@@ -1,0 +1,8 @@
+node_modules
+
+.env
+__azurite_*
+.angular/
+.vscode/
+__blobstorage*
+dist/

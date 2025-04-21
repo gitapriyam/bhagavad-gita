@@ -1,0 +1,250 @@
+/* Define CSS variables for light and dark modes */
+:root {
+  --font-family: 'Arial, sans-serif';
+  --font-size: 16px;
+  --primary-color: #007bff;
+  --background-color: #ffffff;
+  --text-color: #000000;
+  --card-background-color: #f8f8f8;
+  --card-border-color: #ddd;
+  --container-padding: 20px;
+  --modal-background-color: #fefefe;
+  --modal-text-color: #000000;
+  --modal-overlay-color: rgba(0, 0, 0, 0.4);
+  --modal-border-color: #888;
+  --border-color: #000;
+  /* Black for light theme */
+
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-color: #121212;
+    --text-color: #ffffff;
+    --card-background-color: #1e1e1e;
+    --card-border-color: #333;
+    --modal-background-color: #1e1e1e;
+    --modal-text-color: #ffffff;
+    --modal-overlay-color: rgba(0, 0, 0, 0.8);
+    --modal-border-color: #555;
+    --border-color: #fff;
+    /* White for dark theme */
+  }
+}
+
+/* Apply the global styles */
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  background-color: var(--background-color);
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+}
+
+body.light-theme {
+  --border-color: var(--border-color-light);
+}
+
+body.dark-theme {
+  --border-color: var(--border-color-dark);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: var(--container-padding);
+  box-sizing: border-box;
+  /* Include padding in the element's total width and height */
+}
+
+header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 10px;
+  background-color: var(--card-background-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+header h3 {
+  margin: 0;
+  color: var(--text-color);
+}
+
+.menu-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  position: absolute;
+  left: 10px;
+  color: var(--text-color);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+.card {
+  background-color: var(--card-background-color);
+  border: 1px solid var(--card-border-color);
+  border-radius: 4px;
+  padding: 20px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.card h3 {
+  margin-top: 0;
+}
+
+.custom-pre {
+  color: var(--text-color-light);
+  background: var(--background-color-light);
+  font-family: inherit;
+  font-size: inherit;
+  margin: 0;
+  padding: 0;
+  white-space: pre-wrap;
+  /* This ensures that the content wraps within the parent container */
+  word-wrap: break-word;
+  /* This ensures that long words break and wrap within the parent container */
+  background: inherit;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  font-size: var(--font-size);
+}
+
+.breadcrumb a {
+  cursor: pointer;
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.breadcrumb::after {
+  content: '>';
+  margin: 0 5px;
+}
+
+.sloka-navigation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.sloka-navigation i {
+  font-size: 24px;
+  color: var(--primary-color);
+  cursor: pointer;
+  margin: 0 10px;
+}
+
+.sloka-navigation i.disabled {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.sloka-title {
+  margin: 0 20px;
+  text-align: center;
+  flex-grow: 1;
+}
+
+/* Global styles for the modal dialog */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: var(--modal-overlay-color);
+  padding-top: 60px;
+}
+
+.modal.show {
+  display: block;
+}
+
+.modal-content {
+  background-color: var(--modal-background-color);
+  color: var(--modal-text-color);
+  margin: 5% auto;
+  padding: 20px;
+  border: 1px solid var(--modal-border-color);
+  width: 80%;
+  max-width: 600px;
+  /* Set a maximum width for the modal */
+  max-height: 80vh;
+  /* Set a maximum height for the modal */
+  overflow-y: auto;
+  /* Add scroll if content overflows */
+  box-sizing: border-box;
+  /* Include padding and border in the element's total width and height */
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.dropdown-container {
+  display: flex;
+  align-items: center;
+  /* Vertically align the label and dropdown */
+  gap: 10px;
+  /* Add spacing between the label and dropdown */
+}
+
+.dropdown-container label {
+  margin: 0;
+  font-size: var(--font-size);
+  /* Use global font size */
+  color: var(--text-color);
+  /* Use global text color */
+}
+
+.dropdown-container select {
+  width: auto;
+  /* Adjust width to fit the content */
+  min-width: 150px;
+  /* Set a minimum width for the dropdown */
+  background-color: var(--card-background-color);
+  color: var(--text-color);
+  border: 1px solid var(--card-border-color);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: var(--font-size);
+  font-family: var(--font-family);
+  appearance: none;
+  /* Remove default browser styling */
+}

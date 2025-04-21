@@ -1,0 +1,36 @@
+<div>
+    <div *ngIf="showSanskrit && showSandhi && sanskritSandhi" class="card">
+      <h4>सन्धिविग्रहः</h4>
+      <pre class="custom-pre">{{sanskritSandhi}}</pre>
+    </div>
+    <div *ngIf="showSanskrit && showSandhi && sanskritAnvaya" class="card">
+      <h4>अन्वयः</h4>
+      <pre class="custom-pre">{{sanskritAnvaya}}</pre>
+    </div>
+    <div class="dropdown-container">
+      <label for="slokaDropdown">Select Sloka:</label>
+      <select id="slokaDropdown" [(ngModel)]="selectedSloka" (change)="onSlokaChange()">
+        <option *ngFor="let slokaId of slokaGroup" [value]="slokaId">
+          {{ getSlokaTitle(slokaId) }}
+        </option>
+      </select>
+    </div>
+    <div *ngIf="selectedSloka" class="sloka-content">
+      <div class="card">
+        <h3>Shloka Meaning</h3>
+        <pre class="custom-pre">{{ slokaMeaning[selectedSloka] }}</pre>
+      </div>
+      <div class="card">
+        <h3>Shloka Audio</h3>
+        <div class="audio">
+          <audio #audioPlayer controls>
+            Your browser does not support the audio element.
+          </audio>
+          <!-- <audio controls>
+            <source [src]="slokaAudioSrc[selectedSloka]" type="audio/mpeg">
+            Your browser does not support the audio element.
+          </audio> -->
+        </div>
+      </div>
+    </div>  
+  </div>

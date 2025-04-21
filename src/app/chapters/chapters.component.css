@@ -1,0 +1,234 @@
+.header-title {
+    flex-grow: 1;
+    text-align: center;
+  }
+  
+  .chapters-section {
+    display: none; /* Hide by default */
+  }
+  
+  .chapters-overlay {
+    position: fixed; /* Change to fixed to cover the entire viewport */
+    top: 0;
+    left: 0;
+    width: auto;
+    max-width: 400px; /* Set a maximum width for the chapter list */
+    height: 100%;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align the chapter list to the left */
+    justify-content: flex-start; /* Align the chapter list to the top */
+    overflow-y: auto; /* Add scroll if content overflows */
+    padding: 20px; /* Add padding for better spacing */
+    padding-bottom: 100px;
+  }
+  
+  .chapters-list {
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+  }
+  
+  .chapters-list li {
+    cursor: pointer;
+    margin: 10px 0;
+  }
+  
+  .chapters-list li h4 {
+    margin: 0;
+    color: var(--text-color);
+  }
+  
+  .sloka-list {
+    width: 100%;
+    overflow-y: auto;
+  }
+  
+  .sloka-list ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .sloka-list li {
+    cursor: pointer;
+    margin: 10px 0;
+  }
+  
+  .sloka-view {
+    width: 100%;
+    overflow-y: auto;
+  }
+  
+  .sloka-view nav {
+    margin-bottom: 10px;
+  }
+  
+  .sloka-section {
+    margin-top: 20px;
+    width: 100%;
+  }
+  
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    font-size: var(--font-size);
+  }
+  
+  .breadcrumb a {
+    cursor: pointer;
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+  
+  .breadcrumb::after {
+    content: '>';
+    margin: 0 5px;
+  }
+  
+  .sloka-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .sloka-list-header h4 {
+    margin: 0;
+  }
+  
+  .sloka-list-header label {
+    font-size: 16px;
+    color: var(--text-color);
+  }
+  
+  .sloka-list-header input {
+    margin-right: 10px;
+  }
+  
+  .font-size-controls {
+    display: flex;
+    gap: 10px;
+    margin-left: auto;
+  }
+  
+  .font-size-controls i {
+    font-size: 20px;
+    cursor: pointer;
+    color: #007bff;
+  }
+  
+  .font-size-controls i:hover {
+    color: #0056b3;
+  }
+  
+  .font-size-icon {
+    font-size: 20px;
+    cursor: pointer;
+    color: #007bff;
+    font-weight: bold;
+  }
+  
+  .font-size-icon:hover {
+    color: #0056b3;
+  }
+  
+  .reference-icon {
+    font-size: 20px;
+    cursor: pointer;
+    color: #007bff;
+    margin-left: 20px;
+  }
+  
+  .reference-icon:hover {
+    color: #0056b3;
+  }
+  
+  .dropbtn {
+    font-size: 20px;
+    cursor: pointer;
+    color: #007bff;
+    margin: 10px;
+  }
+  
+  .dropbtn:hover, .dropbtn:focus {
+    color: #0056b3;
+  }
+  
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .dropdown-content {
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1000; /* Ensure dropdown is above other elements */
+    padding: 10px;
+  }
+  
+  .dropdown-content a {
+    display: block;
+    color: black;
+    text-decoration: none;
+    padding: 8px 0;
+  }
+  
+  .dropdown-content a:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .dropdown:hover .dropdown-content {
+    display: block; /* Show the dropdown on hover */
+  }
+  
+  /* Media query for larger screens */
+  @media (min-width: 768px) {
+    .content {
+      flex-direction: row; /* Arrange chapters and sloka list side by side */
+      justify-content: flex-start; /* Align the content to the top */
+      align-items: flex-start;
+    }
+  
+    .chapters-section {
+      display: flex; 
+      flex-direction: column;
+      align-items: flex-start;
+      max-width: 300px; /* Set a maximum width for the chapter list */
+      height: 100%;
+      overflow-y: auto; /* Add scroll if content overflows */
+      padding: 20px; /* Add padding for better spacing */
+      justify-content: flex-start; /* Align the chapter list to the top */
+      white-space: nowrap;
+    }
+  
+    .chapters-overlay {
+      display: none; /* Hide overlay on larger screens */
+    }
+  
+    .sloka-list {
+      flex: 1; /* Take remaining space */
+    }
+  
+  }
+  
+  /* Media query for smaller screens */
+  @media (max-width: 767px) {
+    .chapters-section {
+      display: none; /* Hide chapters section */
+    }
+  
+    .chapters-overlay {
+      display: flex; /* Show overlay on smaller screens */
+      justify-content: flex-start; /* Align the chapter list to the top */
+    }
+  }

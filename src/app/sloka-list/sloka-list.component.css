@@ -1,0 +1,129 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  
+  .chapter {
+    flex: 1;
+    text-align: center;
+    margin-right: 20px;
+  }
+  
+  .sloka-list {
+    flex: 2;
+    margin-top: 20px;
+  }
+  
+  .sloka-list ul {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .sloka-list li {
+    margin: 10px 0;
+  }
+  
+  .sloka-list-header {
+    display: flex;
+    justify-content: center; /* Center-aligns the content horizontally */
+    align-items: center; /* Center-aligns the content vertically */
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .sloka-list-header h4 {
+    margin: 0;
+    text-align: center; /* Center-aligns the text within the h4 element */
+  }
+  
+  .sloka-list-header label {
+    font-size: 16px;
+    color: var(--text-color);
+    margin-left: 20px; /* Adds some space between the h4 and the label */
+  }
+  
+  .sloka-list-header input {
+    margin-right: 10px;
+  }
+  
+  .custom-pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .clickable {
+    cursor: pointer;
+  }
+  
+  /* Media query for smaller screens */
+  @media (max-width: 768px) {
+    .container {
+      flex-direction: column;
+    }
+  
+    .chapter {
+      margin-right: 0;
+      margin-bottom: 20px;
+    }
+  
+    .sloka-list ul {
+      flex-direction: column;
+    }
+  }
+
+  .sloka-group-container {
+    border: 1px dotted var(--border-color); /*Use the CSS variable for the border color */
+    padding: 10px; /* Add some padding inside the container */
+    margin: 10px 0; /* Add some margin around the container */
+    border-radius: 5px; /* Optional: Add rounded corners */
+  }
+
+  .sliding-pane {
+    position: absolute;
+    top: 50px;
+    right: 20px;
+    background-color: var(--card-background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 999;
+  }
+  
+  .sliding-pane.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .toggle-pane-btn {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 16px;
+    cursor: pointer;
+    margin-right: 10px;
+  }
+
+  /* Style for the checkbox when enabled */
+input[type="checkbox"]:not(:disabled) {
+  cursor: pointer;
+  opacity: 1;
+}
+
+/* Style for the checkbox when disabled */
+input[type="checkbox"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.5; /* Makes it look faded */
+}
+
+/* Optional: Style the label for the disabled checkbox */
+input[type="checkbox"]:disabled + label {
+  color: gray; /* Makes the label text gray */
+}
