@@ -11,6 +11,44 @@ const httpsAgent = new https.Agent({
 // In-memory cache
 const cache = new Map();
 
+/**
+ * @swagger
+ * /sloka/{chapterId}/{slokaIndex}:
+ *   get:
+ *     summary: Get a specific sloka by chapter and index
+ *     parameters:
+ *       - in: path
+ *         name: chapterId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the chapter between 0 and 19
+ *       - in: path
+ *         name: slokaIndex
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The index of the sloka
+ *       - in: query
+ *         name: content
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum: [sanskrit, english, meaning]
+ *         description: The language of the sloka content. Default is 'english'.
+ *     responses:
+ *       200:
+ *         description: A sloka object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 content:
+ *                   type: string
+ *                   description: The content of the sloka
+ */
+
 app.http('sloka', {
     methods: ['GET'],
     authLevel: 'anonymous',
