@@ -44,31 +44,26 @@ jobs:
     runs-on: ubuntu-latest
     needs: verify
     if: github.event_name == 'push' && (github.ref_name == 'main' || github.ref_name == 'development')
+    env:
+      AZURE_STATIC_WEB_APPS_API_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+      DEPLOYMENT_ENVIRONMENT: ${{ github.ref_name == 'main' && 'production' || 'development' }}
+      APP_LOCATION: "src"
+      OUTPUT_LOCATION: "dist/bhagavad-gita"
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Debug GitHub Ref
-        run: "echo 'GitHub Ref: ${{ github.ref }}'"
-
-      - name: Set Deployment Environment
-        id: set-env
-        run: |
-          if [[ "${{ github.ref_name }}" == "main" ]]; then
-            echo "ENVIRONMENT=Production" >> $GITHUB_ENV
-          elif [[ "${{ github.ref_name }}" == "development" ]]; then
-            echo "ENVIRONMENT=Development" >> $GITHUB_ENV
-          else
-            echo "ENVIRONMENT=Unknown" >> $GITHUB_ENV
-          fi
+      - name: Install Azure Static Web Apps CLI
+        run: npm install -g @azure/static-web-apps-cli
 
       - name: Deploy to Azure Static Web Apps
-        uses: Azure/static-web-apps-deploy@v1
-        with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          action: "upload"
-          app_location: "src"
-          api_location: "api"
-          output_location: "dist/bhagavad-gita"
+        run: |
+          npx swa deploy \
+            --app-location ${{ env.APP_LOCATION }} \
+            --api-location api \
+            --output-location ${{ env.OUTPUT_LOCATION }} \
+            --env ${{ env.DEPLOYMENT_ENVIRONMENT }} \
+            --deployment-token ${{ env.AZURE_STATIC_WEB_APPS_API_TOKEN }} \
+            --api-language node \
+            --api-version 20
