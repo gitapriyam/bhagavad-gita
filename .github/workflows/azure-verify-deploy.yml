@@ -34,10 +34,18 @@ jobs:
       # Step 3: Set Deployment Environment
       - name: Set Deployment Environment
         run: |
-          if [ "${{ github.ref_name }}" == "main" ]; then
-            echo "DEPLOYMENT_ENVIRONMENT=Production" >> $GITHUB_ENV
-          else
-            echo "DEPLOYMENT_ENVIRONMENT=development" >> $GITHUB_ENV
+          if [ "${{ github.event_name }}" == "push" ]; then
+            if [ "${{ github.ref_name }}" == "main" ]; then
+              echo "DEPLOYMENT_ENVIRONMENT=Production" >> $GITHUB_ENV
+            else 
+              echo "DEPLOYMENT_ENVIRONMENT=development" >> $GITHUB_ENV
+            fi
+          elif [ "${{ github.event_name }}" == "pull_request" ]; then
+            if [ "${{ github.base_ref }}" == "main" ]; then
+              echo "DEPLOYMENT_ENVIRONMENT=Production" >> $GITHUB_ENV
+            else
+              echo "DEPLOYMENT_ENVIRONMENT=development" >> $GITHUB_ENV
+            fi
           fi
 
       # Step 4: Install dependencies
@@ -65,6 +73,7 @@ jobs:
           echo "Event Name: ${{ github.event_name }}"
           echo "Base Ref: ${{ github.base_ref }}"
           echo "Ref Name: ${{ github.ref_name }}"
+          echo "Deployment Environment: $DEPLOYMENT_ENVIRONMENT"
 
       # Step 8: Conditionally deploy to Azure Static Web Apps
       - name: Deploy to Azure Static Web Apps
