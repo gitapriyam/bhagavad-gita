@@ -35,10 +35,6 @@ export class SlokaListComponent implements OnChanges {
     private slokaService: SlokaService,
     private apiService: ApiService) { }
 
-/*   ngOnInit(): void {
-    this.loadSlokas();
-  } */
-
   ngOnChanges(changes: SimpleChanges): void {
     this.showSandhi = false;
     if (changes['chapterId'] || changes['showSanskrit'] || changes['chapterName']) {
