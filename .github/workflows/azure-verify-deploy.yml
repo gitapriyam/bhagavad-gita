@@ -17,7 +17,6 @@ jobs:
 
     env:
       AZURE_STATIC_WEB_APPS_API_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
-      DEPLOYMENT_ENVIRONMENT: ${{ github.ref_name == 'main' && 'production' || 'development' }}
       APP_LOCATION: "src"
       OUTPUT_LOCATION: "dist/bhagavad-gita"
 
@@ -32,35 +31,57 @@ jobs:
         with:
           node-version: 20
 
-      # Step 3: Install dependencies
+      # Step 3: Set Deployment Environment
+      - name: Set Deployment Environment
+        run: |
+          if [ "${{ github.ref_name }}" == "main" ]; then
+            echo "DEPLOYMENT_ENVIRONMENT=production" >> $GITHUB_ENV
+          else
+            echo "DEPLOYMENT_ENVIRONMENT=development" >> $GITHUB_ENV
+          fi
+
+      # Step 4: Install dependencies
       - name: Install Dependencies
         run: npm install
 
-      # Step 4: Install Angular CLI
+      # Step 5: Install Angular CLI
       - name: Install Angular CLI
         run: npm install -g @angular/cli
 
-      # Step 5: Build the application
+      # Step 6: Build the application
       - name: Build Application
         run: npm run build
 
-      # Step 6: Install API dependencies
+      # Step 7: Install API dependencies
       - name: Install API Dependencies
         run: |
           cd api
           npm install --production
           cd -
 
-      # Step 7: Conditionally deploy to Azure Static Web Apps
-      - name: Deploy to Azure Static Web Apps
-        if: github.event_name == 'push' && (github.ref_name == 'main' || github.ref_name == 'development')
+      # Debug Step: Print Event Info
+      - name: Debug Event Info
         run: |
-          npm install -g @azure/static-web-apps-cli
+          echo "Event Name: ${{ github.event_name }}"
+          echo "Base Ref: ${{ github.base_ref }}"
+          echo "Ref Name: ${{ github.ref_name }}"
+
+      - name: Install Azure Static Web Apps CLI
+        run: npm install -g @azure/static-web-apps-cli
+
+      # Step 8: Conditionally deploy to Azure Static Web Apps
+      - name: Deploy to Azure Static Web Apps
+        if: >
+          (github.event_name == 'pull_request' && github.base_ref == 'development') ||
+          (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        env:
+          DEPLOYMENT_ENVIRONMENT: ${{ env.DEPLOYMENT_ENVIRONMENT }}
+        run: |
           npx swa deploy \
             --app-location ${{ env.APP_LOCATION }} \
             --api-location api \
             --output-location ${{ env.OUTPUT_LOCATION }} \
-            --env ${{ env.DEPLOYMENT_ENVIRONMENT }} \
+            --env $DEPLOYMENT_ENVIRONMENT \
             --deployment-token ${{ env.AZURE_STATIC_WEB_APPS_API_TOKEN }} \
             --api-language node \
             --api-version 20
