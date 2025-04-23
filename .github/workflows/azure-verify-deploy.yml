@@ -35,7 +35,7 @@ jobs:
       - name: Set Deployment Environment
         run: |
           if [ "${{ github.ref_name }}" == "main" ]; then
-            echo "DEPLOYMENT_ENVIRONMENT=production" >> $GITHUB_ENV
+            echo "DEPLOYMENT_ENVIRONMENT=Production" >> $GITHUB_ENV
           else
             echo "DEPLOYMENT_ENVIRONMENT=development" >> $GITHUB_ENV
           fi
@@ -66,9 +66,6 @@ jobs:
           echo "Base Ref: ${{ github.base_ref }}"
           echo "Ref Name: ${{ github.ref_name }}"
 
-      - name: Install Azure Static Web Apps CLI
-        run: npm install -g @azure/static-web-apps-cli
-
       # Step 8: Conditionally deploy to Azure Static Web Apps
       - name: Deploy to Azure Static Web Apps
         if: >
@@ -77,7 +74,7 @@ jobs:
         env:
           DEPLOYMENT_ENVIRONMENT: ${{ env.DEPLOYMENT_ENVIRONMENT }}
         run: |
-          npx swa deploy \
+          npx @azure/static-web-apps-cli deploy \
             --app-location ${{ env.APP_LOCATION }} \
             --api-location api \
             --output-location ${{ env.OUTPUT_LOCATION }} \
