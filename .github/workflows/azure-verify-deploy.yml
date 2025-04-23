@@ -11,39 +11,10 @@ on:
       - development
 
 jobs:
-  verify:
-    name: Verify Code
+  verify_and_deploy:
+    name: Verify and Deploy
     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Install Angular CLI
-        run: npm install -g @angular/cli
-
-      - name: Build Application
-        run: npm run build
-
-      - name: Install API Dependencies
-        run: |
-          cd api
-          npm install --production
-          cd -
-
-  deploy:
-    name: Deploy to Azure Static Web Apps
-    runs-on: ubuntu-latest
-    needs: verify
-    if: github.event_name == 'push' && (github.ref_name == 'main' || github.ref_name == 'development')
     env:
       AZURE_STATIC_WEB_APPS_API_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
       DEPLOYMENT_ENVIRONMENT: ${{ github.ref_name == 'main' && 'production' || 'development' }}
@@ -51,14 +22,40 @@ jobs:
       OUTPUT_LOCATION: "dist/bhagavad-gita"
 
     steps:
+      # Step 1: Checkout the code
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Install Azure Static Web Apps CLI
-        run: npm install -g @azure/static-web-apps-cli
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
 
-      - name: Deploy to Azure Static Web Apps
+      # Step 3: Install dependencies
+      - name: Install Dependencies
+        run: npm install
+
+      # Step 4: Install Angular CLI
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
+
+      # Step 5: Build the application
+      - name: Build Application
+        run: npm run build
+
+      # Step 6: Install API dependencies
+      - name: Install API Dependencies
         run: |
+          cd api
+          npm install --production
+          cd -
+
+      # Step 7: Conditionally deploy to Azure Static Web Apps
+      - name: Deploy to Azure Static Web Apps
+        if: github.event_name == 'push' && (github.ref_name == 'main' || github.ref_name == 'development')
+        run: |
+          npm install -g @azure/static-web-apps-cli
           npx swa deploy \
             --app-location ${{ env.APP_LOCATION }} \
             --api-location api \
