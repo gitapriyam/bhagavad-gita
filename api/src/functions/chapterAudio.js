@@ -4,6 +4,36 @@ const { getChapterAudioURL,logError, validateChapterId } = require('./utils.js')
 // In-memory cache
 const cache = new Map();
 
+/**
+ * @swagger
+ * /chapterAudio/{chapterId}:
+ *   get:
+ *     summary: Get the audio URL for a specific chapter
+ *     description: Returns the audio URL for the specified chapter of the Bhagavad Gita.
+ *     parameters:
+ *       - in: path
+ *         name: chapterId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the chapter (e.g., 1 for Chapter 1).
+ *     responses:
+ *       200:
+ *         description: A JSON object containing the audio URL for the chapter.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 url:
+ *                   type: string
+ *                   description: The URL of the chapter audio.
+ *                   example: "https://example.com/audio/chapter1.mp3"
+ *       400:
+ *         description: Invalid chapter ID.
+ *       500:
+ *         description: Internal server error.
+ */
 app.http('chapterAudio', {
     methods: ['GET'],
     authLevel: 'anonymous',

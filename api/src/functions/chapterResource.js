@@ -4,6 +4,42 @@ const { getChapterResource, logError, validateChapterId, validateContent } = req
 // In-memory cache
 const cache = new Map();
 
+/**
+ * @swagger
+ * /chapterResource/{chapterId}:
+ *   get:
+ *     summary: Get the chapter PDF resource URL for a specific chapter
+ *     description: Returns the chapter PDF resource URL for the specified chapter of the Bhagavad Gita.
+ *     parameters:
+ *     - in: path
+ *       name: chapterId
+ *       required: true
+ *       schema:
+ *         type: integer
+ *       description: The ID of the chapter (e.g., 1 for Chapter 1).
+ *     - in: query
+ *       name: content
+ *       required: false
+ *       schema:
+ *        type: string
+ *        enum: [sanskrit, english, tamil]
+ *     responses:
+ *       200:
+ *         description: A JSON object containing the audio URL for the chapter.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 url: 
+ *                   type: string
+ *                   description: The URL of the chapter resource.
+ *       400:
+ *         description: Invalid chapter ID.
+ *       500:
+ *         description: Internal server error.
+ */
+
 app.http('chapterResource', {
     methods: ['GET'],
     authLevel: 'anonymous',

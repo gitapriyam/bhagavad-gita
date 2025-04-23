@@ -4,6 +4,43 @@ const { getSlokaAudioUrl, logError, validateChapterId, validateSlokaId } = requi
 // In-memory cache
 const cache = new Map();
 
+/**
+ * @swagger
+ * /slokaAudio/{chapterId}/{slokaId}:
+ *   get:
+ *     summary: Get the audio URL for a specific chapter sloka
+ *     description: Returns the audio URL for the specified chapter's sloka of the Bhagavad Gita.
+ *     parameters:
+ *       - in: path
+ *         name: chapterId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the chapter (e.g., 1 for Chapter 1).
+ *       - in: path
+ *         name: slokaId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the sloka (e.g., 1 for Sloka 1).
+ *     responses:
+ *       200:
+ *         description: A JSON object containing the audio URL for the chapter.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 url:
+ *                   type: string
+ *                   description: The URL of the chapter audio.
+ *                   example: "https://example.com/audio/chapter1.mp3"
+ *       400:
+ *         description: Invalid chapter ID.
+ *       500:
+ *         description: Internal server error.
+ */
+
 app.http('slokaAudio', {
     methods: ['GET'],
     authLevel: 'anonymous',
