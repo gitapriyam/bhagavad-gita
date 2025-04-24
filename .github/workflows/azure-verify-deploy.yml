@@ -36,15 +36,15 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" == "push" ]; then
             if [ "${{ github.ref_name }}" == "main" ]; then
-              echo "DEPLOYMENT_ENVIRONMENT=Production" >> $GITHUB_ENV
+              echo "SWA_CLI_DEPLOY_ENV=Production" >> $GITHUB_ENV
             else 
-              echo "DEPLOYMENT_ENVIRONMENT=development" >> $GITHUB_ENV
+              echo "SWA_CLI_DEPLOY_ENV=development" >> $GITHUB_ENV
             fi
           elif [ "${{ github.event_name }}" == "pull_request" ]; then
             if [ "${{ github.base_ref }}" == "main" ]; then
-              echo "DEPLOYMENT_ENVIRONMENT=Production" >> $GITHUB_ENV
+              echo "SWA_CLI_DEPLOY_ENV=Production" >> $GITHUB_ENV
             else
-              echo "DEPLOYMENT_ENVIRONMENT=development" >> $GITHUB_ENV
+              echo "SWA_CLI_DEPLOY_ENV=development" >> $GITHUB_ENV
             fi
           fi
 
@@ -87,7 +87,6 @@ jobs:
             --app-location ${{ env.APP_LOCATION }} \
             --api-location api \
             --output-location ${{ env.OUTPUT_LOCATION }} \
-            --env $DEPLOYMENT_ENVIRONMENT \
             --deployment-token ${{ env.AZURE_STATIC_WEB_APPS_API_TOKEN }} \
             --api-language node \
             --api-version 20
