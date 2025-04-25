@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UtilityService } from '../services/utility.service';
 import { FormsModule } from '@angular/forms';
@@ -15,7 +15,7 @@ import { SlokaData } from '../models/sloka-data.model'; // Import the interface
   imports: [CommonModule, FormsModule, SlokaComponent],
   standalone: true
 })
-export class SlokaListComponent implements OnChanges {
+export class SlokaListComponent implements OnChanges, AfterViewInit {
   @Input() chapterId: number = 0;
   @Input() chapterName: string = '';
   @Input() slokaCount: number = 0;
@@ -24,12 +24,16 @@ export class SlokaListComponent implements OnChanges {
   @Output() showSloka = new EventEmitter<number>();
   slokaData: number[][] = [];
   expandedSloka: number | null = null;
-  slokas: string[] = [];
+  slokas: { [key: number]: string } = {}; // Store slokas by index
   indices: number[] = [];
   showSandhi: boolean = false;
   isPaneVisible: boolean = false;
   groups: any[] = []; // Store groups here
   isSlokaGroupsReady: boolean = false;
+  contentType: string = 'english'; // Default content type
+  observer: IntersectionObserver | null = null;
+
+  @ViewChild('slokaContainer', { static: true }) slokaContainer!: ElementRef;
 
   constructor(private utilityService: UtilityService,
     private slokaService: SlokaService,
@@ -44,6 +48,10 @@ export class SlokaListComponent implements OnChanges {
         this.showSandhi = false;
       }
     }
+  }
+
+  ngAfterViewInit(): void {
+    this.setupIntersectionObserver();
   }
 
   togglePane(): void {
@@ -88,18 +96,43 @@ export class SlokaListComponent implements OnChanges {
     this.expandedSloka = null;
     this.populateSlokaData();
     this.chapterName = this.utilityService.getChapterName(this.chapterId, this.showSanskrit);
-    const content = this.showSanskrit ? 'sanskrit' : 'english';
-    this.slokas = [];
-    for (let slokaIndex = 1; slokaIndex <= this.slokaCount; slokaIndex++) {
-      this.apiService.getSloka(this.chapterId, slokaIndex, content).subscribe(
-        (data: SlokaData) => {
-          this.slokas[slokaIndex - 1] = data.content // Adjust this based on the actual response format
-        },
-        (error) => {
-          console.error(`Error fetching sloka ${slokaIndex}:`, error);
+    this.contentType = this.showSanskrit ? 'sanskrit' : 'english';
+    this.slokas = {}; // Reset slokas
+    this.indices = Array.from({ length: this.slokaCount }, (_, i) => i + 1); // Create indices for slokas
+  }
+
+  setupIntersectionObserver(): void {
+    const options = {
+      root: null, // Use the viewport as the root
+      rootMargin: '0px',
+      threshold: 0.1 // Trigger when 10% of the element is visible
+    };
+
+    this.observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const slokaIndex = Number(entry.target.getAttribute('data-index'));
+          if (!this.slokas[slokaIndex]) {
+            this.fetchSloka(slokaIndex);
+          }
         }
-      );
-    }
+      });
+    }, options);
+
+    // Observe all <li> elements
+    const placeholders = document.querySelectorAll('.sloka-placeholder');
+    placeholders.forEach((placeholder) => this.observer?.observe(placeholder as HTMLElement));
+  }
+
+  fetchSloka(slokaIndex: number): void {
+    this.apiService.getSloka(this.chapterId, slokaIndex, this.contentType).subscribe(
+      (data: SlokaData) => {
+        this.slokas[slokaIndex] = data.content; // Store the fetched sloka content
+      },
+      (error) => {
+        console.error(`Error fetching sloka ${slokaIndex}:`, error);
+      }
+    );
   }
 
   onSlokaClick(index: number): void {
@@ -109,6 +142,7 @@ export class SlokaListComponent implements OnChanges {
   onToggleSanskrit(): void {
     this.showSanskrit = !this.showSanskrit;
     this.sanskritToggled.emit(this.showSanskrit);
+    this.loadSlokas(); // Reload slokas when toggling Sanskrit
   }
 
   onToggleSandhi(): void {

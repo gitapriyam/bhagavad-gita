@@ -127,3 +127,26 @@ input[type="checkbox"]:disabled {
 input[type="checkbox"]:disabled + label {
   color: gray; /* Makes the label text gray */
 }
+
+.sloka-container {
+  height: 100vh; /* Full viewport height */
+  overflow-y: auto; /* Enable scrolling */
+}
+
+.sloka-placeholder {
+  min-height: 100px; /* Placeholder height */
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  padding: 10px;
+  background-color: #f9f9f9;
+}
+
+.sloka-loading {
+  color: #888;
+  font-style: italic;
+}
+
+.sloka-content {
+  font-size: 16px;
+  color: #333;
+}

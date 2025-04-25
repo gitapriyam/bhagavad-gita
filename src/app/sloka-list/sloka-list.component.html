@@ -1,41 +1,58 @@
 <div class="sloka-list" id="sloka-list">
-    <div class="sloka-list-header">
-        <h4>{{ chapterName }}</h4>
-        <button (click)="togglePane()" class="toggle-pane-btn">☰ Options</button>
-        <div class="sliding-pane" [class.visible]="isPaneVisible">
-            <label>
-                <input type="checkbox" [(ngModel)]="showSanskrit" (change)="onToggleSanskrit()"> Show Sanskrit
-            </label>
-            <label>
-                <input type="checkbox" [(ngModel)]="showSandhi" [disabled]="!showSanskrit || !isSlokaGroupsReady"> Show Details
-            </label>
+  <div class="sloka-list-header">
+    <h4>{{ chapterName }}</h4>
+    <button (click)="togglePane()" class="toggle-pane-btn">☰ Options</button>
+    <div class="sliding-pane" [class.visible]="isPaneVisible">
+      <label>
+        <input type="checkbox" [(ngModel)]="showSanskrit" (change)="onToggleSanskrit()"> Show Sanskrit
+      </label>
+      <label>
+        <input type="checkbox" [(ngModel)]="showSandhi" [disabled]="!showSanskrit || !isSlokaGroupsReady"> Show Details
+      </label>
+    </div>
+  </div>
+
+  <div *ngIf="indices.length > 0">
+    <ul>
+      <li *ngFor="let index of indices" class="sloka-placeholder" [attr.data-index]="index">
+        <!-- Single Sloka -->
+        <div *ngIf="slokaData[index]?.length === 1">
+          <h4>{{ getSlokaTitle(index) }}</h4>
+          <pre (click)="toggleSloka(index)" class="custom-pre clickable">
+            <ng-container *ngIf="slokas[index]; else loading">
+              {{ slokas[index] }}
+            </ng-container>
+          </pre>
+          <ng-template #loading>
+            <div class="sloka-loading">Loading sloka {{ index }}...</div>
+          </ng-template>
+          <div *ngIf="expandedSloka === index">
+            <app-sloka [chapterId]="chapterId" [slokaGroup]="[index]" [showSanskrit]="showSanskrit"
+              [showSandhi]="showSandhi" [isSlokaGroupsReady]="isSlokaGroupsReady"></app-sloka>
+          </div>
         </div>
-    </div>
-    <div *ngIf="slokaData.length > 0">
-        <ul>
-            <li *ngFor="let i of indices; ">
-                <div *ngIf="slokaData[i]?.length === 1">
-                    <h4> {{ getSlokaTitle(i + 1) }}</h4>
-                    <pre (click)="toggleSloka(i + 1)" class="custom-pre clickable">{{ slokas[i]}}</pre>
-                    <div *ngIf="expandedSloka === i + 1">
-                        <app-sloka [chapterId]="chapterId" [slokaGroup]="[i + 1]" [showSanskrit]="showSanskrit"
-                            [showSandhi]="showSandhi" [isSlokaGroupsReady]="isSlokaGroupsReady"></app-sloka>
-                    </div>
-                </div>
-                <div *ngIf="slokaData[i] && slokaData[i].length > 1">
-                    <div class="sloka-group-container">
-                        <div *ngFor="let slokaId of slokaData[i]">
-                            <h4>{{getSlokaTitle(slokaId)}}</h4>
-                            <pre (click)="toggleSlokaGroup(i)"
-                                class="custom-pre clickable">{{ slokas[slokaId - 1] }}</pre>
-                        </div>
-                        <div *ngIf="expandedSloka === slokaData[i][0]">
-                            <app-sloka [slokaGroup]="slokaData[i]" [chapterId]="chapterId" [showSanskrit]="showSanskrit"
-                                [showSandhi]="showSandhi" [isSlokaGroupsReady]="isSlokaGroupsReady"></app-sloka>
-                        </div>
-                    </div>
-                </div>
-            </li>
-        </ul>
-    </div>
+
+        <!-- Grouped Slokas -->
+        <div *ngIf="slokaData[index] && slokaData[index].length > 1">
+          <div class="sloka-group-container">
+            <div *ngFor="let slokaId of slokaData[index]">
+              <h4>{{ getSlokaTitle(slokaId) }}</h4>
+              <pre (click)="toggleSlokaGroup(index)" class="custom-pre clickable">
+                <ng-container *ngIf="slokas[slokaId - 1]; else loading">
+                  {{ slokas[slokaId - 1] }}
+                </ng-container>
+              </pre>
+              <ng-template #loading>
+                <div class="sloka-loading">Loading sloka {{ slokaId }}...</div>
+              </ng-template>
+            </div>
+            <div *ngIf="expandedSloka === slokaData[index][0]">
+              <app-sloka [slokaGroup]="slokaData[index]" [chapterId]="chapterId" [showSanskrit]="showSanskrit"
+                [showSandhi]="showSandhi" [isSlokaGroupsReady]="isSlokaGroupsReady"></app-sloka>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
 </div>

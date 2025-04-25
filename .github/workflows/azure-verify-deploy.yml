@@ -58,7 +58,9 @@ jobs:
 
       # Step 6: Build the application
       - name: Build Application
-        run: npm run build
+        run: |
+          echo "Building application for environment: $SWA_CLI_DEPLOY_ENV"
+          npx ng build --configuration=$SWA_CLI_DEPLOY_ENV
 
       # Step 7: Install API dependencies
       - name: Install API Dependencies
@@ -73,7 +75,7 @@ jobs:
           echo "Event Name: ${{ github.event_name }}"
           echo "Base Ref: ${{ github.base_ref }}"
           echo "Ref Name: ${{ github.ref_name }}"
-          echo "Deployment Environment: $DEPLOYMENT_ENVIRONMENT"
+          echo "Deployment Environment: $SWA_CLI_DEPLOY_ENV"
 
       # Step 8: Conditionally deploy to Azure Static Web Apps
       - name: Deploy to Azure Static Web Apps

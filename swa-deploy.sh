@@ -17,7 +17,11 @@ export OUTPUT_LOCATION="dist/bhagavad-gita/"
 # Build the frontend application
 echo "Building frontend application..."
 npm install 
-npm run build
+if [ "$ENVIRONMENT" == "development" ]; then
+  npx ng build --configuration=development
+else
+  npx ng build --configuration=production
+fi
 
 # Install production dependencies for the API
 echo "Installing production dependencies for the API..."

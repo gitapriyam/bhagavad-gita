@@ -31,16 +31,9 @@
           },
           "configurations": {
             "production": {
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
@@ -53,6 +46,15 @@
                   "maximumError": "5kb"
                 }
               ]
+            },
+            "development": {
+              "sourceMap": true, 
+              "optimization": false, 
+              "outputHashing": "none",
+              "namedChunks": true,
+              "aot": true,
+              "vendorChunk": true,
+              "buildOptimizer": false
             }
           }
         },
@@ -64,6 +66,9 @@
           "configurations": {
             "production": {
               "browserTarget": "angular-static-web-app:build:production"
+            },
+            "development": {
+              "browserTarget": "angular-static-web-app:build:development"
             }
           }
         },
