@@ -9,6 +9,25 @@
       "appDevserverUrl": "http://localhost:4200",
       "appName": "bhagavad-gita",
       "resourceGroup": "gita-app-rg"
+    },
+    "development": {
+      "appLocation": "src",
+      "apiLocation": "api",
+      "outputLocation": "dist/bhagavad-gita",
+      "appBuildCommand": "npm run build:dev",
+      "run": "npm start",
+      "appDevserverUrl": "http://localhost:4200",
+      "appName": "bhagavad-gita-dev",
+      "resourceGroup": "gita-app-rg-dev"
+    },
+    "production": {
+      "appLocation": "src",
+      "apiLocation": "api",
+      "outputLocation": "dist/bhagavad-gita",
+      "appBuildCommand": "npm run build",
+      "appDevserverUrl": "https://brave-hill-0370ef31e.6.azurestaticapps.net",
+      "appName": "bhagavad-gita",
+      "resourceGroup": "gita-app-rg"
     }
   }
 }

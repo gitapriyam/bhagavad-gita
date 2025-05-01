@@ -3,11 +3,10 @@ import { environment } from '../../environments/environment';
 import { ChapterService } from './chapter.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UtilityService {
-
-  constructor(private chapterService: ChapterService) { }
+  constructor(private chapterService: ChapterService) {}
 
   getChapters(): any[] {
     let chapters: string[] = [];
@@ -23,10 +22,14 @@ export class UtilityService {
   getChapterName(chapterId: number, isSanskrit: boolean): string {
     const chapters = this.getChapters();
     if (!chapters || !chapters[chapterId]) {
-      console.error(`Chapter data for chapterId ${chapterId} is not available.`);
+      console.error(
+        `Chapter data for chapterId ${chapterId} is not available.`,
+      );
       return '';
     }
-    return isSanskrit ? chapters[chapterId].sanskrit : chapters[chapterId].english;
+    return isSanskrit
+      ? chapters[chapterId].sanskrit
+      : chapters[chapterId].english;
   }
 
   getSlokaTitle(index: number, isSanskrit: boolean): string {

@@ -8,9 +8,8 @@ describe('SlokaComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SlokaComponent ]
-    })
-    .compileComponents();
+      declarations: [SlokaComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SlokaComponent);
     component = fixture.componentInstance;

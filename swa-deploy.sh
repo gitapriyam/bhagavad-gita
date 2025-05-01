@@ -16,8 +16,14 @@ export OUTPUT_LOCATION="dist/bhagavad-gita/"
 
 # Build the frontend application
 echo "Building frontend application..."
-npm install 
-npm run build
+npm install
+if [ "$ENVIRONMENT" == "development" ]; then
+  echo "Building in development mode..."
+  npx ng build --configuration=development
+else
+  echo "Building in production mode..."
+  npx ng build --configuration=production
+fi
 
 # Install production dependencies for the API
 echo "Installing production dependencies for the API..."
@@ -30,17 +36,17 @@ cd -
 if [ "$ACTION" == "start" ]; then
   echo "Starting SWA in environment: $ENVIRONMENT"
   # Start the SWA CLI
-  npx swa --verbose=silly start \
+  npx swa start \
     --config swa-cli.config.json \
     --config-name $ENVIRONMENT \
     --app-location $OUTPUT_LOCATION  \
     --api-location $API_LOCATION \
-    --output-location $OUTPUT_LOCATION 
+    --output-location $OUTPUT_LOCATION
 else
   echo "Deploying to environment: $ENVIRONMENT"
   npx swa --verbose=silly deploy \
     --config swa-cli.config.json \
-    --app-location $OUTPUT_LOCATION \
+    --app-location $APP_LOCATION \
     --api-location $API_LOCATION \
     --config-name $ENVIRONMENT \
     --output-location $OUTPUT_LOCATION \
@@ -49,5 +55,5 @@ else
     --app-name gita-app-rg/bhagavad-gita \
     --swa-config-location src \
     --api-language node \
-    --api-version 20 
+    --api-version 20
 fi

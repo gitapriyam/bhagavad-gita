@@ -7,16 +7,22 @@ import { ChaptersComponent } from './chapters/chapters.component';
 import { provideHttpClient } from '@angular/common/http';
 import { SlokaComponent } from './sloka/sloka.component';
 import { FormsModule } from '@angular/forms';
+import { SingleSlokaComponent } from './single-sloka/single-sloka.component';
+import { GroupedSlokaComponent } from './grouped-sloka/grouped-sloka.component';
 
 @NgModule({
+  declarations: [],
   imports: [
     CommonModule,
     BrowserModule,
-    FormsModule
+    FormsModule,
+    AppComponent,
+    SlokaListComponent,
+    ChaptersComponent,
+    SlokaComponent,
+    SingleSlokaComponent,
+    GroupedSlokaComponent,
   ],
-  providers: [
-    provideHttpClient()
-  ]
+  providers: [provideHttpClient()],
 })
-export class AppModule { }
-
+export class AppModule {}

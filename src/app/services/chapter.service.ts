@@ -3,7 +3,7 @@ import { Observable, of } from 'rxjs';
 import { environment } from '../../environments/environment'; // Import environment
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ChapterService {
   constructor() {}

@@ -1,3 +1,3 @@
 export interface SlokaData {
-    content: string;
+  content: string;
 }
