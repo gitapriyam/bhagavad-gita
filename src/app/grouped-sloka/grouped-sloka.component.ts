@@ -18,12 +18,17 @@ import { CommonModule } from '@angular/common';
         </ng-template>
       </div>
       <div *ngIf="expandedSloka === group[0]">
-        <app-sloka [slokaGroup]="group" [chapterId]="chapterId" [showSanskrit]="showSanskrit"
-          [showSandhi]="showSandhi" [isSlokaGroupsReady]="isSlokaGroupsReady"></app-sloka>
+        <app-sloka
+          [slokaGroup]="group"
+          [chapterId]="chapterId"
+          [showSanskrit]="showSanskrit"
+          [showSandhi]="showSandhi"
+          [isSlokaGroupsReady]="isSlokaGroupsReady"
+        ></app-sloka>
       </div>
     </div>
   `,
-  imports: [SlokaComponent, CommonModule]
+  imports: [SlokaComponent, CommonModule],
 })
 export class GroupedSlokaComponent {
   expandedSloka!: number; // Add this property to track the expanded sloka

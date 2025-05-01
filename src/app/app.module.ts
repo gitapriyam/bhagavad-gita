@@ -21,11 +21,8 @@ import { GroupedSlokaComponent } from './grouped-sloka/grouped-sloka.component';
     ChaptersComponent,
     SlokaComponent,
     SingleSlokaComponent,
-    GroupedSlokaComponent
+    GroupedSlokaComponent,
   ],
-  providers: [
-    provideHttpClient()
-  ]
+  providers: [provideHttpClient()],
 })
-export class AppModule { }
-
+export class AppModule {}

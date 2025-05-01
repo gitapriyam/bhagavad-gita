@@ -107,13 +107,10 @@ export class SlokaComponent implements OnInit, OnChanges {
       (response: RemoteResource) => {
         this.assignAudioSource(response.url); // Assign the audio source
       },
-        (error: any) => {
-          console.error(
-            `Error fetching audio URL for Sloka ${slokaId}:`,
-            error,
-          );
-          this.assignAudioSource(''); // Assign the audio source
-        }
+      (error: any) => {
+        console.error(`Error fetching audio URL for Sloka ${slokaId}:`, error);
+        this.assignAudioSource(''); // Assign the audio source
+      },
     );
   }
 

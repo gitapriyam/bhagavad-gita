@@ -110,13 +110,13 @@ export class ChaptersComponent implements OnInit {
       (response: RemoteResource) => {
         this.chapterAudioSrc = response.url; // Assign the audio source
       },
-        (error: any) => {
-          console.error(
-            `Error fetching audio URL for Chapter ${this.chapterId}:`,
-            error,
-          );
-          this.chapterAudioSrc = '';
-        }
+      (error: any) => {
+        console.error(
+          `Error fetching audio URL for Chapter ${this.chapterId}:`,
+          error,
+        );
+        this.chapterAudioSrc = '';
+      },
     );
   }
 
@@ -134,13 +134,13 @@ export class ChaptersComponent implements OnInit {
           this.chapterResource = chapterResource;
         }
       },
-        (error: any) => {
-          console.error(
-            `Error fetching chapter URL for Chapter ${this.chapterId}:`,
-            error,
-          );
-          this.chapterResource = '';
-        }
+      (error: any) => {
+        console.error(
+          `Error fetching chapter URL for Chapter ${this.chapterId}:`,
+          error,
+        );
+        this.chapterResource = '';
+      },
     );
   }
 
