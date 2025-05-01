@@ -42,14 +42,14 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "2kb",
-                  "maximumError": "5kb"
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
                 }
               ]
             },
             "development": {
-              "sourceMap": true, 
-              "optimization": false, 
+              "sourceMap": true,
+              "optimization": false,
               "outputHashing": "none",
               "namedChunks": true,
               "aot": true,
@@ -90,12 +90,9 @@
           }
         },
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "tsConfig": "tsconfig.app.json",
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         }
       }

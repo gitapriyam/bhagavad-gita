@@ -17,20 +17,21 @@
     </div>
     <div *ngIf="selectedSloka" class="sloka-content">
       <div class="card">
-        <h3>Shloka Meaning</h3>
-        <pre class="custom-pre">{{ slokaMeaning[selectedSloka] }}</pre>
+        <h4>Shloka Meaning</h4>
+        <ng-container *ngIf="slokaMeaning[selectedSloka]; else loading">
+          <pre class="custom-pre">{{ slokaMeaning[selectedSloka] }}</pre>
+        </ng-container>
       </div>
+        <ng-template #loading>
+          <pre class="custom-pre clickable">Loading meaning of sloka {{ selectedSloka }}...</pre>
+        </ng-template>
       <div class="card">
-        <h3>Shloka Audio</h3>
+        <h4>Shloka Audio</h4>
         <div class="audio">
           <audio #audioPlayer controls>
             Your browser does not support the audio element.
           </audio>
-          <!-- <audio controls>
-            <source [src]="slokaAudioSrc[selectedSloka]" type="audio/mpeg">
-            Your browser does not support the audio element.
-          </audio> -->
         </div>
       </div>
-    </div>  
+    </div>
   </div>

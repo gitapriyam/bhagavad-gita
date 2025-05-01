@@ -1,4 +1,10 @@
-import { Component, OnInit, Inject, PLATFORM_ID, HostListener } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Inject,
+  PLATFORM_ID,
+  HostListener,
+} from '@angular/core';
 import { environment } from '../../environments/environment';
 import { SlokaListComponent } from '../sloka-list/sloka-list.component';
 import { CommonModule } from '@angular/common';
@@ -8,14 +14,14 @@ import { SlokaComponent } from '../sloka/sloka.component';
 import { FormsModule } from '@angular/forms';
 import { ChapterService } from '../services/chapter.service';
 import { ApiService } from '../services/api.service';
-import { remoteResource } from '../models/remote-resource.model'; // Import the interface
+import { RemoteResource } from '../models/remote-resource.model'; // Import the interface
 
 @Component({
   selector: 'app-chapters',
   templateUrl: './chapters.component.html',
   styleUrls: ['./chapters.component.css'],
   imports: [CommonModule, FormsModule, SlokaListComponent, SlokaComponent],
-  standalone: true
+  standalone: true,
 })
 export class ChaptersComponent implements OnInit {
   chapterId: number = 0;
@@ -36,9 +42,12 @@ export class ChaptersComponent implements OnInit {
   references: string[] = environment.references;
   isDropdownOpen: boolean = false;
 
-  constructor(private utilityService: UtilityService,
-    private chapterService: ChapterService, private apiService: ApiService,
-    @Inject(PLATFORM_ID) private platformId: Object) { }
+  constructor(
+    private utilityService: UtilityService,
+    private chapterService: ChapterService,
+    private apiService: ApiService,
+    @Inject(PLATFORM_ID) private platformId: Object,
+  ) {}
 
   ngOnInit(): void {
     this.loadChapters();
@@ -57,7 +66,7 @@ export class ChaptersComponent implements OnInit {
       },
       (error: any) => {
         console.error('Error fetching chapters:', error);
-      }
+      },
     );
   }
 
@@ -88,41 +97,51 @@ export class ChaptersComponent implements OnInit {
     this.showSlokaView = false;
 
     this.assignChapterResource();
-    this.assignChapterResource(true); 
+    this.assignChapterResource(true);
     this.assignChapterAudio();
-    
-    
+
     if (isPlatformBrowser(this.platformId) && this.windowWidth < 768) {
       this.showChapterView = false;
     }
   }
 
   private assignChapterAudio() {
-    this.apiService.getChapterAudio(this.chapterId).subscribe((response: remoteResource) => {
-      this.chapterAudioSrc = response.url; // Assign the audio source
-    }, (error: any) => {
-      console.error(`Error fetching audio URL for Chapter ${this.chapterId}:`, error);
-      this.chapterAudioSrc = '';
-    });
+    this.apiService.getChapterAudio(this.chapterId).subscribe(
+      (response: RemoteResource) => {
+        this.chapterAudioSrc = response.url; // Assign the audio source
+      },
+        (error: any) => {
+          console.error(
+            `Error fetching audio URL for Chapter ${this.chapterId}:`,
+            error,
+          );
+          this.chapterAudioSrc = '';
+        }
+    );
   }
 
   private assignChapterResource(isTamil: boolean = false): void {
     let content = this.showSanskrit ? 'sanskrit' : 'english';
-    if(isTamil) {
+    if (isTamil) {
       content = 'tamil';
     }
-    this.apiService.getChapterResource(this.chapterId, content).subscribe((response: remoteResource) => {
-      const chapterResource = response.url; 
-      if(isTamil) {
-        this.chapterTamilResource = chapterResource;
-      }
-      else {
-        this.chapterResource = chapterResource; 
-      }
-    }, (error: any) => {
-      console.error(`Error fetching chapter URL for Chapter ${this.chapterId}:`, error);
-      this.chapterResource = '';
-    });
+    this.apiService.getChapterResource(this.chapterId, content).subscribe(
+      (response: RemoteResource) => {
+        const chapterResource = response.url;
+        if (isTamil) {
+          this.chapterTamilResource = chapterResource;
+        } else {
+          this.chapterResource = chapterResource;
+        }
+      },
+        (error: any) => {
+          console.error(
+            `Error fetching chapter URL for Chapter ${this.chapterId}:`,
+            error,
+          );
+          this.chapterResource = '';
+        }
+    );
   }
 
   showSloka(slokaIndex: number): void {

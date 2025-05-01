@@ -1,35 +1,46 @@
-import { Component, Input, ViewChild, ElementRef, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  Input,
+  ViewChild,
+  ElementRef,
+  OnChanges,
+  SimpleChanges,
+  OnInit,
+} from '@angular/core';
 import { UtilityService } from '../services/utility.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { catchError, map } from 'rxjs/operators';
 import { of, Observable } from 'rxjs'; // Import 'of' and 'Observable' to provide fallback data
 import { ApiService } from '../services/api.service';
-import { remoteResource } from '../models/remote-resource.model'; // Import the interface
+import { RemoteResource } from '../models/remote-resource.model'; // Import the interface
 
 @Component({
   selector: 'app-sloka',
   templateUrl: './sloka.component.html',
   styleUrls: ['./sloka.component.css'],
   imports: [FormsModule, CommonModule],
-  standalone: true
+  standalone: true,
 })
-export class SlokaComponent implements OnChanges {
+export class SlokaComponent implements OnInit, OnChanges {
   @Input() chapterId: number = 0;
   @Input() showSanskrit: boolean = false;
   @Input() slokaTitle: string = '';
   @Input() slokaGroup: number[] = [];
   @Input() showSandhi: boolean = false;
-  @Input() isSlokaGroupsReady: boolean = false
+  @Input() isSlokaGroupsReady: boolean = false;
   slokaMeaning: string[] = [];
-  sanskritSandhi: string = "";
-  sanskritAnvaya: string = "";
+  sanskritSandhi: string = '';
+  sanskritAnvaya: string = '';
   selectedSloka: number | null = null; // Track the selected sloka
 
-  @ViewChild('audioPlayer', { static: false }) audioPlayer!: ElementRef<HTMLAudioElement>;
+  @ViewChild('audioPlayer', { static: false })
+  audioPlayer!: ElementRef<HTMLAudioElement>;
 
-  constructor(private utilityService: UtilityService,
-     private apiService: ApiService) { }
+  constructor(
+    private utilityService: UtilityService,
+    private apiService: ApiService,
+  ) {}
 
   ngOnInit(): void {
     if (this.slokaGroup.length > 0) {
@@ -37,44 +48,73 @@ export class SlokaComponent implements OnChanges {
     }
   }
 
-  ngOnChanges(changes: SimpleChanges): void {    
-    if (changes['chapterId'] || changes['showSanskrit'] || changes['showSandhi'] ) {
+  ngOnChanges(changes: SimpleChanges): void {
+    if (
+      changes['chapterId'] ||
+      changes['showSanskrit'] ||
+      changes['showSandhi']
+    ) {
       this.updateSlokaContent();
     }
   }
 
-  getSlokaContent(chapterId: number, slokaId: number, content: string): Observable<string> {
+  getSlokaContent(
+    chapterId: number,
+    slokaId: number,
+    content: string,
+  ): Observable<string> {
     return this.apiService.getSloka(chapterId, slokaId, content).pipe(
       map((data: any) => data.content),
       catchError((error: any) => {
-        console.error(`Error fetching Sloka content for Chapter ${chapterId}, Sloka ${slokaId}, Content: ${content}`, error);
-        return of(`Error fetching Sloka content for Chapter ${chapterId}, Sloka ${slokaId}, Content: ${content}`);
-      })
+        console.error(
+          `Error fetching Sloka content for Chapter ${chapterId}, Sloka ${slokaId}, Content: ${content}`,
+          error,
+        );
+        return of(
+          `Error fetching Sloka content for Chapter ${chapterId}, Sloka ${slokaId}, Content: ${content}`,
+        );
+      }),
     );
   }
 
   fetchSandhiAndAnvaya(): void {
     if (this.showSanskrit && this.showSandhi && this.isSlokaGroupsReady) {
-      this.getSlokaContent(this.chapterId, this.slokaGroup[0], 'sandhi').subscribe(content => {
+      this.getSlokaContent(
+        this.chapterId,
+        this.slokaGroup[0],
+        'sandhi',
+      ).subscribe((content) => {
         this.sanskritSandhi = content;
       });
-      this.getSlokaContent(this.chapterId, this.slokaGroup[0], 'anvaya').subscribe(content => {
+      this.getSlokaContent(
+        this.chapterId,
+        this.slokaGroup[0],
+        'anvaya',
+      ).subscribe((content) => {
         this.sanskritAnvaya = content;
       });
     }
   }
 
   private fetchSlokaMeaningAndAudio(slokaId: number = 0): void {
-    this.getSlokaContent(this.chapterId, slokaId, 'meaning').subscribe(content => {
-      this.slokaMeaning[slokaId] = content;
-    });
+    this.getSlokaContent(this.chapterId, slokaId, 'meaning').subscribe(
+      (content) => {
+        this.slokaMeaning[slokaId] = content;
+      },
+    );
 
-    this.apiService.getSlokaAudio(this.chapterId, slokaId).subscribe((response: remoteResource) => {
-      this.assignAudioSource(response.url); // Assign the audio source
-    }, (error: any) => {
-      console.error(`Error fetching audio URL for Sloka ${slokaId}:`, error);
-      this.assignAudioSource(''); // Assign the audio source
-    });
+    this.apiService.getSlokaAudio(this.chapterId, slokaId).subscribe(
+      (response: RemoteResource) => {
+        this.assignAudioSource(response.url); // Assign the audio source
+      },
+        (error: any) => {
+          console.error(
+            `Error fetching audio URL for Sloka ${slokaId}:`,
+            error,
+          );
+          this.assignAudioSource(''); // Assign the audio source
+        }
+    );
   }
 
   updateSlokaContent(): void {
@@ -89,7 +129,7 @@ export class SlokaComponent implements OnChanges {
   }
 
   private assignAudioSource(audioUrl: string = ''): void {
-    if (this.audioPlayer ) {
+    if (this.audioPlayer) {
       const audioElement = this.audioPlayer.nativeElement;
       // Stop the currently playing audio
       audioElement.pause();

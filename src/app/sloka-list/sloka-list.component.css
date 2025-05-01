@@ -4,29 +4,29 @@
     justify-content: space-between;
     align-items: flex-start;
   }
-  
+
   .chapter {
     flex: 1;
     text-align: center;
     margin-right: 20px;
   }
-  
+
   .sloka-list {
     flex: 2;
     margin-top: 20px;
   }
-  
+
   .sloka-list ul {
     list-style-type: none;
     padding: 0;
     display: flex;
     flex-direction: column;
   }
-  
+
   .sloka-list li {
     margin: 10px 0;
   }
-  
+
   .sloka-list-header {
     display: flex;
     justify-content: center; /* Center-aligns the content horizontally */
@@ -34,22 +34,22 @@
     width: 100%;
     margin-bottom: 20px;
   }
-  
+
   .sloka-list-header h4 {
     margin: 0;
     text-align: center; /* Center-aligns the text within the h4 element */
   }
-  
+
   .sloka-list-header label {
     font-size: 16px;
     color: var(--text-color);
     margin-left: 20px; /* Adds some space between the h4 and the label */
   }
-  
+
   .sloka-list-header input {
     margin-right: 10px;
   }
-  
+
   .custom-pre {
     white-space: pre-wrap;
     word-wrap: break-word;
@@ -58,18 +58,18 @@
   .clickable {
     cursor: pointer;
   }
-  
+
   /* Media query for smaller screens */
   @media (max-width: 768px) {
     .container {
       flex-direction: column;
     }
-  
+
     .chapter {
       margin-right: 0;
       margin-bottom: 20px;
     }
-  
+
     .sloka-list ul {
       flex-direction: column;
     }
@@ -96,12 +96,12 @@
     transition: opacity 0.3s ease, transform 0.3s ease;
     z-index: 999;
   }
-  
+
   .sliding-pane.visible {
     opacity: 1;
     transform: translateY(0);
   }
-  
+
   .toggle-pane-btn {
     background: none;
     border: none;
@@ -134,11 +134,16 @@ input[type="checkbox"]:disabled + label {
 }
 
 .sloka-placeholder {
-  min-height: 100px; /* Placeholder height */
   margin: 10px 0;
   border: 1px solid #ddd;
-  padding: 10px;
-  background-color: #f9f9f9;
+  padding: 5px;
+  background-color: var(--card-background-color);
+}
+
+.sloka-single-container h4 {
+  margin: 0;
+  font-size: 24px;
+  color: var(--text-color);
 }
 
 .sloka-loading {
