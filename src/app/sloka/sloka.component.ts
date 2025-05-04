@@ -63,7 +63,7 @@ export class SlokaComponent implements OnInit, OnChanges {
     slokaId: number,
     content: string,
   ): Observable<string> {
-    return this.apiService.getSloka(chapterId, slokaId, content).pipe(
+    return this.apiService.getSloka(chapterId, slokaId + 1, content).pipe(
       map((data: any) => data.content),
       catchError((error: any) => {
         console.error(

@@ -19,12 +19,17 @@ import { SandhiReadiness } from '../models/sandhi-readiness.model';
 import { ApiService } from '../services/api.service';
 import { SlokaData } from '../models/sloka-data.model';
 import { SingleSlokaComponent } from '../single-sloka/single-sloka.component';
-
+import { GroupedSlokaComponent } from '../grouped-sloka/grouped-sloka.component';
 @Component({
   selector: 'app-sloka-list',
   templateUrl: './sloka-list.component.html',
   styleUrls: ['./sloka-list.component.css'],
-  imports: [CommonModule, FormsModule, SingleSlokaComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    SingleSlokaComponent,
+    GroupedSlokaComponent,
+  ],
   standalone: true,
 })
 export class SlokaListComponent implements OnChanges, AfterViewInit {
@@ -245,7 +250,15 @@ export class SlokaListComponent implements OnChanges, AfterViewInit {
   }
 
   toggleSloka(slokaIndex: number): void {
-    this.expandedSloka = this.expandedSloka === slokaIndex ? null : slokaIndex;
+    const group = this.slokaData[slokaIndex];
+    if (!group) {
+      console.error(`No group found for sloka index ${slokaIndex}`);
+      return;
+    }
+
+    // Expand or collapse the group
+    this.expandedSloka = this.expandedSloka === group[0] ? null : group[0];
+    console.log('Expanded sloka:', this.expandedSloka);
   }
 
   toggleSlokaGroup(index: number): void {
@@ -257,14 +270,6 @@ export class SlokaListComponent implements OnChanges, AfterViewInit {
 
   computeIndices(): void {
     this.indices = [];
-    if (!this.isSlokaGroupsReady) {
-      this.indices = Array.from({ length: this.slokaCount }, (_, i) => i);
-    } else {
-      let i = 1; // Start from 0 for 0-based indexing
-      while (i < this.slokaData.length) {
-        this.indices.push(i);
-        i += this.slokaData[i].length; // Adjust for grouped slokas
-      }
-    }
+    this.indices = Array.from({ length: this.slokaData.length }, (_, i) => i);
   }
 }

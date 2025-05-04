@@ -15,18 +15,37 @@
   <div *ngIf="indices.length > 0">
     <ul>
       <ng-container *ngFor="let index of indices">
-        <li class="sloka-placeholder" [attr.data-index]="index">
-          <!-- Single Sloka -->
-          <app-single-sloka [index]="index" [sloka]="slokas[index]" [expandedSloka]="expandedSloka ?? -1"
-            [chapterId]="chapterId" [showSanskrit]="showSanskrit" [showSandhi]="showSandhi"
-            [isSlokaGroupsReady]="isSlokaGroupsReady" (slokaToggle)="toggleSloka(index)">
-          </app-single-sloka>
-          <!-- Grouped Slokas -->
-          <!-- <app-grouped-sloka [group]="slokaData[index]"
-            [chapterId]="chapterId" [slokas]="slokas" [showSanskrit]="showSanskrit" [showSandhi]="showSandhi"
-            [isSlokaGroupsReady]="isSlokaGroupsReady" (toggleGroup)="toggleSlokaGroup($event)">
-          </app-grouped-sloka> -->
-        </li>
+        <ng-container *ngIf="slokaData[index] as currentSlokaData">
+          <li *ngIf="currentSlokaData.length > 1; else singleSlokaTemplate" class="sloka-placeholder" [attr.data-index]="index">
+            <!-- Grouped Slokas -->
+            <app-grouped-sloka
+              [group]="currentSlokaData"
+              [expandedSloka]="expandedSloka ?? -1"
+              [chapterId]="chapterId"
+              [showSanskrit]="showSanskrit"
+              [showSandhi]="showSandhi"
+              [isSlokaGroupsReady]="isSlokaGroupsReady"
+              [slokas]="slokas"
+              (toggleGroup)="toggleSlokaGroup($event)">
+            </app-grouped-sloka>
+          </li>
+
+          <ng-template #singleSlokaTemplate>
+            <li class="sloka-placeholder" [attr.data-index]="index">
+              <!-- Single Sloka -->
+              <app-single-sloka
+                [index]="currentSlokaData[0]"
+                [sloka]="slokas[currentSlokaData[0]]"
+                [expandedSloka]="expandedSloka ?? -1"
+                [chapterId]="chapterId"
+                [showSanskrit]="showSanskrit"
+                [showSandhi]="showSandhi"
+                [isSlokaGroupsReady]="isSlokaGroupsReady"
+                (slokaToggle)="toggleSloka(index)">
+              </app-single-sloka>
+            </li>
+          </ng-template>
+        </ng-container>
       </ng-container>
     </ul>
   </div>
