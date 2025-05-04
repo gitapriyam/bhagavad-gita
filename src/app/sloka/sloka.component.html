@@ -11,7 +11,7 @@
       <label for="slokaDropdown">Select Sloka:</label>
       <select id="slokaDropdown" [(ngModel)]="selectedSloka" (change)="onSlokaChange()">
         <option *ngFor="let slokaId of slokaGroup" [value]="slokaId">
-          {{ getSlokaTitle(slokaId) }}
+          {{ getSlokaTitle(slokaId + 1) }}
         </option>
       </select>
     </div>
