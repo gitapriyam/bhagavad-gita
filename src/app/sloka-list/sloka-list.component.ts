@@ -176,19 +176,26 @@ export class SlokaListComponent implements OnChanges, AfterViewInit {
           }
 
           const index = Number(dataIndex);
-          const slokaGroup = this.slokaData[index]; // Adjust for 1-based indexing
+          const slokaGroup = this.slokaData[index];
 
           if (Array.isArray(slokaGroup) && slokaGroup.length > 1) {
             // Handle grouped slokas
             slokaGroup.forEach((slokaId) => {
-              if (!this.slokas[slokaId]) {
+              if (
+                this.slokas[slokaId] === undefined ||
+                this.slokas[slokaId] === null
+              ) {
                 this.fetchSloka(slokaId); // Fetch each sloka in the group
               }
             });
           } else {
+            const slokaIndex = slokaGroup[0];
             // Handle single sloka
-            if (!this.slokas[index]) {
-              this.fetchSloka(index); // Fetch the single sloka
+            if (
+              this.slokas[slokaIndex] === undefined ||
+              this.slokas[slokaIndex] === null
+            ) {
+              this.fetchSloka(slokaIndex); // Fetch the single sloka
             }
           }
         }
@@ -226,7 +233,9 @@ export class SlokaListComponent implements OnChanges, AfterViewInit {
           this.cdr.detectChanges(); // Trigger change detection
         },
         (error) => {
-          console.error(`Error fetching sloka ${slokaIndex}:`, error);
+          const errorMsg = `Error fetching sloka ${slokaIndex}: ${error}`;
+          this.slokas[slokaIndex] = errorMsg;
+          console.error(errorMsg);
         },
       );
   }
@@ -258,10 +267,22 @@ export class SlokaListComponent implements OnChanges, AfterViewInit {
 
     // Expand or collapse the group
     this.expandedSloka = this.expandedSloka === group[0] ? null : group[0];
-    console.log('Expanded sloka:', this.expandedSloka);
   }
 
-  toggleSlokaGroup(index: number): void {
+  toggleSlokaGroup(slokaIndex: number): void {
+    const index: number = this.slokaData.findIndex((group) => {
+      if (group.length > 1) {
+        return group.includes(slokaIndex);
+      } else {
+        return group[0] === slokaIndex;
+      }
+    });
+
+    if (index === -1) {
+      console.error(`No group found for sloka index ${slokaIndex}`);
+      return;
+    }
+
     this.expandedSloka =
       this.expandedSloka === this.slokaData[index][0]
         ? null
@@ -269,7 +290,6 @@ export class SlokaListComponent implements OnChanges, AfterViewInit {
   }
 
   computeIndices(): void {
-    this.indices = [];
     this.indices = Array.from({ length: this.slokaData.length }, (_, i) => i);
   }
 }
