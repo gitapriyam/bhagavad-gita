@@ -19,8 +19,8 @@ import { CommonModule } from '@angular/common';
       </div>
       <div *ngIf="expandedSloka === group[0]">
         <app-sloka
-          [slokaGroup]="group"
           [chapterId]="chapterId"
+          [slokaGroup]="group"
           [showSanskrit]="showSanskrit"
           [showSandhi]="showSandhi"
           [isSlokaGroupsReady]="isSlokaGroupsReady"
@@ -31,7 +31,7 @@ import { CommonModule } from '@angular/common';
   imports: [SlokaComponent, CommonModule],
 })
 export class GroupedSlokaComponent {
-  expandedSloka!: number; // Add this property to track the expanded sloka
+  @Input() expandedSloka!: number; // Add this property to track the expanded sloka
   @Input() group!: number[];
   @Input() slokas!: { [key: number]: string };
   @Input() chapterId!: number;
@@ -45,6 +45,6 @@ export class GroupedSlokaComponent {
   }
 
   getSlokaTitle(slokaId: number): string {
-    return `Sloka ${slokaId}`;
+    return `Sloka ${slokaId + 1}`;
   }
 }

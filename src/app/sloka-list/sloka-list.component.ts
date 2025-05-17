@@ -19,12 +19,17 @@ import { SandhiReadiness } from '../models/sandhi-readiness.model';
 import { ApiService } from '../services/api.service';
 import { SlokaData } from '../models/sloka-data.model';
 import { SingleSlokaComponent } from '../single-sloka/single-sloka.component';
-
+import { GroupedSlokaComponent } from '../grouped-sloka/grouped-sloka.component';
 @Component({
   selector: 'app-sloka-list',
   templateUrl: './sloka-list.component.html',
   styleUrls: ['./sloka-list.component.css'],
-  imports: [CommonModule, FormsModule, SingleSlokaComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    SingleSlokaComponent,
+    GroupedSlokaComponent,
+  ],
   standalone: true,
 })
 export class SlokaListComponent implements OnChanges, AfterViewInit {
@@ -171,19 +176,26 @@ export class SlokaListComponent implements OnChanges, AfterViewInit {
           }
 
           const index = Number(dataIndex);
-          const slokaGroup = this.slokaData[index]; // Adjust for 1-based indexing
+          const slokaGroup = this.slokaData[index];
 
           if (Array.isArray(slokaGroup) && slokaGroup.length > 1) {
             // Handle grouped slokas
             slokaGroup.forEach((slokaId) => {
-              if (!this.slokas[slokaId]) {
+              if (
+                this.slokas[slokaId] === undefined ||
+                this.slokas[slokaId] === null
+              ) {
                 this.fetchSloka(slokaId); // Fetch each sloka in the group
               }
             });
           } else {
+            const slokaIndex = slokaGroup[0];
             // Handle single sloka
-            if (!this.slokas[index]) {
-              this.fetchSloka(index); // Fetch the single sloka
+            if (
+              this.slokas[slokaIndex] === undefined ||
+              this.slokas[slokaIndex] === null
+            ) {
+              this.fetchSloka(slokaIndex); // Fetch the single sloka
             }
           }
         }
@@ -221,7 +233,9 @@ export class SlokaListComponent implements OnChanges, AfterViewInit {
           this.cdr.detectChanges(); // Trigger change detection
         },
         (error) => {
-          console.error(`Error fetching sloka ${slokaIndex}:`, error);
+          const errorMsg = `Error fetching sloka ${slokaIndex}: ${error}`;
+          this.slokas[slokaIndex] = errorMsg;
+          console.error(errorMsg);
         },
       );
   }
@@ -245,10 +259,30 @@ export class SlokaListComponent implements OnChanges, AfterViewInit {
   }
 
   toggleSloka(slokaIndex: number): void {
-    this.expandedSloka = this.expandedSloka === slokaIndex ? null : slokaIndex;
+    const group = this.slokaData[slokaIndex];
+    if (!group) {
+      console.error(`No group found for sloka index ${slokaIndex}`);
+      return;
+    }
+
+    // Expand or collapse the group
+    this.expandedSloka = this.expandedSloka === group[0] ? null : group[0];
   }
 
-  toggleSlokaGroup(index: number): void {
+  toggleSlokaGroup(slokaIndex: number): void {
+    const index: number = this.slokaData.findIndex((group) => {
+      if (group.length > 1) {
+        return group.includes(slokaIndex);
+      } else {
+        return group[0] === slokaIndex;
+      }
+    });
+
+    if (index === -1) {
+      console.error(`No group found for sloka index ${slokaIndex}`);
+      return;
+    }
+
     this.expandedSloka =
       this.expandedSloka === this.slokaData[index][0]
         ? null
@@ -256,15 +290,6 @@ export class SlokaListComponent implements OnChanges, AfterViewInit {
   }
 
   computeIndices(): void {
-    this.indices = [];
-    if (!this.isSlokaGroupsReady) {
-      this.indices = Array.from({ length: this.slokaCount }, (_, i) => i);
-    } else {
-      let i = 1; // Start from 0 for 0-based indexing
-      while (i < this.slokaData.length) {
-        this.indices.push(i);
-        i += this.slokaData[i].length; // Adjust for grouped slokas
-      }
-    }
+    this.indices = Array.from({ length: this.slokaData.length }, (_, i) => i);
   }
 }

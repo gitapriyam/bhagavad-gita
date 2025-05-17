@@ -46,6 +46,6 @@ export class SlokaService {
     if (isProduction) {
       return isProduction && readiness.production;
     }
-    return !isProduction && readiness.development;
+    return readiness.development;
   }
 }

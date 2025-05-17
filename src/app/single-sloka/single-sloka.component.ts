@@ -26,7 +26,7 @@ import { UtilityService } from '../services/utility.service';
     <div *ngIf="expandedSloka === index">
       <app-sloka
         [chapterId]="chapterId"
-        [slokaGroup]="[index + 1]"
+        [slokaGroup]="[index]"
         [showSanskrit]="showSanskrit"
         [showSandhi]="showSandhi"
         [isSlokaGroupsReady]="isSlokaGroupsReady"
@@ -43,7 +43,7 @@ export class SingleSlokaComponent {
   @Input() showSanskrit!: boolean;
   @Input() showSandhi!: boolean;
   @Input() isSlokaGroupsReady!: boolean;
-  @Output() slokaToggle = new EventEmitter<number>(); // Renamed from 'toggle'
+  @Output() slokaToggle = new EventEmitter<number>();
 
   constructor(private utilityService: UtilityService) {}
 

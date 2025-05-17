@@ -14,6 +14,8 @@ import { catchError, map } from 'rxjs/operators';
 import { of, Observable } from 'rxjs'; // Import 'of' and 'Observable' to provide fallback data
 import { ApiService } from '../services/api.service';
 import { RemoteResource } from '../models/remote-resource.model'; // Import the interface
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-sloka',
@@ -29,10 +31,11 @@ export class SlokaComponent implements OnInit, OnChanges {
   @Input() slokaGroup: number[] = [];
   @Input() showSandhi: boolean = false;
   @Input() isSlokaGroupsReady: boolean = false;
-  slokaMeaning: string[] = [];
+  slokaMeaning: string = '';
   sanskritSandhi: string = '';
   sanskritAnvaya: string = '';
-  selectedSloka: number | null = null; // Track the selected sloka
+  selectedSloka: number | null = this.slokaGroup[0];
+  private slokaChangeSubject = new Subject<number>();
 
   @ViewChild('audioPlayer', { static: false })
   audioPlayer!: ElementRef<HTMLAudioElement>;
@@ -46,6 +49,11 @@ export class SlokaComponent implements OnInit, OnChanges {
     if (this.slokaGroup.length > 0) {
       this.selectedSloka = this.slokaGroup[0]; // Default to the first sloka in the group
     }
+    this.updateSlokaContent();
+    // Subscribe to the debounced sloka change events
+    this.slokaChangeSubject.pipe(debounceTime(300)).subscribe((slokaId) => {
+      this.fetchSlokaMeaningAndAudio(slokaId + 1);
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -54,11 +62,56 @@ export class SlokaComponent implements OnInit, OnChanges {
       changes['showSanskrit'] ||
       changes['showSandhi']
     ) {
+      this.selectedSloka = this.slokaGroup[0];
       this.updateSlokaContent();
     }
   }
 
-  getSlokaContent(
+  updateSlokaContent(): void {
+    this.fetchSandhiAndAnvaya();
+    if (this.selectedSloka !== null) {
+      this.fetchSlokaMeaningAndAudio(this.selectedSloka + 1);
+    }
+  }
+
+  fetchSandhiAndAnvaya(): void {
+    if (this.showSanskrit && this.showSandhi && this.isSlokaGroupsReady) {
+      this.getSlokaContent(
+        this.chapterId,
+        this.slokaGroup[0] + 1,
+        'sandhi',
+      ).subscribe((content) => {
+        this.sanskritSandhi = content;
+      });
+      this.getSlokaContent(
+        this.chapterId,
+        this.slokaGroup[0] + 1,
+        'anvaya',
+      ).subscribe((content) => {
+        this.sanskritAnvaya = content;
+      });
+    }
+  }
+
+  private fetchSlokaMeaningAndAudio(slokaId: number): void {
+    this.getSlokaContent(this.chapterId, slokaId, 'meaning').subscribe(
+      (content) => {
+        this.slokaMeaning = content;
+      },
+    );
+
+    this.apiService.getSlokaAudio(this.chapterId, slokaId).subscribe(
+      (response: RemoteResource) => {
+        this.assignAudioSource(response.url); // Assign the audio source
+      },
+      (error: any) => {
+        console.error(`Error fetching audio URL for Sloka ${slokaId}:`, error);
+        this.assignAudioSource(''); // Assign the audio source
+      },
+    );
+  }
+
+  private getSlokaContent(
     chapterId: number,
     slokaId: number,
     content: string,
@@ -77,52 +130,12 @@ export class SlokaComponent implements OnInit, OnChanges {
     );
   }
 
-  fetchSandhiAndAnvaya(): void {
-    if (this.showSanskrit && this.showSandhi && this.isSlokaGroupsReady) {
-      this.getSlokaContent(
-        this.chapterId,
-        this.slokaGroup[0],
-        'sandhi',
-      ).subscribe((content) => {
-        this.sanskritSandhi = content;
-      });
-      this.getSlokaContent(
-        this.chapterId,
-        this.slokaGroup[0],
-        'anvaya',
-      ).subscribe((content) => {
-        this.sanskritAnvaya = content;
-      });
-    }
-  }
-
-  private fetchSlokaMeaningAndAudio(slokaId: number = 0): void {
-    this.getSlokaContent(this.chapterId, slokaId, 'meaning').subscribe(
-      (content) => {
-        this.slokaMeaning[slokaId] = content;
-      },
-    );
-
-    this.apiService.getSlokaAudio(this.chapterId, slokaId).subscribe(
-      (response: RemoteResource) => {
-        this.assignAudioSource(response.url); // Assign the audio source
-      },
-      (error: any) => {
-        console.error(`Error fetching audio URL for Sloka ${slokaId}:`, error);
-        this.assignAudioSource(''); // Assign the audio source
-      },
-    );
-  }
-
-  updateSlokaContent(): void {
-    this.fetchSandhiAndAnvaya();
-    this.fetchSlokaMeaningAndAudio(this.slokaGroup[0]);
-  }
-
   onSlokaChange(): void {
-    // Dynamically update the audio source
-    this.fetchSlokaMeaningAndAudio(this.selectedSloka!); // Fetch meaning and audio for the selected sloka
-    this.assignAudioSource();
+    if (this.selectedSloka !== null && !isNaN(Number(this.selectedSloka))) {
+      this.slokaChangeSubject.next(Number(this.selectedSloka)); // Ensure it's a number
+    } else {
+      console.error('Invalid selectedSloka:', this.selectedSloka);
+    }
   }
 
   private assignAudioSource(audioUrl: string = ''): void {
