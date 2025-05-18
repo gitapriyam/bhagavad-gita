@@ -60,7 +60,11 @@ jobs:
       - name: Build Application
         run: |
           echo "Building application for environment: $SWA_CLI_DEPLOY_ENV"
-          npx ng build --configuration=$SWA_CLI_DEPLOY_ENV
+          if [ "$SWA_CLI_DEPLOY_ENV" = "Production" ]; then
+            npx ng build --configuration=production
+          else
+            npx ng build --configuration=$SWA_CLI_DEPLOY_ENV
+          fi
 
       # Step 7: Install API dependencies
       - name: Install API Dependencies
