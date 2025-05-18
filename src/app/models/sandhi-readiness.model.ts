@@ -1,4 +1,4 @@
 export interface SandhiReadiness {
-    production: boolean;
-    development: boolean;
-  }
+  production: boolean;
+  development: boolean;
+}

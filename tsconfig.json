@@ -12,7 +12,10 @@
     "sourceMap": true,
     "strict": true,
     "noImplicitAny": true,
-    "skipLibCheck": true
+    "skipLibCheck": true    
+  },
+  "angularCompilerOptions": {
+    "strictTemplates": true // Enable strict template type checking
   },
   "include": [
     "src/**/*.ts"
