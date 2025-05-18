@@ -7,19 +7,19 @@
       <h4>अन्वयः</h4>
       <pre class="custom-pre">{{sanskritAnvaya}}</pre>
     </div>
-    <div class="dropdown-container">
+    <div *ngIf="slokaGroup.length > 1" class="dropdown-container">
       <label for="slokaDropdown">Select Sloka:</label>
       <select id="slokaDropdown" [(ngModel)]="selectedSloka" (change)="onSlokaChange()">
         <option *ngFor="let slokaId of slokaGroup" [value]="slokaId">
-          {{ getSlokaTitle(slokaId) }}
+          {{ getSlokaTitle(slokaId + 1) }}
         </option>
       </select>
     </div>
-    <div *ngIf="selectedSloka" class="sloka-content">
+    <div *ngIf="selectedSloka !== null && selectedSloka >= 0" class="sloka-content">
       <div class="card">
         <h4>Shloka Meaning</h4>
-        <ng-container *ngIf="slokaMeaning[selectedSloka]; else loading">
-          <pre class="custom-pre">{{ slokaMeaning[selectedSloka] }}</pre>
+        <ng-container *ngIf="slokaMeaning; else loading">
+          <pre class="custom-pre">{{ slokaMeaning }}</pre>
         </ng-container>
       </div>
         <ng-template #loading>
