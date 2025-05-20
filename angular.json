@@ -96,6 +96,5 @@
         }
       }
     }
-  },
-  "defaultProject": "angular-static-web-app"
+  }
 }
