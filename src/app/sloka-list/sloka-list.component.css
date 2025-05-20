@@ -80,31 +80,25 @@
 
   .sliding-pane {
     position: absolute;
-    top: 50px;
-    right: 20px;
-    background-color: var(--card-background-color);
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-    padding: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    opacity: 0;
-    transform: translateY(-20px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    z-index: 999;
+    top: 40px; /* adjust as needed */
+    right: 10px;
+    background: var(--background-color, #fff); /* Use theme variable with fallback */
+    border: 1px solid var(--border-color, #ccc);
+    z-index: 30;
+    display: none;
+    min-width: 180px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    color: var(--text-color, #222); /* Use theme variable with fallback */
+    padding: 16px 8px;
+  }
+
+  .sliding-pane label,
+  .sliding-pane input {
+    color: var(--text-color, #222);
   }
 
   .sliding-pane.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .toggle-pane-btn {
-    background: none;
-    border: none;
-    color: var(--primary-color);
-    font-size: 16px;
-    cursor: pointer;
-    margin-right: 10px;
+    display: block;
   }
 
   /* Style for the checkbox when enabled */
@@ -150,4 +144,26 @@ input[type="checkbox"]:disabled + label {
 .sloka-content {
   font-size: 16px;
   color: #333;
+}
+
+/* Responsive: ensure the pane and button are accessible on small screens */
+@media (max-width: 600px) {
+  .sloka-list-header {
+    position: relative;
+  }
+  .sliding-pane {
+    right: 0;
+    left: 0;
+    width: 100vw;
+    min-width: unset;
+    top: 48px; /* adjust if header height changes */
+    background: var(--background-color, #fff);
+    color: var(--text-color, #222);
+    padding: 16px 8px;
+  }
+  .sliding-pane label {
+    display: block;
+    margin-bottom: 12px;
+    color: var(--text-color, #222);
+  }
 }
