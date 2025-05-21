@@ -7,14 +7,13 @@ import {
 } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { SlokaListComponent } from '../sloka-list/sloka-list.component';
-import { CommonModule } from '@angular/common';
 import { UtilityService } from '../services/utility.service';
-import { isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { SlokaComponent } from '../sloka/sloka.component';
-import { FormsModule } from '@angular/forms';
 import { ChapterService } from '../services/chapter.service';
 import { ApiService } from '../services/api.service';
 import { RemoteResource } from '../models/remote-resource.model'; // Import the interface
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-chapters',

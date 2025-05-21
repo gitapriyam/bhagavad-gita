@@ -12,7 +12,7 @@ source .env
 
 export API_LOCATION="api"
 export APP_LOCATION="src"
-export OUTPUT_LOCATION="dist/bhagavad-gita/"
+export OUTPUT_LOCATION="dist/bhagavad-gita/browser"
 
 # Build the frontend application
 echo "Building frontend application..."
