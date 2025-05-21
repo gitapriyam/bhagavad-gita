@@ -1,9 +1,9 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { SlokaComponent } from '../sloka/sloka.component';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-grouped-sloka',
-  standalone: true,
   template: `
     <div class="sloka-group-container">
       <div *ngFor="let slokaId of group">
@@ -28,7 +28,8 @@ import { CommonModule } from '@angular/common';
       </div>
     </div>
   `,
-  imports: [SlokaComponent, CommonModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule, SlokaComponent],
 })
 export class GroupedSlokaComponent {
   @Input() expandedSloka!: number; // Add this property to track the expanded sloka

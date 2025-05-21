@@ -8,21 +8,21 @@ import {
   OnInit,
 } from '@angular/core';
 import { UtilityService } from '../services/utility.service';
-import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 import { catchError, map } from 'rxjs/operators';
 import { of, Observable } from 'rxjs'; // Import 'of' and 'Observable' to provide fallback data
 import { ApiService } from '../services/api.service';
 import { RemoteResource } from '../models/remote-resource.model'; // Import the interface
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-sloka',
   templateUrl: './sloka.component.html',
   styleUrls: ['./sloka.component.css'],
-  imports: [FormsModule, CommonModule],
   standalone: true,
+  imports: [CommonModule, FormsModule],
 })
 export class SlokaComponent implements OnInit, OnChanges {
   @Input() chapterId: number = 0;
