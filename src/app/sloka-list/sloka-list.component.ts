@@ -8,11 +8,8 @@ import {
   ElementRef,
   ViewChild,
   AfterViewInit,
-  ChangeDetectorRef,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { UtilityService } from '../services/utility.service';
-import { FormsModule } from '@angular/forms';
 import { SlokaService } from '../services/sloka.service';
 import { environment } from '../../environments/environment';
 import { SandhiReadiness } from '../models/sandhi-readiness.model';
@@ -20,17 +17,20 @@ import { ApiService } from '../services/api.service';
 import { SlokaData } from '../models/sloka-data.model';
 import { SingleSlokaComponent } from '../single-sloka/single-sloka.component';
 import { GroupedSlokaComponent } from '../grouped-sloka/grouped-sloka.component';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
 @Component({
   selector: 'app-sloka-list',
   templateUrl: './sloka-list.component.html',
   styleUrls: ['./sloka-list.component.css'],
+  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
     SingleSlokaComponent,
     GroupedSlokaComponent,
   ],
-  standalone: true,
 })
 export class SlokaListComponent implements OnChanges, AfterViewInit {
   @Input() chapterId: number = 0;
@@ -55,7 +55,6 @@ export class SlokaListComponent implements OnChanges, AfterViewInit {
     private apiService: ApiService,
     private utilityService: UtilityService,
     private slokaService: SlokaService,
-    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -123,7 +122,6 @@ export class SlokaListComponent implements OnChanges, AfterViewInit {
       const data: SlokaGroupData = await this.apiService
         .getSlokaGroupData(this.chapterId)
         .toPromise();
-      // this.slokaData = Array.from({ length: this.slokaCount }, (_, i) => [i]);
       this.isSlokaGroupsReady = this.slokaService.isSlokaGroupReady(
         isProduction,
         data.readiness,
@@ -147,13 +145,13 @@ export class SlokaListComponent implements OnChanges, AfterViewInit {
   }
 
   loadSlokas(): void {
+    this.slokas = {}; // Reset slokas
     this.expandedSloka = null;
     this.populateSlokaData();
     this.chapterName = this.utilityService.getChapterName(
       this.chapterId,
       this.showSanskrit,
     );
-    this.slokas = {}; // Reset slokas
   }
 
   setupIntersectionObserver(): void {
@@ -230,7 +228,6 @@ export class SlokaListComponent implements OnChanges, AfterViewInit {
       .subscribe(
         (data: SlokaData) => {
           this.slokas[slokaIndex] = data.content;
-          this.cdr.detectChanges(); // Trigger change detection
         },
         (error) => {
           const errorMsg = `Error fetching sloka ${slokaIndex}: ${error}`;

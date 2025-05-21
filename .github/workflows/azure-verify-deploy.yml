@@ -18,7 +18,7 @@ jobs:
     env:
       AZURE_STATIC_WEB_APPS_API_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
       APP_LOCATION: "src"
-      OUTPUT_LOCATION: "dist/bhagavad-gita"
+      OUTPUT_LOCATION: "dist/bhagavad-gita/browser"
 
     steps:
       # Step 1: Checkout the code
@@ -37,7 +37,7 @@ jobs:
           if [ "${{ github.event_name }}" == "push" ]; then
             if [ "${{ github.ref_name }}" == "main" ]; then
               echo "SWA_CLI_DEPLOY_ENV=Production" >> $GITHUB_ENV
-            else 
+            else
               echo "SWA_CLI_DEPLOY_ENV=development" >> $GITHUB_ENV
             fi
           elif [ "${{ github.event_name }}" == "pull_request" ]; then
@@ -54,7 +54,7 @@ jobs:
 
       # Step 5: Install Angular CLI
       - name: Install Angular CLI
-        run: npm install -g @angular/cli@15
+        run: npm install -g @angular/cli@19
 
       # Step 6: Build the application
       - name: Build Application
