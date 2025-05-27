@@ -56,6 +56,9 @@ jobs:
       - name: Install Angular CLI
         run: npm install -g @angular/cli@19
 
+      - name: Run unit tests
+        run: ng test 
+
       # Step 6: Build the application
       - name: Build Application
         run: |
