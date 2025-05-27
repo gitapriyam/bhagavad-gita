@@ -25,15 +25,11 @@ export class SlokaService {
     return this.getSlokaGroupData(chapterId).pipe(
       map((data) => {
         if (isSanskrit) {
-          // Check sloka groups
-          for (const group of data.groups) {
-            if (group.slokas.includes(slokaId)) {
-              return group.slokas;
-            }
-          }
+          const group = data.groups?.find((g: any) =>
+            g.slokas.includes(slokaId),
+          );
+          return group ? group.slokas : [slokaId];
         }
-
-        // Treat other slokas as standalone
         return [slokaId];
       }),
     );

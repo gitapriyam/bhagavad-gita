@@ -1,18 +1,20 @@
 {
   "compilerOptions": {
-    "target": "es2015",
     "module": "esnext",
     "lib": ["es2018", "dom"],
     "outDir": "./out-tsc/app",
     "baseUrl": "./",
-    "types": [],
+    "types": [
+      "jest",
+      "node"
+    ],
     "moduleResolution": "node",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "sourceMap": true,
     "strict": true,
     "noImplicitAny": true,
-    "skipLibCheck": true    
+    "skipLibCheck": true
   },
   "angularCompilerOptions": {
     "strictTemplates": true // Enable strict template type checking
@@ -21,7 +23,6 @@
     "src/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
-    "**/*.spec.ts"
+    "node_modules"
   ]
 }
