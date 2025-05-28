@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "start": "func start",
-    "test": "echo \"No tests yet...\""
+    "test": "jest ../tests"
   },
   "dependencies": {
     "@azure/functions": "^4.0.0",
@@ -13,6 +13,8 @@
   },
   "author": "Gitapriyam",
   "license": "MIT",
-  "devDependencies": {},
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
   "main": "src/{index.js,functions/*.js}"
 }
