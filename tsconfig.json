@@ -14,7 +14,8 @@
     "sourceMap": true,
     "strict": true,
     "noImplicitAny": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "esModuleInterop": true,
   },
   "angularCompilerOptions": {
     "strictTemplates": true // Enable strict template type checking

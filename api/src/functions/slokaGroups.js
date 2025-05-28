@@ -4,12 +4,61 @@ const { getSlokaGroupUrl, logError, validateChapterId } = require('./utils.js');
 const https = require('https');
 
 // In-memory cache
-const cache = new Map();
+let cache = new Map();
 
 // Create an HTTPS agent with keep-alive enabled
 const httpsAgent = new https.Agent({
-    keepAlive: true // Enable connection reuse
+  keepAlive: true, // Enable connection reuse
 });
+
+async function slokaGroupHandler(request, context) {
+  try {
+    const chapterId = request.params.chapterId;
+    validateChapterId(chapterId); // Validate chapterId (throws an error if invalid)
+
+    const remoteResourceUrl = getSlokaGroupUrl(chapterId);
+
+    // Generate a cache key
+    let cacheKey = `${remoteResourceUrl}`;
+    // Check if the data is already in the cache
+    if (cache.has(cacheKey)) {
+      return {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(cache.get(cacheKey).content), // Return cached data
+      };
+    }
+
+    const response = await axios.get(remoteResourceUrl, {
+      httpsAgent, // Pass the keep-alive agent to axios
+    });
+
+    // Cache the response data
+    const responseData = { content: response.data };
+    cache.set(cacheKey, responseData);
+
+    context.log(`Response from remote server: ${response.data}`);
+
+    return {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(responseData.content), // Serialize the body to JSON
+    };
+  } catch (error) {
+    logError(context, `Error fetching data from remote server: error.message`);
+    return {
+      status: 500,
+      body: {
+        error: 'Failed to fetch content from the remote server.',
+        details: error.message,
+      },
+    };
+  }
+}
 /**
  * @swagger
  * /slokaGroups/{chapterId}:
@@ -40,7 +89,7 @@ const httpsAgent = new https.Agent({
  *                       example: true
  *                     production:
  *                       type: boolean
- *                       description: Indicates if the chapter is in production.    
+ *                       description: Indicates if the chapter is in production.
  *                       example: false
  *                 groups:
  *                   type: array
@@ -50,7 +99,7 @@ const httpsAgent = new https.Agent({
  *                       groupId:
  *                         type: integer
  *                         description: The ID of the sloka group.
- *                       slokas:  
+ *                       slokas:
  *                          type: array
  *                          items:
  *                            type: integer
@@ -62,57 +111,10 @@ const httpsAgent = new https.Agent({
  *         description: Internal server error.
  */
 app.http('slokaGroups', {
-    methods: ['GET'],
-    authLevel: 'anonymous',
-    route: 'slokaGroups/{chapterId}', // Updated route to use 'slokaGroups'
-    handler: async (request, context) => {
-        try {
-            const chapterId = request.params.chapterId;
-            validateChapterId(chapterId); // Validate chapterId (throws an error if invalid)
-        
-            const remoteResourceUrl = getSlokaGroupUrl(chapterId);
-            
-            // Generate a cache key
-            const cacheKey = `${remoteResourceUrl}`;
-            // Check if the data is already in the cache
-            if (cache.has(cacheKey)) {
-                return {
-                    status: 200,
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(cache.get(cacheKey).content) // Return cached data
-                };
-            }
-
-            const response = await axios.get(remoteResourceUrl, {
-                httpsAgent // Pass the keep-alive agent to axios
-            });
-            
-            // Cache the response data
-            const responseData = { content: response.data };
-            cache.set(cacheKey, responseData);
-
-            context.log(`Response from remote server: ${response.data}`);
-            
-            return {
-                status: 200,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(responseData.content) // Serialize the body to JSON
-            };
-        } catch (error) {
-            logError('Error fetching data from remote server:', error.message);
-            return {
-                status: 500,
-                body: {
-                    error: 'Failed to fetch content from the remote server.',
-                    details: error.message
-                }
-            }
-        }
-    }
+  methods: ['GET'],
+  authLevel: 'anonymous',
+  route: 'slokaGroups/{chapterId}', // Updated route to use 'slokaGroups'
+  handler: slokaGroupHandler,
 });
 
-
+module.exports = { slokaGroupHandler };
