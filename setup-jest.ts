@@ -1,5 +1,9 @@
 import 'zone.js';
 import 'zone.js/testing';
+import { setupZoneTestEnv } from 'jest-preset-angular/setup-env/zone';
+
+// Initialize Angular testing environment for Jest
+setupZoneTestEnv();
 
 // Mock IntersectionObserver for Jest
 class MockIntersectionObserver {

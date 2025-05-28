@@ -1,8 +1,65 @@
-const { app } = require('@azure/functions');
-const { getChapterAudioURL,logError, validateChapterId } = require('./utils.js');
+const app = require('@azure/functions').app;
+const utils = require('./utils.js');
+const getChapterAudioURL = utils.getChapterAudioURL;
+const logError = utils.logError;
+const validateChapterId = utils.validateChapterId;
 
 // In-memory cache
-const cache = new Map();
+let cache = new Map();
+
+// Define the handler as a named async function
+async function chapterAudioHandler(request, context) {
+  let chapterId;
+  try {
+    chapterId = request.params.chapterId;
+    validateChapterId(chapterId); // Validate chapterId (throws an error if invalid)
+  } catch (error) {
+    context.log(`Invalid chapter ID: ${chapterId}`);
+    return {
+      status: 400,
+      body: `Invalid chapter ID: ${chapterId}`,
+    };
+  }
+
+  try {
+    // Construct the remote audio URL
+    const remoteAudioUrl = getChapterAudioURL(chapterId);
+    // Generate a cache key
+    const cacheKey = `${remoteAudioUrl}`;
+    // Return the audio URL as a JSON response
+    if (cache.has(cacheKey)) {
+      return {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(cache.get(cacheKey)), // Return cached data
+      };
+    }
+    const responseData = { url: remoteAudioUrl };
+    cache.set(cacheKey, responseData);
+
+    return {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(responseData),
+    };
+  } catch (error) {
+    context.log(
+      `Error generating audio URL for Chapter ${chapterId}: ${error}`,
+    );
+    logError(
+      `Error generating audio URL for Chapter ${chapterId}`,
+      error.message,
+    );
+    return {
+      status: 500,
+      body: `Error generating audio URL for Chapter ${chapterId}.`,
+    };
+  }
+}
 
 /**
  * @swagger
@@ -35,45 +92,11 @@ const cache = new Map();
  *         description: Internal server error.
  */
 app.http('chapterAudio', {
-    methods: ['GET'],
-    authLevel: 'anonymous',
-    route: 'chapterAudio/{chapterId}', 
-    handler: async (request, context) => {
-        try {
-            const chapterId = request.params.chapterId;
-            validateChapterId(chapterId); // Validate chapterId (throws an error if invalid)
-        
-            // Construct the remote audio URL
-            const remoteAudioUrl = getChapterAudioURL(chapterId);
-            // Generate a cache key
-            const cacheKey = `${remoteAudioUrl}`;
-            // Return the audio URL as a JSON response
-            if (cache.has(cacheKey)) {
-                return {
-                    status: 200,
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(cache.get(cacheKey)) // Return cached data
-                };
-            }
-            const responseData = { url: remoteAudioUrl };
-            cache.set(cacheKey, responseData);
-            
-            return {
-                status: 200,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(responseData)
-            };
-        } catch (error) {
-            context.log(`Error generating audio URL for Chapter ${chapterId}: ${error}`);
-            logError(`Error generating audio URL for Chapter ${chapterId}`, error.message);
-            context.res = {
-                status: 500,
-                body: `Error generating audio URL for Chapter ${chapterId}.`
-            };
-        }
-    }
+  methods: ['GET'],
+  authLevel: 'anonymous',
+  route: 'chapterAudio/{chapterId}',
+  handler: chapterAudioHandler, // Use the named handler function
 });
+
+// Export the handler for testing
+module.exports = { chapterAudioHandler };

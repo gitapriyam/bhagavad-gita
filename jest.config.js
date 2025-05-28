@@ -16,4 +16,5 @@ module.exports = {
       stringifyContentPathRegex: '\\.(html|svg)$',
     },
   },
+  testPathIgnorePatterns: ['/node_modules/', '/api/'],
 };

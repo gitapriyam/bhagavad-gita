@@ -56,10 +56,25 @@ jobs:
       - name: Install Angular CLI
         run: npm install -g @angular/cli@19
 
+      # Step 6: Install Angular CLI
       - name: Run unit tests
-        run: ng test 
+        run: npm test
 
-      # Step 6: Build the application
+      # Step 7.1: Install API Dev Dependencies
+      - name: Install API Dev Dependencies
+        run: |
+          cd api
+          npm install
+          cd -
+
+      # Step 7.2: Run API Unit Tests
+      - name: Run API Unit Tests
+        run: |
+          cd api
+          npm test
+          cd -
+
+      # Step 8: Build the application
       - name: Build Application
         run: |
           echo "Building application for environment: $SWA_CLI_DEPLOY_ENV"
@@ -69,7 +84,7 @@ jobs:
             npx ng build --configuration=$SWA_CLI_DEPLOY_ENV
           fi
 
-      # Step 7: Install API dependencies
+      # Step 9: Install API dependencies
       - name: Install API Dependencies
         run: |
           cd api
@@ -84,7 +99,7 @@ jobs:
           echo "Ref Name: ${{ github.ref_name }}"
           echo "Deployment Environment: $SWA_CLI_DEPLOY_ENV"
 
-      # Step 8: Conditionally deploy to Azure Static Web Apps
+      # Step 10: Conditionally deploy to Azure Static Web Apps
       - name: Deploy to Azure Static Web Apps
         if: >
           (github.event_name == 'pull_request' && github.base_ref == 'development') ||
