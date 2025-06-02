@@ -1,7 +1,7 @@
 <div class="sloka-list" id="sloka-list" #slokaContainer>
   <div class="sloka-list-header">
     <h3>{{ chapterName }}</h3>
-    <button (click)="togglePane()" class="toggle-pane-btn">☰ Options</button>
+    <button [disabled]="isViewportLoading" (click)="togglePane()" class="toggle-pane-btn">☰ Options</button>
     <div class="sliding-pane" [class.visible]="isPaneVisible">
       <label>
         <input type="checkbox" [(ngModel)]="showSanskrit" (change)="onToggleSanskrit()"> Show Sanskrit
