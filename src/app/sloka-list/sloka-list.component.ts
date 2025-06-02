@@ -48,6 +48,9 @@ export class SlokaListComponent implements OnChanges, AfterViewInit {
   groups: any[] = []; // Store groups here
   isSlokaGroupsReady: boolean = false;
   observer: IntersectionObserver | null = null;
+  isViewportLoading = true;
+  viewportIndices: number[] = []; // Add this property to track indices in the viewport
+  visibleSlokaIndices = new Set<number>();
 
   @ViewChild('slokaContainer', { static: true }) slokaContainer!: ElementRef;
 
@@ -166,41 +169,50 @@ export class SlokaListComponent implements OnChanges, AfterViewInit {
     };
 
     this.observer = new IntersectionObserver((entries) => {
+      let changed = false;
       entries.forEach((entry) => {
+        const dataIndex = entry.target.getAttribute('data-index');
+        if (!dataIndex) return;
+        const index = Number(dataIndex);
+
         if (entry.isIntersecting) {
-          const dataIndex = entry.target.getAttribute('data-index');
-          if (!dataIndex) {
-            return;
+          if (!this.visibleSlokaIndices.has(index)) {
+            this.visibleSlokaIndices.add(index);
+            changed = true;
           }
-
-          const index = Number(dataIndex);
           const slokaGroup = this.slokaData[index];
-
           if (Array.isArray(slokaGroup) && slokaGroup.length > 1) {
-            // Handle grouped slokas
             slokaGroup.forEach((slokaId) => {
               if (
                 this.slokas[slokaId] === undefined ||
                 this.slokas[slokaId] === null
               ) {
-                this.fetchSloka(slokaId); // Fetch each sloka in the group
+                this.fetchSloka(slokaId);
               }
             });
           } else {
             const slokaIndex = slokaGroup[0];
-            // Handle single sloka
             if (
               this.slokas[slokaIndex] === undefined ||
               this.slokas[slokaIndex] === null
             ) {
-              this.fetchSloka(slokaIndex); // Fetch the single sloka
+              this.fetchSloka(slokaIndex);
             }
+          }
+        } else {
+          if (this.visibleSlokaIndices.delete(index)) {
+            changed = true;
           }
         }
       });
+      if (changed) {
+        // Update viewportIndices to reflect the current set of visible sloka indices.
+        // This ensures that the application can check whether the slokas currently in the viewport are loaded.
+        this.viewportIndices = Array.from(this.visibleSlokaIndices);
+        this.checkViewportSlokasLoaded();
+      }
     }, options);
 
-    // Observe all <li> elements
     const placeholders = document.querySelectorAll('.sloka-placeholder');
     placeholders.forEach((placeholder) =>
       this.observer?.observe(placeholder as HTMLElement),
@@ -228,6 +240,7 @@ export class SlokaListComponent implements OnChanges, AfterViewInit {
       .subscribe(
         (data: SlokaData) => {
           this.slokas[slokaIndex] = data.content;
+          this.checkViewportSlokasLoaded();
         },
         (error) => {
           const errorMsg = `Error fetching sloka ${slokaIndex}: ${error}`;
@@ -288,5 +301,17 @@ export class SlokaListComponent implements OnChanges, AfterViewInit {
 
   computeIndices(): void {
     this.indices = Array.from({ length: this.slokaData.length }, (_, i) => i);
+  }
+
+  checkViewportSlokasLoaded(): void {
+    // Suppose you have a list of indices for slokas in the viewport: this.viewportIndices
+    this.isViewportLoading = !this.viewportIndices.every(
+      (i) => this.slokas[i] !== undefined && this.slokas[i] !== null,
+    );
+  }
+
+  onViewportChange(indices: number[]): void {
+    this.viewportIndices = indices;
+    this.checkViewportSlokasLoaded();
   }
 }
