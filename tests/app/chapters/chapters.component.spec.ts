@@ -1,11 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { ChaptersComponent } from '../../../src/app/chapters/chapters.component';
 
-import { SlokaComponent } from './sloka.component';
-
-describe('SlokaComponent', () => {
-  let component: SlokaComponent;
-  let fixture: ComponentFixture<SlokaComponent>;
+describe('ChaptersComponent', () => {
+  let component: ChaptersComponent;
+  let fixture: ComponentFixture<ChaptersComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -13,7 +12,7 @@ describe('SlokaComponent', () => {
       declarations: [],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SlokaComponent);
+    fixture = TestBed.createComponent(ChaptersComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
