@@ -3,9 +3,9 @@ import {
   HttpClientTestingModule,
   HttpTestingController,
 } from '@angular/common/http/testing';
-import { ApiService } from './api.service';
-import { RemoteResource } from '../models/remote-resource.model';
-import { SlokaData } from '../models/sloka-data.model';
+import { ApiService } from '../../../src/app/services/api.service';
+import { RemoteResource } from '../../../src/app/models/remote-resource.model';
+import { SlokaData } from '../../../src/app/models/sloka-data.model';
 
 describe('ApiService', () => {
   let service: ApiService;

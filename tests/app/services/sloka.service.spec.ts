@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { SlokaService } from './sloka.service';
-import { ApiService } from './api.service';
+import { SlokaService } from '../../../src/app/services/sloka.service';
+import { ApiService } from '../../../src/app/services/api.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { of } from 'rxjs';
-import { SandhiReadiness } from '../models/sandhi-readiness.model';
+import { SandhiReadiness } from '../../../src/app/models/sandhi-readiness.model';
 
 describe('SlokaService', () => {
   let service: SlokaService;

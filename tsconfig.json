@@ -4,10 +4,7 @@
     "lib": ["es2018", "dom"],
     "outDir": "./out-tsc/app",
     "baseUrl": "./",
-    "types": [
-      "jest",
-      "node"
-    ],
+    "types": ["jest", "node"],
     "moduleResolution": "node",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
@@ -15,15 +12,11 @@
     "strict": true,
     "noImplicitAny": true,
     "skipLibCheck": true,
-    "esModuleInterop": true,
+    "esModuleInterop": true
   },
   "angularCompilerOptions": {
     "strictTemplates": true // Enable strict template type checking
   },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src/**/*.ts", "tests/app/chapters/chapters.component.spec.ts"],
+  "exclude": ["node_modules"]
 }
