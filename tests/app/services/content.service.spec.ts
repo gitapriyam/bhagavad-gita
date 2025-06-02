@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ContentService } from './content.service';
+import { ContentService } from '../../../src/app/services/content.service';
 import {
   HttpClientTestingModule,
   HttpTestingController,
