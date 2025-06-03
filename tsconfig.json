@@ -5,7 +5,8 @@
     "outDir": "./out-tsc/app",
     "baseUrl": ".",
     "paths": {
-      "@app/*": ["src/app/*"]
+      "@app/*": ["src/app/*"],
+      "@environments/*": ["src/environments/*"],
     },
     "types": ["jest", "node"],
     "moduleResolution": "node",

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ChapterService } from '@app/services/chapter.service';
-import { environment } from '../../../src/environments/environment';
+import { environment } from '@environments/environment';
 
 describe('ChapterService', () => {
   let service: ChapterService;

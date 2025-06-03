@@ -9,6 +9,7 @@ module.exports = {
   testEnvironment: 'jsdom',
   moduleNameMapper: {
     '^@app/(.*)$': '<rootDir>/src/app/$1',
+    '^@environments/(.*)$': '<rootDir>/src/environments/$1',
   },
   globals: {
     'ts-jest': {
