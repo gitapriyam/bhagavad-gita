@@ -3,7 +3,10 @@
     "module": "esnext",
     "lib": ["es2018", "dom"],
     "outDir": "./out-tsc/app",
-    "baseUrl": "./",
+    "baseUrl": ".",
+    "paths": {
+      "@app/*": ["src/app/*"]
+    },
     "types": ["jest", "node"],
     "moduleResolution": "node",
     "experimentalDecorators": true,
@@ -17,6 +20,6 @@
   "angularCompilerOptions": {
     "strictTemplates": true // Enable strict template type checking
   },
-  "include": ["src/**/*.ts", "tests/app/chapters/chapters.component.spec.ts"],
+  "include": ["src/**/*.ts", "tests/**/*.spec.ts"],
   "exclude": ["node_modules"]
 }
