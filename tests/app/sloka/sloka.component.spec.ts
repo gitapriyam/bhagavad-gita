@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-import { SlokaComponent } from '../../../src/app/sloka/sloka.component';
+import { SlokaComponent } from '@app/sloka/sloka.component';
 
 describe('SlokaComponent', () => {
   let component: SlokaComponent;

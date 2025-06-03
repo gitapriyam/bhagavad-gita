@@ -8,7 +8,7 @@ module.exports = {
   },
   testEnvironment: 'jsdom',
   moduleNameMapper: {
-    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+    '^@app/(.*)$': '<rootDir>/src/app/$1',
   },
   globals: {
     'ts-jest': {

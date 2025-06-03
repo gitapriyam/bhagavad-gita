@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SingleSlokaComponent } from '../../../src/app/single-sloka/single-sloka.component';
-import { SlokaComponent } from '../../../src/app/sloka/sloka.component';
+import { SingleSlokaComponent } from '@app/single-sloka/single-sloka.component';
+import { SlokaComponent } from '@app/sloka/sloka.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { UtilityService } from '../../../src/app/services/utility.service';
+import { UtilityService } from '@app/services/utility.service';
 
 describe('SingleSlokaComponent', () => {
   let component: SingleSlokaComponent;

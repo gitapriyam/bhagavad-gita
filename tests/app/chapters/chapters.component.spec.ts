@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ChaptersComponent } from '../../../src/app/chapters/chapters.component';
+import { ChaptersComponent } from '@app/chapters/chapters.component';
 
 describe('ChaptersComponent', () => {
   let component: ChaptersComponent;

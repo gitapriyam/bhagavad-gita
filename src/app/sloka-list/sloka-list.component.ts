@@ -82,7 +82,7 @@ export class SlokaListComponent implements OnChanges, AfterViewInit {
     this.isPaneVisible = true;
     setTimeout(() => {
       this.isPaneVisible = false;
-    }, 5000); // Hide the pane after 5 seconds
+    }, 3000); // Hide the pane after 3 seconds
   }
 
   optimizeSlokaData(): void {
