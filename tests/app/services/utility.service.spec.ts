@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { UtilityService } from '../../../src/app/services/utility.service';
-import { ChapterService } from '../../../src/app/services/chapter.service';
+import { UtilityService } from '@app/services/utility.service';
+import { ChapterService } from '@app/services/chapter.service';
 import { of } from 'rxjs';
-import { environment } from '../../../src/environments/environment';
+import { environment } from '@environments/environment';
 
 describe('UtilityService', () => {
   let service: UtilityService;

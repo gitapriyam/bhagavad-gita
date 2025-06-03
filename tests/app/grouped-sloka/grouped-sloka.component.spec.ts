@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { GroupedSlokaComponent } from '../../../src/app/grouped-sloka/grouped-sloka.component';
-import { SlokaComponent } from '../../../src/app/sloka/sloka.component';
+import { GroupedSlokaComponent } from '@app/grouped-sloka/grouped-sloka.component';
+import { SlokaComponent } from '@app/sloka/sloka.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
