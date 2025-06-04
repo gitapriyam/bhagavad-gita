@@ -1,37 +1,68 @@
 <div>
-    <div *ngIf="showSanskrit && showSandhi && sanskritSandhi" class="card">
-      <h4>सन्धिविग्रहः</h4>
-      <pre class="custom-pre">{{sanskritSandhi}}</pre>
-    </div>
-    <div *ngIf="showSanskrit && showSandhi && sanskritAnvaya" class="card">
-      <h4>अन्वयः</h4>
-      <pre class="custom-pre">{{sanskritAnvaya}}</pre>
-    </div>
-    <div *ngIf="slokaGroup.length > 1" class="dropdown-container">
-      <label for="slokaDropdown">Select Sloka:</label>
-      <select id="slokaDropdown" [(ngModel)]="selectedSloka" (change)="onSlokaChange()">
-        <option *ngFor="let slokaId of slokaGroup" [value]="slokaId">
-          {{ getSlokaTitle(slokaId + 1) }}
-        </option>
-      </select>
-    </div>
-    <div *ngIf="selectedSloka !== null && selectedSloka >= 0" class="sloka-content">
+  <ng-template #loading let-type="type">
+    <pre class="custom-pre">Loading {{ type }}...</pre>
+  </ng-template>
+
+  <div *ngIf="showSanskrit && showSandhi">
+    <ng-container *ngIf="sanskritSandhi; else loadingSandhi">
       <div class="card">
-        <h4>Shloka Meaning</h4>
-        <ng-container *ngIf="slokaMeaning; else loading">
-          <pre class="custom-pre">{{ slokaMeaning }}</pre>
-        </ng-container>
+        <h4>सन्धिविग्रहः</h4>
+        <pre class="custom-pre">{{ sanskritSandhi }}</pre>
       </div>
-        <ng-template #loading>
-          <pre class="custom-pre clickable">Loading meaning of sloka {{ selectedSloka }}...</pre>
-        </ng-template>
+    </ng-container>
+    <ng-template #loadingSandhi>
+      <ng-container
+        *ngTemplateOutlet="loading; context: { type: 'Sandhi' }"
+      ></ng-container>
+    </ng-template>
+
+    <ng-container *ngIf="sanskritAnvaya; else loadingAnvaya">
       <div class="card">
-        <h4>Shloka Audio</h4>
-        <div class="audio">
-          <audio #audioPlayer controls>
-            Your browser does not support the audio element.
-          </audio>
-        </div>
+        <h4>अन्वयः</h4>
+        <pre class="custom-pre">{{ sanskritAnvaya }}</pre>
+      </div>
+    </ng-container>
+    <ng-template #loadingAnvaya>
+      <ng-container
+        *ngTemplateOutlet="loading; context: { type: 'Anvaya' }"
+      ></ng-container>
+    </ng-template>
+  </div>
+
+  <div *ngIf="slokaGroup.length > 1" class="dropdown-container">
+    <label for="slokaDropdown">Select Sloka:</label>
+    <select
+      id="slokaDropdown"
+      [(ngModel)]="selectedSloka"
+      (change)="onSlokaChange()"
+    >
+      <option *ngFor="let slokaId of slokaGroup" [value]="slokaId">
+        {{ getSlokaTitle(slokaId + 1) }}
+      </option>
+    </select>
+  </div>
+  <div
+    *ngIf="selectedSloka !== null && selectedSloka >= 0"
+    class="sloka-content"
+  >
+    <div class="card">
+      <h4>Shloka Meaning</h4>
+      <ng-container *ngIf="slokaMeaning; else loadingMeaning">
+        <pre class="custom-pre">{{ slokaMeaning }}</pre>
+      </ng-container>
+      <ng-template #loadingMeaning>
+        <ng-container
+          *ngTemplateOutlet="loading; context: { type: 'Meaning' }"
+        ></ng-container>
+      </ng-template>
+    </div>
+    <div class="card">
+      <h4>Shloka Audio</h4>
+      <div class="audio">
+        <audio #audioPlayer controls>
+          Your browser does not support the audio element.
+        </audio>
       </div>
     </div>
   </div>
+</div>
