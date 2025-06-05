@@ -1,34 +1,60 @@
 <div>
+  <!-- Generic card template -->
+  <ng-template #card let-title="title" let-content="content">
+    <div class="card">
+      <h4>{{ title }}</h4>
+      <ng-container *ngTemplateOutlet="content"></ng-container>
+    </div>
+  </ng-template>
+
+  <!-- Loading template -->
   <ng-template #loading let-type="type">
     <pre class="custom-pre">Loading {{ type }}...</pre>
   </ng-template>
 
+  <!-- Sandhi content templates -->
+  <ng-template #sandhiContent>
+    <pre class="custom-pre">{{ sanskritSandhi }}</pre>
+  </ng-template>
+  <ng-template #loadingSandhiContent>
+    <ng-container *ngTemplateOutlet="loading; context: { type: 'Sandhi' }"></ng-container>
+  </ng-template>
+
+  <!-- Anvaya content templates -->
+  <ng-template #anvayaContent>
+    <pre class="custom-pre">{{ sanskritAnvaya }}</pre>
+  </ng-template>
+  <ng-template #loadingAnvayaContent>
+    <ng-container *ngTemplateOutlet="loading; context: { type: 'Anvaya' }"></ng-container>
+  </ng-template>
+
+  <!-- Meaning content templates -->
+  <ng-template #meaningContent>
+    <pre class="custom-pre">{{ slokaMeaning }}</pre>
+  </ng-template>
+  <ng-template #loadingMeaningContent>
+    <ng-container *ngTemplateOutlet="loading; context: { type: 'Meaning' }"></ng-container>
+  </ng-template>
+
+  <!-- Sandhi Card -->
   <div *ngIf="showSanskrit && showSandhi">
-    <ng-container *ngIf="sanskritSandhi; else loadingSandhi">
-      <div class="card">
-        <h4>सन्धिविग्रहः</h4>
-        <pre class="custom-pre">{{ sanskritSandhi }}</pre>
-      </div>
+    <ng-container *ngIf="sanskritSandhi; else sandhiLoadingBlock">
+      <ng-container *ngTemplateOutlet="card; context: { title: 'सन्धिविग्रहः', content: sandhiContent }"></ng-container>
     </ng-container>
-    <ng-template #loadingSandhi>
-      <ng-container
-        *ngTemplateOutlet="loading; context: { type: 'Sandhi' }"
-      ></ng-container>
+    <ng-template #sandhiLoadingBlock>
+      <ng-container *ngTemplateOutlet="card; context: { title: 'सन्धिविग्रहः', content: loadingSandhiContent }"></ng-container>
     </ng-template>
 
-    <ng-container *ngIf="sanskritAnvaya; else loadingAnvaya">
-      <div class="card">
-        <h4>अन्वयः</h4>
-        <pre class="custom-pre">{{ sanskritAnvaya }}</pre>
-      </div>
+    <!-- Anvaya Card -->
+    <ng-container *ngIf="sanskritAnvaya; else anvayaLoadingBlock">
+      <ng-container *ngTemplateOutlet="card; context: { title: 'अन्वयः', content: anvayaContent }"></ng-container>
     </ng-container>
-    <ng-template #loadingAnvaya>
-      <ng-container
-        *ngTemplateOutlet="loading; context: { type: 'Anvaya' }"
-      ></ng-container>
+    <ng-template #anvayaLoadingBlock>
+      <ng-container *ngTemplateOutlet="card; context: { title: 'अन्वयः', content: loadingAnvayaContent }"></ng-container>
     </ng-template>
   </div>
 
+  <!-- Sloka selection dropdown -->
   <div *ngIf="slokaGroup.length > 1" class="dropdown-container">
     <label for="slokaDropdown">Select Sloka:</label>
     <select
@@ -41,21 +67,17 @@
       </option>
     </select>
   </div>
-  <div
-    *ngIf="selectedSloka !== null && selectedSloka >= 0"
-    class="sloka-content"
-  >
-    <div class="card">
-      <h4>Shloka Meaning</h4>
-      <ng-container *ngIf="slokaMeaning; else loadingMeaning">
-        <pre class="custom-pre">{{ slokaMeaning }}</pre>
-      </ng-container>
-      <ng-template #loadingMeaning>
-        <ng-container
-          *ngTemplateOutlet="loading; context: { type: 'Meaning' }"
-        ></ng-container>
-      </ng-template>
-    </div>
+
+  <!-- Sloka Meaning Card -->
+  <div *ngIf="selectedSloka !== null && selectedSloka >= 0" class="sloka-content">
+    <ng-container *ngIf="slokaMeaning; else meaningLoadingBlock">
+      <ng-container *ngTemplateOutlet="card; context: { title: 'Shloka Meaning', content: meaningContent }"></ng-container>
+    </ng-container>
+    <ng-template #meaningLoadingBlock>
+      <ng-container *ngTemplateOutlet="card; context: { title: 'Shloka Meaning', content: loadingMeaningContent }"></ng-container>
+    </ng-template>
+
+    <!-- Shloka Audio Card (not templated, as it's unique) -->
     <div class="card">
       <h4>Shloka Audio</h4>
       <div class="audio">
