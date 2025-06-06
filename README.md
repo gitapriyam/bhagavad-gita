@@ -59,3 +59,7 @@ npm run build
 ## Usage
 
 This application serves as a template for building static web applications using Angular. You can modify the components, styles, and assets as needed to fit your project requirements.
+
+## Privacy
+
+This application uses cookies to remember users last viewed chapter and sloka for their convenience. No personal data is stored or tracked. Cookies are used solely for improving user's experience and are not used for analytics or advertising.

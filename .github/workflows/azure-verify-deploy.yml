@@ -50,7 +50,7 @@ jobs:
 
       # Step 4: Install dependencies
       - name: Install Dependencies
-        run: npm install
+        run: npm install -legacy-peer-deps
 
       # Step 5: Install Angular CLI
       - name: Install Angular CLI
