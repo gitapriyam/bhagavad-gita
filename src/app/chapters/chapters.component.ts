@@ -14,7 +14,8 @@ import { ChapterService } from '../services/chapter.service';
 import { ApiService } from '../services/api.service';
 import { RemoteResource } from '../models/remote-resource.model'; // Import the interface
 import { FormsModule } from '@angular/forms';
-
+import { CookieService } from 'ngx-cookie-service';
+import { LoggerService } from '@app/services/logging.service';
 @Component({
   selector: 'app-chapters',
   templateUrl: './chapters.component.html',
@@ -45,14 +46,22 @@ export class ChaptersComponent implements OnInit {
     private utilityService: UtilityService,
     private chapterService: ChapterService,
     private apiService: ApiService,
+    private cookieService: CookieService,
+    private logger: LoggerService,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {}
 
   ngOnInit(): void {
     this.loadChapters();
+    if (this.cookieService.get('currentChapter')) {
+      this.chapterId = +this.cookieService.get('currentChapter');
+    }
+    if (this.cookieService.get('showSanskrit')) {
+      this.showSanskrit = this.cookieService.get('showSanskrit') === 'true';
+    }
     if (isPlatformBrowser(this.platformId)) {
       this.windowWidth = window.innerWidth;
-      this.showSlokas(this.chapters[0]); // Set default chapter selection
+      this.showSlokas(this.chapters[this.chapterId]);
       this.adjustChapterView(this.windowWidth);
     }
     this.showReferences = false;

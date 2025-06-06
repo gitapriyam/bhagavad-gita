@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { provideHttpClient } from '@angular/common/http';
+import { CookieService } from 'ngx-cookie-service';
 
 @NgModule({
   declarations: [],
@@ -15,7 +16,7 @@ import { provideHttpClient } from '@angular/common/http';
     FormsModule,
     RouterModule.forRoot([]),
   ],
-  providers: [provideHttpClient()],
+  providers: [provideHttpClient(), CookieService],
   bootstrap: [],
 })
 export class AppModule {}

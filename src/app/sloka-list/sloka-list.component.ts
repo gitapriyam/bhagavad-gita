@@ -3,6 +3,7 @@ import {
   Input,
   Output,
   EventEmitter,
+  OnInit,
   OnChanges,
   SimpleChanges,
   ElementRef,
@@ -19,6 +20,8 @@ import { SingleSlokaComponent } from '../single-sloka/single-sloka.component';
 import { GroupedSlokaComponent } from '../grouped-sloka/grouped-sloka.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { CookieService } from 'ngx-cookie-service';
+import { LoggerService } from '../services/logging.service';
 
 @Component({
   selector: 'app-sloka-list',
@@ -32,7 +35,7 @@ import { FormsModule } from '@angular/forms';
     GroupedSlokaComponent,
   ],
 })
-export class SlokaListComponent implements OnChanges, AfterViewInit {
+export class SlokaListComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() chapterId: number = 0;
   @Input() chapterName: string = '';
   @Input() slokaCount: number = 0;
@@ -51,6 +54,7 @@ export class SlokaListComponent implements OnChanges, AfterViewInit {
   isViewportLoading = true;
   viewportIndices: number[] = []; // Add this property to track indices in the viewport
   visibleSlokaIndices = new Set<number>();
+  cookieLifetimeDays = 30; // Set cookie lifetime in days
 
   @ViewChild('slokaContainer', { static: true }) slokaContainer!: ElementRef;
 
@@ -58,11 +62,43 @@ export class SlokaListComponent implements OnChanges, AfterViewInit {
     private apiService: ApiService,
     private utilityService: UtilityService,
     private slokaService: SlokaService,
+    private cookieService: CookieService,
+    private logger: LoggerService,
   ) {}
+
+  ngOnInit() {
+    // Try to get from cookies
+    if (this.cookieService.get('currentSloka')) {
+      this.expandedSloka = +this.cookieService.get('currentSloka');
+    }
+
+    this.logger.debug(
+      'SlokaListComponent initialized with chapterId:',
+      this.chapterId,
+      'selectedSloka',
+      this.expandedSloka,
+      'showSanskrit:',
+      this.showSanskrit,
+    );
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     this.showSandhi = false;
     if (changes['chapterId'] || changes['showSanskrit']) {
+      if (changes['chapterId']) {
+        this.cookieService.set(
+          'currentChapter',
+          this.chapterId.toString(),
+          this.cookieLifetimeDays,
+        );
+      }
+      if (changes['showSanskrit']) {
+        this.cookieService.set(
+          'showSanskrit',
+          this.showSanskrit.toString(),
+          this.cookieLifetimeDays,
+        );
+      }
       this.loadSlokas();
       setTimeout(() => {
         this.setupIntersectionObserver(); // Reinitialize the observer after DOM update
@@ -255,14 +291,11 @@ export class SlokaListComponent implements OnChanges, AfterViewInit {
   }
 
   onToggleSanskrit(): void {
-    this.showSanskrit = !this.showSanskrit;
     this.sanskritToggled.emit(this.showSanskrit);
     this.loadSlokas(); // Reload slokas when toggling Sanskrit
   }
 
-  onToggleSandhi(): void {
-    this.showSandhi = !this.showSandhi;
-  }
+  onToggleSandhi(): void {}
 
   getSlokaTitle(index: number): string {
     return this.utilityService.getSlokaTitle(index, this.showSanskrit);
@@ -274,9 +307,21 @@ export class SlokaListComponent implements OnChanges, AfterViewInit {
       console.error(`No group found for sloka index ${slokaIndex}`);
       return;
     }
-
     // Expand or collapse the group
     this.expandedSloka = this.expandedSloka === group[0] ? null : group[0];
+    this.setCurrentSloka();
+  }
+
+  private setCurrentSloka() {
+    if (this.expandedSloka !== null) {
+      this.cookieService.set(
+        'currentSloka',
+        this.expandedSloka.toString(),
+        this.cookieLifetimeDays,
+      );
+    } else {
+      this.cookieService.delete('currentSloka');
+    }
   }
 
   toggleSlokaGroup(slokaIndex: number): void {
@@ -297,6 +342,7 @@ export class SlokaListComponent implements OnChanges, AfterViewInit {
       this.expandedSloka === this.slokaData[index][0]
         ? null
         : this.slokaData[index][0];
+    this.setCurrentSloka();
   }
 
   computeIndices(): void {
