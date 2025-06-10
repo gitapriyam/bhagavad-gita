@@ -61,7 +61,7 @@ async function slokaHandler(request, context) {
     // Handle errors (e.g., network issues, server errors)
     context.log(`Error fetching content: ${error}`);
     return {
-      status: 500,
+      status: 400,
       body: {
         error: 'Failed to fetch content from the remote server.',
         details: error.message,
