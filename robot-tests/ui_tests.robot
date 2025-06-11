@@ -14,6 +14,11 @@ Open Browser To App
     New Browser    headless=${HEADLESS}
     New Page    ${APP_URL}
 
+Ensure Dropdown Is Open
+    ${is_visible}=    Run Keyword And Return Status    Get Element    css=.dropdown-content
+    IF    not ${is_visible}
+        Click    css=i.dropbtn
+    END
 *** Test Cases ***
 Home Page Loads
     [Tags]    smoke
@@ -47,13 +52,13 @@ Sloka Cookie Is Used On Reload
     Should Be Equal    ${cookie.value}    2
 
 Chapter Resources are available
-    Click    css=i.dropbtn
+    Ensure Dropdown Is Open
     ${resources}=    Get Elements    css=.dropdown-content a
     Should Not Be Empty    ${resources}
     Length Should Be    ${resources}    3
-
 Chapter Audio Resource is valid
     [Tags]    smoke
+    Ensure Dropdown Is Open
     # Check if the first resource is Audio
     ${first_resource}=    Get Text    css=.dropdown-content a:first-child
     Should Be Equal    ${first_resource}    Audio
@@ -63,6 +68,7 @@ Chapter Audio Resource is valid
     Should Contain    ${audio_url}    slokastorage
 Chapter PDF Resource is valid
     [Tags]    smoke
+    Ensure Dropdown Is Open
     # Check if the pdf link name contains 'PDF'
     ${second_resource}=    Get Text    css=.dropdown-content a:nth-child(2)
     Should Be Equal    ${second_resource}    PDF
@@ -72,6 +78,7 @@ Chapter PDF Resource is valid
     Should Contain    ${pdf_url}    slokastorage
 Chapter Tamil PDF Resource is valid
     [Tags]    smoke
+    Ensure Dropdown Is Open
     # Check if the third resource name is Tamil PDF
     ${third_resource}=    Get Text    css=.dropdown-content a:nth-child(3)
     Should Be Equal    ${third_resource}    Tamil PDF
