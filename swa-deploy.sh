@@ -7,16 +7,15 @@ ACTION=${2:-start}      # Default to 'start' if no action is specified
 echo "Environment: $ENVIRONMENT"
 echo "Action: $ACTION"
 
-# Load environment variables from .env file
-source .env
-
 export API_LOCATION="api"
 export APP_LOCATION="src"
 export OUTPUT_LOCATION="dist/bhagavad-gita/browser"
 
 # Build the frontend application
 echo "Building frontend application..."
-npm install
+# Using --legacy-peer-deps to bypass peer dependency conflicts during installation.
+# This is a temporary workaround; resolving these conflicts is recommended in the future.
+npm install -legacy-peer-deps
 if [ "$ENVIRONMENT" == "development" ]; then
   echo "Building in development mode..."
   npx ng build --configuration=development
@@ -41,8 +40,12 @@ if [ "$ACTION" == "start" ]; then
     --config-name $ENVIRONMENT \
     --app-location $OUTPUT_LOCATION  \
     --api-location $API_LOCATION \
-    --output-location $OUTPUT_LOCATION
+    --output-location $OUTPUT_LOCATION \
+    --devserver-timeout 120
 else
+  # Load environment variables from .env file
+  source .env
+
   echo "Deploying to environment: $ENVIRONMENT"
   npx swa --verbose=silly deploy \
     --config swa-cli.config.json \

@@ -19,6 +19,7 @@ jobs:
       AZURE_STATIC_WEB_APPS_API_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
       APP_LOCATION: "src"
       OUTPUT_LOCATION: "dist/bhagavad-gita/browser"
+      AZURE_STATIC_WEB_APPS_URL: ${{ secrets.AZURE_STATIC_WEB_APPS_URL }}
 
     steps:
       # Step 1: Checkout the code
@@ -114,3 +115,48 @@ jobs:
             --deployment-token ${{ env.AZURE_STATIC_WEB_APPS_API_TOKEN }} \
             --api-language node \
             --api-version 20
+
+      # Step 11.1: Set up Python
+      - name: Set up Python
+        if: >
+          (github.event_name == 'pull_request' && github.base_ref == 'development') ||
+          (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # Step 11.2: Set up Python venv and install Robot Framework
+      - name: Set up venv and install Robot Framework
+        if: >
+          (github.event_name == 'pull_request' && github.base_ref == 'development') ||
+          (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        run: |
+          python -m venv rf-venv
+          source rf-venv/bin/activate
+          pip install --upgrade pip
+          pip install -r robot-tests/requirements.txt
+      # Step 11.2.1: Install Robot Framework Browser
+      - name: Initialize Robot Framework Browser
+        if: >
+          (github.event_name == 'pull_request' && github.base_ref == 'development') ||
+          (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        run: |
+          source rf-venv/bin/activate
+          rfbrowser init
+      # Step 11.3: Run Robot UI Tests
+      - name: Run Robot UI Tests
+        if: >
+          (github.event_name == 'pull_request' && github.base_ref == 'development') ||
+          (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        run: |
+          source rf-venv/bin/activate
+          robot --variable HEADLESS:true --variable APP_URL:${{ env.AZURE_STATIC_WEB_APPS_URL }} robot-tests/ui_tests.robot
+
+      # Step 11.4: Run Robot API Tests
+      - name: Run Robot API Tests
+        if: >
+          (github.event_name == 'pull_request' && github.base_ref == 'development') ||
+          (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        run: |
+          source rf-venv/bin/activate
+          robot --variable API_URL:${{ env.AZURE_STATIC_WEB_APPS_URL }}/api robot-tests/api_tests.robot
