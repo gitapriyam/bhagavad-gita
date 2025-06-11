@@ -34,7 +34,7 @@ describe('sloka Azure Function', () => {
     };
     const result = await handler(request, context);
 
-    expect(result.status).toBe(500);
+    expect(result.status).toBe(400);
     expect(result.body.error).toBe(
       'Failed to fetch content from the remote server.',
     );
@@ -53,7 +53,7 @@ describe('sloka Azure Function', () => {
     };
     const result = await handler(request, context);
 
-    expect(result.status).toBe(500);
+    expect(result.status).toBe(400);
     expect(result.body.error).toBe(
       'Failed to fetch content from the remote server.',
     );
@@ -136,7 +136,7 @@ describe('sloka Azure Function', () => {
     };
     const result = await handler(request, context);
 
-    expect(result.status).toBe(500);
+    expect(result.status).toBe(400);
     expect(result.body.error).toBe(
       'Failed to fetch content from the remote server.',
     );
