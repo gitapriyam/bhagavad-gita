@@ -14,7 +14,7 @@ export OUTPUT_LOCATION="dist/bhagavad-gita/browser"
 # Run unit tests before building
 npm run test
 TEST_RESULT=$?
-if [ $TEST_RESULT -ne 0 ]; then
+if [ "$TEST_RESULT" -ne 0 ]; then
   echo "Frontend unit tests failed. Aborting build and SWA start/deploy."
   exit 1
 fi
