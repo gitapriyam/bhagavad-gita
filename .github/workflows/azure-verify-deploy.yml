@@ -19,7 +19,6 @@ jobs:
       AZURE_STATIC_WEB_APPS_API_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
       APP_LOCATION: "src"
       OUTPUT_LOCATION: "dist/bhagavad-gita/browser"
-      AZURE_STATIC_WEB_APPS_URL: ${{ secrets.AZURE_STATIC_WEB_APPS_URL }}
 
     steps:
       # Step 1: Checkout the code
@@ -135,7 +134,7 @@ jobs:
           source rf-venv/bin/activate
           pip install --upgrade pip
           pip install -r robot-tests/requirements.txt
-          
+
       # Step 15: Install Robot Framework Browser
       - name: Initialize Robot Framework Browser
         if: >
@@ -153,6 +152,22 @@ jobs:
           else
             echo "AZURE_STATIC_WEB_APPS_URL=${{ secrets.AZURE_STATIC_WEB_APPS_URL_DEV }}" >> $GITHUB_ENV
           fi
+
+      # Step 16.5: Wait for AZURE_STATIC_WEB_APPS_URL to be up
+      - name: Wait for Static Web App to be Up
+        run: |
+          echo "Waiting for $AZURE_STATIC_WEB_APPS_URL to be available..."
+          for i in {1..20}; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$AZURE_STATIC_WEB_APPS_URL")
+            if [ "$STATUS" = "200" ]; then
+              echo "Static Web App is up!"
+              exit 0
+            fi
+            echo "Attempt $i: Not up yet (status: $STATUS). Waiting 10 seconds..."
+            sleep 10
+          done
+          echo "Static Web App did not become available in time."
+          exit 1
 
       # Step 17: Run Robot UI Tests
       - name: Run Robot UI Tests
