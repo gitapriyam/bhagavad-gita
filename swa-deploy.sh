@@ -11,6 +11,33 @@ export API_LOCATION="api"
 export APP_LOCATION="src"
 export OUTPUT_LOCATION="dist/bhagavad-gita/browser"
 
+# Run unit tests before building
+npm run test
+TEST_RESULT=$?
+if [ $TEST_RESULT -ne 0 ]; then
+  echo "Frontend unit tests failed. Aborting build and SWA start/deploy."
+  exit 1
+fi
+
+# Run API (backend) unit tests
+cd $API_LOCATION
+if [ -f package.json ]; then
+  if npm run | grep -q "test"; then
+    echo "Running API unit tests..."
+    npm run test
+    API_TEST_RESULT=$?
+    if [ $API_TEST_RESULT -ne 0 ]; then
+      echo "API unit tests failed. Aborting build and SWA start/deploy."
+      exit 1
+    fi
+  else
+    echo "No API unit test script found in $API_LOCATION/package.json. Skipping API tests."
+  fi
+else
+  echo "No package.json found in $API_LOCATION. Skipping API tests."
+fi
+cd -
+
 # Build the frontend application
 echo "Building frontend application..."
 # Using --legacy-peer-deps to bypass peer dependency conflicts during installation.
