@@ -41,6 +41,7 @@ export class ChaptersComponent implements OnInit {
   showReferences: boolean = false;
   references: string[] = environment.references;
   isDropdownOpen: boolean = false;
+  showHelp = false;
 
   constructor(
     private utilityService: UtilityService,
@@ -208,5 +209,13 @@ export class ChaptersComponent implements OnInit {
     if (!target.closest('.dropdown')) {
       this.isDropdownOpen = false;
     }
+  }
+
+  openHelp() {
+    this.showHelp = true;
+  }
+
+  closeHelp() {
+    this.showHelp = false;
   }
 }

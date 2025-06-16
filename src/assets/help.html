@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bhagavad Gita App - Help & Guide</title>
+  <style>
+    :root {
+      --bg-light: #fff;
+      --bg-dark: #181a1b;
+      --text-light: #222;
+      --text-dark: #e0e0e0;
+      --accent-light: #2d5c2f;
+      --accent-dark: #8fd694;
+      --subaccent-light: #3a7c3a;
+      --subaccent-dark: #b2f2b2;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2em;
+      background: var(--bg-light);
+      color: var(--text-light);
+      transition: background 0.3s, color 0.3s;
+    }
+    h1 { color: var(--accent-light); }
+    h2 { color: var(--subaccent-light); }
+    ul { margin-bottom: 1.5em; }
+    .feature { margin-bottom: 1em; }
+    .toggle-mode {
+      position: fixed;
+      top: 1em;
+      right: 1em;
+      background: none;
+      border: 1px solid #888;
+      border-radius: 1.5em;
+      padding: 0.5em 1.2em;
+      cursor: pointer;
+      font-size: 1em;
+      color: inherit;
+      background-color: rgba(200,200,200,0.1);
+      transition: background 0.2s, color 0.2s;
+    }
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: var(--bg-dark);
+        color: var(--text-dark);
+      }
+      h1 { color: var(--accent-dark); }
+      h2 { color: var(--subaccent-dark); }
+    }
+    body.dark-mode {
+      background: var(--bg-dark);
+      color: var(--text-dark);
+    }
+    body.dark-mode h1 { color: var(--accent-dark); }
+    body.dark-mode h2 { color: var(--subaccent-dark); }
+  </style>
+</head>
+<body>
+  <h1>Welcome to the Bhagavad Gita Application</h1>
+  <p>
+    This application allows you to explore the Bhagavad Gita chapter by chapter, view slokas in English and Sanskrit, listen to audio, and access additional study tools.
+  </p>
+
+  <h2>Key Features</h2>
+  <ul>
+    <li class="feature"><strong>Navigate Chapters:</strong> Use the chapters listed on the left menu to browse and select any chapter of the Bhagavad Gita.</li>
+    <li class="feature"><strong>View Slokas:</strong> See all slokas (verses) for the selected chapter. Click on a sloka to view its details such as its english meaning and the sloka audio. You can right click on the audio control to download the audio content of the current sloka.</li>
+    <li class="feature"><strong>English/Sanskrit Switch:</strong> English is shown by default. You can switch to use Sanskrit using the "☰ Options" button on the top near chapter heading and select "Show Sanskrit" checkbox.</li>
+    <li class="feature"><strong>Sandhi & Anvaya:</strong> For each sloka, view the Sandhi Vigraha (compound splitting) and Anvaya (prose order) to aid understanding. Use the "☰ Options" button on the top near chapter heading and select "Show Details" checkbox. If the chapter is not yet ready with Sandhi Vigraha and Anvaya features, this checkbox will remain disabled.</li>
+    <li class="feature"><strong>Chapter Audio Playback & Download:</strong> Listen to audio recitations of each chapter or download the audio for offline listening. This feature is available on the top right corner with "download" icon image.</li>
+    <li class="feature"><strong>Download PDFs:</strong>Depending on the language chosen, the PDF will open in a new window. It is possible to download PDFs for offline study from the new window. Tamil PDF is also available in the same menu.</li>
+    <li class="feature"><strong>Adjust Text Size:</strong> Use the text size controls to increase or decrease the font size for easier reading.</li>
+    <li class="feature"><strong>Cookie-based Preferences:</strong> Your chapter, sloka, and language preferences are saved automatically for a seamless experience across sessions (within 30 days).</li>
+  </ul>
+
+  <h2>How to Use</h2>
+  <ol>
+    <li><strong>Select a Chapter:</strong> Click on any chapter from the chapter list in the left menu to view its slokas.</li>
+    <li><strong>Read & Explore:</strong> Click on a sloka to see its meaning, audio, (Sandhi, and Anvaya if selected).</li>
+    <li><strong>Switch Language:</strong> Use the toggle to view slokas in English or Sanskrit.</li>
+    <li><strong>Listen or Download:</strong> Use the dropdown menu to play audio or download PDFs for the chapter.</li>
+    <li><strong>Change Text Size:</strong> Use the text size buttons (A+/A-) to adjust the font size as needed.</li>
+  </ol>
+
+  <h2>Tips</h2>
+  <ul>
+    <li>Your last viewed chapter and sloka are remembered automatically.</li>
+    <li>If you prefer to always see Sanskrit, enable the Sanskrit toggle in settings.</li>
+    <li>Use the download options to save resources for offline study.</li>
+  </ul>
+
+  <p>
+    <em>For questions or feedback, please email <a href="mailto:guise.kitsch4m@icloud.com">contact</a></em>
+  </p>
+  <script>
+    // Detect and apply saved mode or system preference
+    function setMode(mode) {
+      if (mode === 'dark') {
+        document.body.classList.add('dark-mode');
+        document.getElementById('toggleModeBtn').textContent = '☀️ Light Mode';
+      } else {
+        document.body.classList.remove('dark-mode');
+        document.getElementById('toggleModeBtn').textContent = '🌙 Dark Mode';
+      }
+    }
+    function getPreferredMode() {
+      const saved = localStorage.getItem('help-mode');
+      if (saved) return saved;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+  </script>
+</body>
+</html>
