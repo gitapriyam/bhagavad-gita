@@ -176,7 +176,7 @@ jobs:
           (github.event_name == 'push' && github.ref == 'refs/heads/main')
         run: |
           source rf-venv/bin/activate
-          robot --variable HEADLESS:true --variable APP_URL:${{ env.AZURE_STATIC_WEB_APPS_URL }} robot-tests/ui_tests.robot
+          robot --variable HEADLESS:true --variable APP_URL:$AZURE_STATIC_WEB_APPS_URL robot-tests/ui_tests.robot
 
       # Step 18: Run Robot API Tests
       - name: Run Robot API Tests
@@ -185,4 +185,4 @@ jobs:
           (github.event_name == 'push' && github.ref == 'refs/heads/main')
         run: |
           source rf-venv/bin/activate
-          robot --variable API_URL:${{ env.AZURE_STATIC_WEB_APPS_URL }}/api robot-tests/api_tests.robot
+          robot --variable API_URL:$AZURE_STATIC_WEB_APPS_URL/api robot-tests/api_tests.robot
