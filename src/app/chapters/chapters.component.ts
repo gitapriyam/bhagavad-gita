@@ -12,15 +12,22 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { SlokaComponent } from '../sloka/sloka.component';
 import { ChapterService } from '../services/chapter.service';
 import { ApiService } from '../services/api.service';
-import { RemoteResource } from '../models/remote-resource.model'; // Import the interface
+import { RemoteResource } from '../models/remote-resource.model';
 import { FormsModule } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
 import { LoggerService } from '@app/services/logging.service';
+import { SearchResultsComponent } from '../search-results/search-results.component';
 @Component({
   selector: 'app-chapters',
   templateUrl: './chapters.component.html',
   styleUrls: ['./chapters.component.css'],
-  imports: [CommonModule, FormsModule, SlokaListComponent, SlokaComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    SlokaListComponent,
+    SlokaComponent,
+    SearchResultsComponent,
+  ],
   standalone: true,
 })
 export class ChaptersComponent implements OnInit {
@@ -41,7 +48,8 @@ export class ChaptersComponent implements OnInit {
   showReferences: boolean = false;
   references: string[] = environment.references;
   isDropdownOpen: boolean = false;
-  showHelp = false;
+  showSearchModal = false;
+  showHelpAndReferences = false;
 
   constructor(
     private utilityService: UtilityService,
@@ -211,11 +219,26 @@ export class ChaptersComponent implements OnInit {
     }
   }
 
-  openHelp() {
-    this.showHelp = true;
+  openSearchModal() {
+    this.showSearchModal = true;
   }
 
-  closeHelp() {
-    this.showHelp = false;
+  closeSearchModal() {
+    this.showSearchModal = false;
+  }
+
+  openHelpAndReferences() {
+    this.showHelpAndReferences = true;
+  }
+
+  closeHelpAndReferences() {
+    this.showHelpAndReferences = false;
+  }
+
+  @HostListener('document:keydown.escape', ['$event'])
+  onEscape(event: KeyboardEvent) {
+    if (this.showSearchModal) {
+      this.closeSearchModal();
+    }
   }
 }

@@ -1,21 +1,21 @@
 /* global jest, describe, it, expect, beforeEach */
 const axios = require('axios');
-const utils = require('./utils.js');
+const utils = require('../functions/utils.js');
 
 // Mock axios and utility functions
 jest.mock('axios');
-jest.mock('./utils.js', () => ({
+jest.mock('../functions/utils.js', () => ({
   getSlokaGroupUrl: jest.fn(),
   logError: jest.fn(),
   validateChapterId: jest.fn(),
 }));
 
 // Import the function file to register the handler
-require('./slokaGroups.js');
+require('../functions/slokaGroups.js');
 
 // Import the Azure Functions app to extract the handler
 
-const { slokaGroupHandler: handler } = require('./slokaGroups.js');
+const { slokaGroupHandler: handler } = require('../functions/slokaGroups.js');
 
 describe('slokaGroups Azure Function', () => {
   let context;
