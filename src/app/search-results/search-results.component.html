@@ -1,0 +1,51 @@
+<h2 class="search-results-title">Search Slokas</h2>
+<div class="search-bar">
+  <input
+    type="text"
+    [(ngModel)]="searchTerm"
+    (keyup.enter)="onSearch()"
+    placeholder="Search slokas..."
+    class="search-input"
+    autofocus
+  />
+  <button type="button" (click)="onSearch()">Search</button>
+  <button
+    *ngIf="searchTerm"
+    (click)="onClearSearch()"
+    title="Clear"
+    class="clear-btn"
+  >
+    ✕
+  </button>
+</div>
+<p class="search-note">
+  <em
+    >Note: A phonetic search will be performed and the results will include
+    similar sounding words also. A maximum of 10 slokas will be returned.</em
+  >
+</p>
+<div *ngIf="loading" class="loading">Loading...</div>
+<div *ngIf="results.length" class="search-results-list">
+  <h4 class="search-results-count">{{ results.length }} slokas returned</h4>
+  <div *ngFor="let result of results" class="search-result-item">
+    <div class="sloka-single-container">
+      <h4 class="sloka-title">
+        {{ getSlokaTitle(+result.chapter, +result.slokaNumber) }}
+      </h4>
+      <ng-container
+        *ngIf="
+          result.sloka !== undefined && result.sloka !== null;
+          else loadingTpl
+        "
+      >
+        <pre class="custom-pre sloka-content">{{ result.sloka }}</pre>
+      </ng-container>
+      <ng-template #loadingTpl>
+        <span>Loading...</span>
+      </ng-template>
+    </div>
+  </div>
+</div>
+<div *ngIf="!loading && searched && !results.length" class="no-results">
+  No results found.
+</div>

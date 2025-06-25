@@ -1,0 +1,83 @@
+.search-results-title {
+  font-size: 2em;
+  font-weight: bold;
+  color: var(--primary-color, #1976d2);
+  margin-bottom: 0.5em;
+  font-family: var(--font-family, Arial, sans-serif);
+}
+
+.search-results-count,
+.sloka-title {
+  font-size: 1.1em;
+  font-weight: 500;
+  color: var(--primary-color, #1976d2);
+  margin: 1em 0 0.5em 0;
+  font-family: var(--font-family, Arial, sans-serif);
+  letter-spacing: 0.01em;
+}
+
+.search-results-list {
+  margin-top: 1.5em;
+  border-radius: 8px;
+  background: var(--search-bg, #fafbfc);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  padding: 0.5em 0;
+}
+
+.search-result-item {
+  border-bottom: 1px solid #e0e4ea;
+  padding: 1em 1.2em;
+  background: transparent;
+  transition: background 0.2s;
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.sloka-single-container {
+  margin: 0;
+}
+
+.sloka-title {
+  font-size: 1.1em;
+  font-weight: 500;
+  color: var(--primary-color, #1976d2);
+  margin: 1em 0 0.5em 0;
+  font-family: var(--font-family, Arial, sans-serif);
+  letter-spacing: 0.01em;
+}
+
+.sloka-content {
+  font-family: 'Noto Serif', 'Georgia', serif;
+  font-size: var(--font-size, 16px);
+  background: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+  color: #222;
+  white-space: pre-wrap;
+}
+
+.no-results {
+  color: #b00;
+  font-style: italic;
+  margin-top: 2em;
+  text-align: center;
+}
+
+.modal-content.search-modal-content {
+  background: var(--card-background-color, #fff);
+  color: var(--text-color, #222);
+}
+
+body.dark-mode .modal-content.search-modal-content {
+  background: #181a1b;
+  color: #e0e0e0;
+}
+
+.search-note {
+  color: #666;
+  font-size: 0.95em;
+  margin: 0.5em 0;
+}
