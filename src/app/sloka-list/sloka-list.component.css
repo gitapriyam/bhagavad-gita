@@ -130,20 +130,26 @@ input[type="checkbox"]:disabled + label {
   background-color: var(--card-background-color);
 }
 
-.sloka-single-container h4 {
+.sloka-single-container {
   margin: 0;
-  font-size: 24px;
-  color: var(--text-color);
 }
 
-.sloka-loading {
-  color: #888;
-  font-style: italic;
+.sloka-title {
+  font-size: 1.1em;
+  font-weight: bold;
+  color: #2d3a4a;
+  margin-bottom: 0.5em;
 }
 
 .sloka-content {
-  font-size: 16px;
-  color: #333;
+  font-family: 'Noto Serif', 'Georgia', serif;
+  font-size: var(--font-size, 16px);
+  background: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+  color: #222;
+  white-space: pre-wrap;
 }
 
 /* Responsive: ensure the pane and button are accessible on small screens */
@@ -166,4 +172,22 @@ input[type="checkbox"]:disabled + label {
     margin-bottom: 12px;
     color: var(--text-color, #222);
   }
+}
+
+.search-result-item {
+  border-bottom: 1px solid #e0e4ea;
+  padding: 1em 1.2em;
+  background: transparent;
+  transition: background 0.2s;
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.no-results {
+  color: #b00;
+  font-style: italic;
+  margin-top: 2em;
+  text-align: center;
 }

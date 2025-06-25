@@ -1,9 +1,11 @@
+/* eslint-disable prettier/prettier */
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { RemoteResource } from '../models/remote-resource.model'; // Import the interface
 import { SlokaData } from '../models/sloka-data.model'; // Import the interface
 import { of as rxjsOf } from 'rxjs';
+import { SlokaSearchResult } from '@app/models/sloka-search-result.model';
 @Injectable({
   providedIn: 'root',
 })
@@ -50,7 +52,15 @@ export class ApiService {
     const url = `/api/chapterResource/${chapterId}?content=${content}`;
     return this.http.get<RemoteResource>(url);
   }
-}
-function of(data: { id: number; name: string }[]): Observable<any> {
-  return rxjsOf(data);
+
+  /**
+   * Calls the backend Azure Function to perform a sloka search using Azure Cognitive Search.
+   * @param query The search text.
+   * @param top The maximum number of results to return (default: 10).
+   */
+  searchCognitive(query: string, top: number = 10, queryLang: string ='english'): Observable<SlokaSearchResult[]> {
+    // eslint-disable-next-line prettier/prettier
+    const params = new HttpParams().set('searchText', query).set('top', top.toString()).set('queryLang', queryLang);
+    return this.http.get<SlokaSearchResult[]>('/api/slokaSearch', { params });
+  }
 }
