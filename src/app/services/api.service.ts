@@ -58,9 +58,9 @@ export class ApiService {
    * @param query The search text.
    * @param top The maximum number of results to return (default: 10).
    */
-  searchCognitive(query: string, top: number = 10, queryLang: string ='english'): Observable<SlokaSearchResult[]> {
+  searchCognitive(query: string, queryLang: string ='english', top: number = 10): Observable<SlokaSearchResult[]> {
     // eslint-disable-next-line prettier/prettier
-    const params = new HttpParams().set('searchText', query).set('top', top.toString()).set('queryLang', queryLang);
+    const params = new HttpParams().set('searchText', query).set('top', top.toString()).set('lang', queryLang);
     return this.http.get<SlokaSearchResult[]>('/api/slokaSearch', { params });
   }
 }
