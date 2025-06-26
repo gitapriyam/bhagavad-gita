@@ -1,5 +1,6 @@
 *** Settings ***
 Library           RequestsLibrary
+Library           Collections
 # Suite for API endpoint validation of the Bhagavad Gita Angular app.
 #
 # This suite verifies the REST API endpoints exposed by the backend, including:
@@ -87,3 +88,24 @@ Invalid Sloka Returns 400
 Post To API Not Allowed
     ${response}=    POST On Session    api     /sloka/1/1    expected_status=any
     Status Should Be    404   ${response}
+
+# Verify slokaSearch endpoint returns 200 and contains 'results' in JSON.
+Get Sloka Search English is Functional
+    [Tags]    smoke
+    ${response}=    GET On Session    api    url=/slokaSearch?searchText=karma&top=2
+    Status Should Be    200    ${response}
+    ${results}=    Set Variable    ${response.json()}
+    Should Not Be Empty    ${results}
+    Should Be True    len(${results}) > 0
+    # Check that the first result has a 'chapter' key
+    Dictionary Should Contain Key    ${results}[0]    chapter
+
+Get Sloka Search Sanskrit is Functional
+    [Tags]    smoke
+    ${response}=    GET On Session    api    url=/slokaSearch?searchText=केशव&top=2&lang=sanskrit
+    Status Should Be    200    ${response}
+    ${results}=    Set Variable    ${response.json()}
+    Should Not Be Empty    ${results}
+    Should Be True    len(${results}) > 0
+    # Check that the first result has a 'chapter' key
+    Dictionary Should Contain Key    ${results}[0]    chapter

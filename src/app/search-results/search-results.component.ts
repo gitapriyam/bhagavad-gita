@@ -3,7 +3,6 @@ import { ApiService } from '../services/api.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SlokaSearchResult } from '@app/models/sloka-search-result.model';
-import { SingleSlokaComponent } from '../single-sloka/single-sloka.component';
 import { UtilityService } from '@app/services/utility.service';
 @Component({
   selector: 'app-search-results',
@@ -15,6 +14,8 @@ import { UtilityService } from '@app/services/utility.service';
 export class SearchResultsComponent {
   results: SlokaSearchResult[] = [];
   searchTerm = '';
+  searchLang = 'english'; // Default language for search
+  topRecords = 10;
   loading = false;
   searched = false;
 
@@ -27,16 +28,19 @@ export class SearchResultsComponent {
     if (this.searchTerm.trim()) {
       this.loading = true;
       this.searched = true;
-      this.api.searchCognitive(this.searchTerm).subscribe(
-        (res) => {
-          this.results = res;
-          this.loading = false;
-        },
-        () => {
-          this.results = [];
-          this.loading = false;
-        },
-      );
+      const lowerCaseTerm = this.searchTerm.toLowerCase();
+      this.api
+        .searchCognitive(lowerCaseTerm, this.searchLang, this.topRecords)
+        .subscribe(
+          (res) => {
+            this.results = res;
+            this.loading = false;
+          },
+          () => {
+            this.results = [];
+            this.loading = false;
+          },
+        );
     }
   }
   onClearSearch() {
