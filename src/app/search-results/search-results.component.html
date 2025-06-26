@@ -3,11 +3,26 @@
   <input
     type="text"
     [(ngModel)]="searchTerm"
-    (keyup.enter)="onSearch()"
     placeholder="Search slokas..."
     class="search-input"
     autofocus
   />
+  <select
+    [(ngModel)]="searchLang"
+    class="search-lang-dropdown"
+    aria-label="Select language"
+  >
+    <option value="english">English</option>
+    <option value="sanskrit">Sanskrit</option>
+  </select>
+  <select
+    [(ngModel)]="topRecords"
+    class="search-top-dropdown"
+    aria-label="Select number of results"
+  >
+    <option [value]="10">Top 10</option>
+    <option [value]="20">Top 20</option>
+  </select>
   <button type="button" (click)="onSearch()">Search</button>
   <button
     *ngIf="searchTerm"
@@ -19,10 +34,12 @@
   </button>
 </div>
 <p class="search-note">
-  <em
-    >Note: A phonetic search will be performed and the results will include
-    similar sounding words also. A maximum of 10 slokas will be returned.</em
-  >
+  <em *ngIf="searchLang === 'english'">
+    Note: A phonetic search will be performed and the results will include similar sounding words also.
+  </em>
+  <em *ngIf="searchLang === 'sanskrit'">
+    Note: A exact match of your search term will be performed for Sanskrit.
+  </em>
 </p>
 <div *ngIf="loading" class="loading">Loading...</div>
 <div *ngIf="results.length" class="search-results-list">

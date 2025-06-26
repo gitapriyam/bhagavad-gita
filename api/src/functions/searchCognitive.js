@@ -8,7 +8,6 @@ const axios = require('axios');
 
 // These should be set in your environment variables for security
 const AZURE_SEARCH_ENDPOINT = process.env.AZURE_SEARCH_ENDPOINT; // e.g., 'https://<YOUR-SEARCH-SERVICE>.search.windows.net'
-const AZURE_INDEX_NAME = process.env.AZURE_INDEX_NAME; // e.g., 'english-slokas-index'
 const AZURE_API_KEY = process.env.AZURE_SEARCH_API_KEY; // Use a query key, not admin key
 
 /**
@@ -23,7 +22,19 @@ async function handler(request) {
   if (!searchText) {
     return { status: 400, body: 'Missing search query.' };
   }
-  const searchQuery = `${searchText} OR ${searchText}*`;
+
+  const lang = request.query.get('lang') || 'english';
+
+  let searchQuery = `${searchText}`;
+
+  if (lang === 'english') {
+    searchQuery = `${searchText} OR ${searchText}*`;
+  }
+
+  const AZURE_INDEX_NAME =
+    lang === 'sanskrit'
+      ? process.env.AZURE_SANSKRIT_INDEX_NAME
+      : process.env.AZURE_INDEX_NAME;
 
   const url = `${AZURE_SEARCH_ENDPOINT}/indexes/${AZURE_INDEX_NAME}/docs/search?api-version=2023-10-01-Preview`;
   const headers = {
@@ -41,7 +52,7 @@ async function handler(request) {
     const response = await axios.post(url, body, { headers });
     return {
       status: 200,
-      body: JSON.stringify(getSlokasFromResponse(response.data.value)),
+      body: JSON.stringify(getSlokasFromResponse(response.data.value, lang)),
       headers: { 'Content-Type': 'application/json' },
     };
   } catch (error) {
@@ -49,16 +60,18 @@ async function handler(request) {
   }
 }
 
-function getSlokasFromResponse(content) {
+function getSlokasFromResponse(content, lang) {
   if (!content || !content.length) {
     return [];
   }
-
-  const filteredResults = content.filter(
-    (item) =>
-      item.metadata_storage_path &&
-      item.metadata_storage_path.includes('english_'),
-  );
+  let filteredResults = content;
+  if (lang === 'english') {
+    filteredResults = content.filter(
+      (item) =>
+        item.metadata_storage_path &&
+        item.metadata_storage_path.includes('english_'),
+    );
+  }
 
   if (!filteredResults || !filteredResults.length) {
     return [];
@@ -67,7 +80,7 @@ function getSlokasFromResponse(content) {
   const results = filteredResults.map((item) => {
     const { content, metadata_storage_path } = item;
     const { chapter, slokaNumber } = extractChapterAndSloka(
-      metadata_storage_path,
+      metadata_storage_path, lang
     );
 
     return {
@@ -95,10 +108,11 @@ function getSlokasFromResponse(content) {
  * @param {string} path - The path to extract chapter and sloka from.
  * @returns {Object} An object containing chapter and slokaNumber.
  */
-function extractChapterAndSloka(path) {
+function extractChapterAndSloka(path, lang = 'english') {
   // Example: "https://slokastorage.blob.core.windows.net/gitaresources/chap19/english_19_21.txt"
   const chapterMatch = path.match(/chap(\d+)/);
-  const slokaMatch = path.match(/english_\d+_(\d+)\.txt/);
+  const slokaRegex = new RegExp(`${lang}_\\d+_(\\d+)\\.txt`);
+  const slokaMatch = path.match(slokaRegex);
 
   return {
     chapter: chapterMatch ? chapterMatch[1] : null,
