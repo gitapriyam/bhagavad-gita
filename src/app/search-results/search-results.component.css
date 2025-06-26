@@ -81,3 +81,34 @@ body.dark-mode .modal-content.search-modal-content {
   font-size: 0.95em;
   margin: 0.5em 0;
 }
+
+.search-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  align-items: center;
+  margin-bottom: 1em;
+}
+
+.search-lang-dropdown,
+.search-top-dropdown {
+  padding: 0.25em 0.25em;
+  /* font-size: 1em; */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fafbfc;
+  color: #222;
+  /* height: 2em; */
+  margin: 0 0.3em;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  vertical-align: middle;
+  transition: border-color 0.2s;
+}
+
+.search-lang-dropdown:focus,
+.search-top-dropdown:focus {
+  border-color: #1976d2;
+  outline: none;
+}
