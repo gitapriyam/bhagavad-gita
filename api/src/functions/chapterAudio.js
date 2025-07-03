@@ -1,6 +1,6 @@
 const app = require('@azure/functions').app;
 const utils = require('./utils.js');
-const getChapterAudioURL = utils.getChapterAudioURL;
+const getChapterAudioUrl = utils.getChapterAudioUrl;
 const logError = utils.logError;
 const validateChapterId = utils.validateChapterId;
 
@@ -23,7 +23,7 @@ async function chapterAudioHandler(request, context) {
 
   try {
     // Construct the remote audio URL
-    const remoteAudioUrl = getChapterAudioURL(chapterId);
+    const remoteAudioUrl = getChapterAudioUrl(chapterId);
     // Generate a cache key
     const cacheKey = `${remoteAudioUrl}`;
     // Return the audio URL as a JSON response

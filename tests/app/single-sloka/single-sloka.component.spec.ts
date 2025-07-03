@@ -5,6 +5,22 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { UtilityService } from '@app/services/utility.service';
+import { SlokaData } from '@app/models/sloka-data.model';
+
+beforeAll(() => {
+  Object.defineProperty(window.HTMLMediaElement.prototype, 'pause', {
+    configurable: true,
+    value: jest.fn(),
+  });
+  Object.defineProperty(window.HTMLMediaElement.prototype, 'load', {
+    configurable: true,
+    value: jest.fn(),
+  });
+  Object.defineProperty(window.HTMLMediaElement.prototype, 'play', {
+    configurable: true,
+    value: jest.fn().mockResolvedValue(undefined),
+  });
+});
 
 describe('SingleSlokaComponent', () => {
   let component: SingleSlokaComponent;
@@ -25,7 +41,7 @@ describe('SingleSlokaComponent', () => {
     component = fixture.componentInstance;
     // Provide default inputs
     component.index = 0;
-    component.sloka = 'Sloka 1 text';
+    component.sloka = { text: 'Sloka 1 text' } as SlokaData | null;
     component.expandedSloka = 0;
     component.chapterId = 1;
     component.showSanskrit = false;

@@ -35,7 +35,7 @@
               <!-- Single Sloka -->
               <app-single-sloka
                 [index]="currentSlokaData[0]"
-                [sloka]="slokas[currentSlokaData[0]]"
+                [sloka]="slokas[expandedSloka !== undefined && expandedSloka !== null ? expandedSloka : index]"
                 [expandedSloka]="expandedSloka ?? -1"
                 [chapterId]="chapterId"
                 [showSanskrit]="showSanskrit"

@@ -3,6 +3,7 @@ import { UtilityService } from '../services/utility.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SlokaComponent } from '../sloka/sloka.component';
+import { SlokaData } from '@app/models/sloka-data.model';
 
 @Component({
   selector: 'app-single-sloka',
@@ -10,7 +11,7 @@ import { SlokaComponent } from '../sloka/sloka.component';
     <h4>{{ getSlokaTitle(index) }}</h4>
     <div (click)="onToggle()" class="custom-pre clickable">
       <ng-container *ngIf="sloka !== undefined && sloka !== null; else loading">
-        <pre class="custom-pre clickable">{{ sloka }}</pre>
+        <pre class="custom-pre clickable">{{ sloka.text }}</pre>
       </ng-container>
     </div>
     <ng-template #loading>
@@ -19,7 +20,9 @@ import { SlokaComponent } from '../sloka/sloka.component';
     <div *ngIf="expandedSloka === index">
       <app-sloka
         [chapterId]="chapterId"
+        [slokaTitle]="getSlokaTitle(index)"
         [slokaGroup]="[index]"
+        [sloka]="sloka"
         [showSanskrit]="showSanskrit"
         [showSandhi]="showSandhi"
         [isSlokaGroupsReady]="isSlokaGroupsReady"
@@ -31,7 +34,7 @@ import { SlokaComponent } from '../sloka/sloka.component';
 })
 export class SingleSlokaComponent {
   @Input() index!: number;
-  @Input() sloka!: string | null;
+  @Input() sloka!: SlokaData | null; // Use SlokaData type for slokas
   @Input() expandedSloka!: number;
   @Input() chapterId!: number;
   @Input() showSanskrit: boolean = false;

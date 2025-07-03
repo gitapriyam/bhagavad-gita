@@ -18,9 +18,10 @@ describe('searchCognitive Azure Function', () => {
       data: {
         value: [
           {
-            content: 'test sloka',
+            content:
+              '{"chapter": 2, "sloka_number": 4, "text": "Arjuna Uvaacha"}',
             metadata_storage_path:
-              'https://slokastorage.blob.core.windows.net/gitaresources/chap02/english_02_17.txt',
+              'https://slokastorage.blob.core.windows.net/gita-app-resources/english/chapter-02/sloka_04.json',
           },
         ],
       },
@@ -36,7 +37,12 @@ describe('searchCognitive Azure Function', () => {
     const result = await handler(request);
 
     expect(result.status).toBe(200);
-    expect(result.body).toContain('test sloka');
+    const responseBody = JSON.parse(result.body); // Parse the JSON string
+    expect(responseBody).toContainEqual({
+      chapter: 2,
+      slokaNumber: 4,
+      sloka: 'Arjuna Uvaacha',
+    });
     expect(result.headers['Content-Type']).toBe('application/json');
   });
 

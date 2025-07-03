@@ -44,7 +44,9 @@ export class SlokaListComponent implements OnInit, OnChanges, AfterViewInit {
   @Output() showSloka = new EventEmitter<number>();
   slokaData: number[][] = [];
   expandedSloka: number | null = null;
-  slokas: { [key: number]: string } = {}; // Store slokas by index
+  slokas: { [key: number]: SlokaData } = {}; // Store slokas by index
+  slokaMeanings: { [key: number]: string } = {}; // Store meanings by index
+  slokaAudioUrls: { [key: number]: string } = {}; // Store audio URLs by index
   indices: number[] = [];
   showSandhi: boolean = false;
   isPaneVisible: boolean = false;
@@ -55,7 +57,6 @@ export class SlokaListComponent implements OnInit, OnChanges, AfterViewInit {
   viewportIndices: number[] = []; // Add this property to track indices in the viewport
   visibleSlokaIndices = new Set<number>();
   cookieLifetimeDays = 30; // Set cookie lifetime in days
-
   @ViewChild('slokaContainer', { static: true }) slokaContainer!: ElementRef;
 
   constructor(
@@ -275,12 +276,18 @@ export class SlokaListComponent implements OnInit, OnChanges, AfterViewInit {
       .getSloka(this.chapterId, slokaIndex + 1, this.getContentType())
       .subscribe(
         (data: SlokaData) => {
-          this.slokas[slokaIndex] = data.content;
+          this.slokas[slokaIndex] = data;
           this.checkViewportSlokasLoaded();
         },
         (error) => {
           const errorMsg = `Error fetching sloka ${slokaIndex}: ${error}`;
-          this.slokas[slokaIndex] = errorMsg;
+          this.slokas[slokaIndex] = {
+            text: errorMsg,
+            chapter: this.chapterId,
+            sloka_number: 0,
+            audio_url: '',
+            meaning: '',
+          }; // Store error message in slokas
           console.error(errorMsg);
         },
       );

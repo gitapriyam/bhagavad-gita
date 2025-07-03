@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { RemoteResource } from '../models/remote-resource.model'; // Import the interface
 import { SlokaData } from '../models/sloka-data.model'; // Import the interface
 import { SlokaSearchResult } from '@app/models/sloka-search-result.model';
+import { CustomContent } from '@app/models/custom-content.model';
 @Injectable({
   providedIn: 'root',
 })
@@ -18,7 +19,16 @@ export class ApiService {
     content: string,
   ): Observable<any> {
     const url = `/api/sloka/${chapterId}/${slokaIndex}?content=${content}`;
-    return this.http.get<SlokaData>(url);
+    return this.http.get<any>(url);
+  }
+
+  getSlokaContent(
+    chapterId: number,
+    slokaIndex: string,
+    content: string,
+  ): Observable<CustomContent> {
+    const url = `/api/sloka/${chapterId}/${slokaIndex}?content=${content}`;
+    return this.http.get<CustomContent>(url);
   }
 
   getSlokaAudio(
@@ -57,9 +67,16 @@ export class ApiService {
    * @param query The search text.
    * @param top The maximum number of results to return (default: 10).
    */
-  searchCognitive(query: string, queryLang: string ='english', top: number = 10): Observable<SlokaSearchResult[]> {
+  searchCognitive(
+    query: string,
+    queryLang: string = 'english',
+    top: number = 10,
+  ): Observable<SlokaSearchResult[]> {
     // eslint-disable-next-line prettier/prettier
-    const params = new HttpParams().set('searchText', query).set('top', top.toString()).set('lang', queryLang);
+    const params = new HttpParams()
+      .set('searchText', query)
+      .set('top', top.toString())
+      .set('lang', queryLang);
     return this.http.get<SlokaSearchResult[]>('/api/slokaSearch', { params });
   }
 }
