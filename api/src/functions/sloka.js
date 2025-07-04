@@ -21,10 +21,12 @@ async function slokaHandler(request, context) {
     const chapterId = request.params.chapterId;
     validateChapterId(chapterId); // Validate chapterId (throws an error if invalid)
     const slokaIndex = request.params.slokaIndex;
-    validateSlokaId(slokaIndex); // Validate slokaIndex (throws an error if invalid)
-
     // Extract query parameter for language (default to 'english')
     const content = request.query.get('content') || 'english';
+    if (content === 'sanskrit' || content === 'english') {
+      validateSlokaId(slokaIndex); // Validate slokaIndex (throws an error if invalid)
+    }
+
     // Fetch content from a remote server using the keep-alive agent
     const remoteUrl = getSlokaResourceUrl(chapterId, slokaIndex, content);
     // Generate a cache key
@@ -42,20 +44,40 @@ async function slokaHandler(request, context) {
     }
 
     const response = await axios.get(remoteUrl, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
       httpsAgent, // Pass the keep-alive agent to axios
     });
 
+    const meaningUrl = response.data.meaning_url;
+    if (meaningUrl) {
+      // Fetch the meaning content if available
+      const meaningResponse = await axios.get(meaningUrl, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        httpsAgent, // Use the same keep-alive agent
+      });
+      //how do I remove the meaning_url from the response?
+      delete response.data.meaning_url; // Remove meaning_url from the response data
+      response.data.meaning = meaningResponse.data; // Add meaning to the response data
+    }
     // Cache the response data
-    const responseData = { content: response.data };
-    cache.set(cacheKey, responseData);
-
+    const contentType = response.headers['content-type'] || 'application/json';
+    let responseContent = response.data;
+    if (contentType.includes('text/plain')) {
+      // If the content is plain text, convert it to a string
+      responseContent = { content: responseContent.toString() };
+    }
+    cache.set(cacheKey, responseContent);
     // Return the fetched content
     return {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(responseData),
+      body: JSON.stringify(responseContent),
     };
   } catch (error) {
     // Handle errors (e.g., network issues, server errors)

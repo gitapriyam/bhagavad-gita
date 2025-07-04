@@ -30,7 +30,7 @@
 
   <!-- Meaning content templates -->
   <ng-template #meaningContent>
-    <pre class="custom-pre">{{ slokaMeaning }}</pre>
+    <pre class="custom-pre">{{ sloka?.meaning }}</pre>
   </ng-template>
   <ng-template #loadingMeaningContent>
     <ng-container *ngTemplateOutlet="loading; context: { type: 'Meaning' }"></ng-container>
@@ -70,7 +70,7 @@
 
   <!-- Sloka Meaning Card -->
   <div *ngIf="selectedSloka !== null && selectedSloka >= 0" class="sloka-content">
-    <ng-container *ngIf="slokaMeaning; else meaningLoadingBlock">
+    <ng-container *ngIf="sloka?.meaning; else meaningLoadingBlock">
       <ng-container *ngTemplateOutlet="card; context: { title: 'Shloka Meaning', content: meaningContent }"></ng-container>
     </ng-container>
     <ng-template #meaningLoadingBlock>

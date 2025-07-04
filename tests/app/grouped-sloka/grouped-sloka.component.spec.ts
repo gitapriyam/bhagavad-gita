@@ -4,6 +4,22 @@ import { SlokaComponent } from '@app/sloka/sloka.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { SlokaData } from '@app/models/sloka-data.model';
+
+beforeAll(() => {
+  Object.defineProperty(window.HTMLMediaElement.prototype, 'pause', {
+    configurable: true,
+    value: jest.fn(),
+  });
+  Object.defineProperty(window.HTMLMediaElement.prototype, 'load', {
+    configurable: true,
+    value: jest.fn(),
+  });
+  Object.defineProperty(window.HTMLMediaElement.prototype, 'play', {
+    configurable: true,
+    value: jest.fn().mockResolvedValue(undefined),
+  });
+});
 
 describe('GroupedSlokaComponent', () => {
   let component: GroupedSlokaComponent;
@@ -24,7 +40,10 @@ describe('GroupedSlokaComponent', () => {
     component = fixture.componentInstance;
     // Provide default inputs
     component.group = [0, 1];
-    component.slokas = { 0: 'Sloka 1 text', 1: 'Sloka 2 text' };
+    component.slokas = {
+      0: { text: 'Sloka 1 text' } as SlokaData,
+      1: { text: 'Sloka 2 text' } as SlokaData,
+    };
     component.chapterId = 1;
     component.showSanskrit = false;
     component.showSandhi = false;
