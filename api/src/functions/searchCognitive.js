@@ -52,7 +52,7 @@ async function handler(request) {
     const response = await axios.post(url, body, { headers });
     return {
       status: 200,
-      body: JSON.stringify(getSlokasFromResponse(response.data.value, lang)),
+      body: JSON.stringify(getSlokasFromResponse(response.data.value)),
       headers: { 'Content-Type': 'application/json' },
     };
   } catch (error) {
@@ -60,33 +60,20 @@ async function handler(request) {
   }
 }
 
-function getSlokasFromResponse(content, lang) {
+function getSlokasFromResponse(content) {
   if (!content || !content.length) {
     return [];
   }
-  let filteredResults = content;
-  if (lang === 'english') {
-    filteredResults = content.filter(
-      (item) =>
-        item.metadata_storage_path &&
-        item.metadata_storage_path.includes('english_'),
-    );
-  }
 
-  if (!filteredResults || !filteredResults.length) {
-    return [];
-  }
-
-  const results = filteredResults.map((item) => {
-    const { content, metadata_storage_path } = item;
-    const { chapter, slokaNumber } = extractChapterAndSloka(
-      metadata_storage_path, lang
+  const results = content.map((item) => {
+    const { chapter, slokaNumber, sloka } = extractSlokaFromContent(
+      item
     );
 
     return {
       chapter,
       slokaNumber,
-      sloka: content || '',
+      sloka
     };
   });
 
@@ -103,28 +90,20 @@ function getSlokasFromResponse(content, lang) {
   });
 }
 
-/**
- * Extracts chapter and sloka number from the given path.
- * @param {string} path - The path to extract chapter and sloka from.
- * @returns {Object} An object containing chapter and slokaNumber.
- */
-function extractChapterAndSloka(path, lang = 'english') {
-  // Example: "https://slokastorage.blob.core.windows.net/gitaresources/chap19/english_19_21.txt"
-  const chapterMatch = path.match(/chap(\d+)/);
-  const slokaRegex = new RegExp(`${lang}_\\d+_(\\d+)\\.txt`);
-  const slokaMatch = path.match(slokaRegex);
 
-  return {
-    chapter: chapterMatch ? chapterMatch[1] : null,
-    slokaNumber: slokaMatch ? slokaMatch[1] : null,
-  };
+function extractSlokaFromContent(results) {
+  try {
+    const parsedContent = JSON.parse(results.content);
+    return {
+      chapter: parsedContent.chapter || null,
+      slokaNumber: parsedContent.sloka_number || null,
+      sloka: parsedContent.text || '',
+    };
+  } catch (error) {
+    console.error('Error parsing sloka content:', error);
+  }
 }
-// {
-//   "@search.score": 8.017582,
-//   "id": "aHR0cHM6Ly9zbG9rYXN0b3JhZ2UuYmxvYi5jb3JlLndpbmRvd3MubmV0L2dpdGFyZXNvdXJjZXMvY2hhcDA2L2VuZ2xpc2hfMDZfNDIudHh00",
-//   "content": "Athavaa yoginaameva kule bhavati dheemataam;\r\nEtaddhi durlabhataram loke janma yadeedrisham.\r\n",
-//   "metadata_storage_path": "https://slokastorage.blob.core.windows.net/gitaresources/chap06/english_06_42.txt"
-// },
+
 app.http('slokaSearch', {
   methods: ['GET'],
   authLevel: 'anonymous',

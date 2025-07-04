@@ -6,7 +6,7 @@ const {
 
 // Mock utility functions
 jest.mock('../functions/utils.js', () => ({
-  getChapterAudioURL: jest.fn(),
+  getChapterAudioUrl: jest.fn(),
   logError: jest.fn(),
   validateChapterId: jest.fn(),
 }));
@@ -37,7 +37,7 @@ describe('chapterAudio Azure Function', () => {
 
   it('should return 200 and audio URL for valid chapterId', async () => {
     utils.validateChapterId.mockImplementation(() => {});
-    utils.getChapterAudioURL.mockReturnValue('https://audio.url/ch1.mp3');
+    utils.getChapterAudioUrl.mockReturnValue('https://audio.url/ch1.mp3');
 
     const request = { params: { chapterId: 1 } };
     const result = await handler(request, context);
@@ -51,7 +51,7 @@ describe('chapterAudio Azure Function', () => {
 
   it('should return cached response if available', async () => {
     utils.validateChapterId.mockImplementation(() => {});
-    utils.getChapterAudioURL.mockReturnValue('https://audio.url/ch2.mp3');
+    utils.getChapterAudioUrl.mockReturnValue('https://audio.url/ch2.mp3');
 
     const request = { params: { chapterId: 2 } };
     // First call to populate cache
@@ -65,9 +65,9 @@ describe('chapterAudio Azure Function', () => {
     });
   });
 
-  it('should return 500 if getChapterAudioURL throws', async () => {
+  it('should return 500 if getChapterAudioUrl throws', async () => {
     utils.validateChapterId.mockImplementation(() => {});
-    utils.getChapterAudioURL.mockImplementation(() => {
+    utils.getChapterAudioUrl.mockImplementation(() => {
       throw new Error('URL error');
     });
 

@@ -29,7 +29,7 @@ describe('ApiService', () => {
   });
 
   it('should fetch sloka data', () => {
-    const dummyData: SlokaData = { content: 'sloka' } as SlokaData;
+    const dummyData: SlokaData = { text: 'sloka' } as SlokaData;
     service.getSloka(1, 2, 'test').subscribe((data) => {
       expect(data).toEqual(dummyData);
     });

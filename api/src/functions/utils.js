@@ -1,5 +1,5 @@
 const remoteResource =
-  'https://slokastorage.blob.core.windows.net/gitaresources';
+  'https://slokastorage.blob.core.windows.net/gita-app-resources';
 const prapattiResource =
   'https://www.prapatti.com/slokas/sanskrit/bhagavad-giitaa/{chapter}.pdf';
 
@@ -12,38 +12,38 @@ const prapattiResource =
  */
 
 function leftAppendedNumber(input) {
-  return input < 10 ? '0' + input : input;
+  return String(input).length === 1 ? '0' + input : String(input);
 }
 
-function getChapterBasePath(chapterId) {
+function getChapterBasePath(chapterId, content = 'english') {
+  let remoteResourceLocal = remoteResource + '/';
+  if (content === 'sanskrit' || content === 'sandhi' || content === 'anvaya') {
+    remoteResourceLocal = remoteResourceLocal + 'sanskrit';
+  } else if (content === 'english') {
+    remoteResourceLocal = remoteResourceLocal + 'english';
+  } else if (content === 'audio') {
+    remoteResourceLocal = remoteResourceLocal + 'common/audio';
+  }
   var chapterNumber = leftAppendedNumber(chapterId);
-  return remoteResource + '/chap' + chapterNumber + '/';
+  return remoteResourceLocal + '/chapter-' + chapterNumber + '/';
 }
 
 function getSlokaResourceUrl(chapterId, slokaId, content) {
-  var chapterNumber = leftAppendedNumber(chapterId);
   var slokaIndex = leftAppendedNumber(slokaId);
-  var resourceUrl =
-    getChapterBasePath(chapterId) +
-    content +
-    '_' +
-    chapterNumber +
-    '_' +
-    slokaIndex +
-    '.txt';
-  return resourceUrl;
-}
-
-function getSlokaAudioUrl(chapterId, slokaId) {
-  var chapterNumber = leftAppendedNumber(chapterId);
-  var slokaIndex = leftAppendedNumber(slokaId);
-  var resourceUrl =
-    getChapterBasePath(chapterId) + chapterNumber + '-' + slokaIndex + '.mp3';
-  return resourceUrl;
+  const chapterBase = getChapterBasePath(chapterId, content);
+  var resourceUrl = null;
+  if (content === 'sandhi') {
+    resourceUrl = 'sandhi_' + slokaIndex + '.txt';
+  } else if (content === 'anvaya') {
+    resourceUrl = 'anvaya_' + slokaIndex + '.txt';
+  } else {
+    resourceUrl = 'sloka_' + slokaIndex + '.json';
+  }
+  return chapterBase + resourceUrl;
 }
 
 function getSlokaGroupUrl(chapterId) {
-  return getChapterBasePath(chapterId) + 'sloka-groups.json';
+  return getChapterBasePath(chapterId, 'english') + 'sloka-groups.json';
 }
 
 function getChapterName(chapterId) {
@@ -52,10 +52,11 @@ function getChapterName(chapterId) {
   } else if (Number(chapterId) === 19) {
     return 'mahatmyam';
   }
-  return 'chap' + leftAppendedNumber(chapterId);
+  return 'chapter_' + leftAppendedNumber(chapterId);
 }
 
 function getChapterResource(chapterId, content) {
+  // sanskrit is handled here
   if (content === 'sanskrit') {
     var replaceValue = 'bg_chapter' + leftAppendedNumber(chapterId);
     if (Number(chapterId) === 0) {
@@ -65,8 +66,11 @@ function getChapterResource(chapterId, content) {
     }
     return prapattiResource.replace('{chapter}', replaceValue);
   }
+  // english is handled here
   var resourceUrl =
-    getChapterBasePath(chapterId) + getChapterName(chapterId) + '.pdf';
+    getChapterBasePath(chapterId, 'english') +
+    getChapterName(chapterId) +
+    '.pdf';
   if (content === 'tamil') {
     resourceUrl = resourceUrl.replace('.pdf', '-tamil.pdf');
   }
@@ -77,8 +81,10 @@ function getChaptersUrl() {
   return remoteResource + '/chapters.json';
 }
 
-function getChapterAudioURL(chapterId) {
-  return getChapterBasePath(chapterId) + getChapterName(chapterId) + '.mp3';
+function getChapterAudioUrl(chapterId) {
+  return (
+    getChapterBasePath(chapterId, 'audio') + getChapterName(chapterId) + '.mp3'
+  );
 }
 
 /**
@@ -131,10 +137,9 @@ function validateChapterId(chapterId) {
 
 module.exports = {
   getSlokaResourceUrl,
-  getSlokaAudioUrl,
   getSlokaGroupUrl,
   getChapterResource,
-  getChapterAudioURL,
+  getChapterAudioUrl,
   getChaptersUrl,
   logError,
   validateContent,

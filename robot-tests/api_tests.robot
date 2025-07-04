@@ -70,14 +70,7 @@ Get Sloka Returns 200
     [Tags]    smoke
     ${response}=    GET On Session    api    /sloka/1/1
     Status Should Be    200    ${response}
-    Validate JSON Response Contains Key    ${response}    content
-
-# Verify sloka audio endpoint returns 200 and contains 'url' in JSON.
-Get Sloka Audio Returns 200
-    [Tags]    smoke
-    ${response}=    GET On Session    api    /slokaAudio/1/1
-    Status Should Be    200    ${response}
-    Validate JSON Response Contains Key    ${response}    url
+    Validate JSON Response Contains Key    ${response}    text
 
 # Verify invalid sloka returns 400 error.
 Invalid Sloka Returns 400

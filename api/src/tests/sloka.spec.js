@@ -66,17 +66,22 @@ describe('sloka Azure Function', () => {
     utils.getSlokaResourceUrl.mockReturnValue(
       'https://sloka.url/ch1s1/english',
     );
-    axios.get.mockResolvedValue({ data: 'Sloka Content' });
+    axios.get.mockResolvedValue({
+      headers: { 'content-type': 'application/json' },
+      data: 'Sloka Content',
+    });
 
     const request = {
       params: { chapterId: 1, slokaIndex: 1 },
       query: new Map([['content', 'english']]),
     };
     const result = await handler(request, context);
+    // Parse the JSON string before assertions
+    const responseBody = JSON.parse(result.body);
 
     expect(result.status).toBe(200);
     expect(result.headers['Content-Type']).toBe('application/json');
-    expect(JSON.parse(result.body)).toEqual({ content: 'Sloka Content' });
+    expect(responseBody).toEqual('Sloka Content');
   });
 
   it('should return cached response if available', async () => {
@@ -85,7 +90,10 @@ describe('sloka Azure Function', () => {
     utils.getSlokaResourceUrl.mockReturnValue(
       'https://sloka.url/ch2s2/english',
     );
-    axios.get.mockResolvedValue({ data: 'Sloka Content 2' });
+    axios.get.mockResolvedValue({
+      headers: { 'content-type': 'application/json' },
+      data: 'Sloka Content 2',
+    });
 
     const request = {
       params: { chapterId: 2, slokaIndex: 2 },
@@ -96,8 +104,10 @@ describe('sloka Azure Function', () => {
     // Second call should hit cache
     const result = await handler(request, context);
 
+    const responseBody = JSON.parse(result.body);
+
     expect(result.status).toBe(200);
-    expect(JSON.parse(result.body)).toEqual({ content: 'Sloka Content 2' });
+    expect(responseBody).toEqual('Sloka Content 2');
     // axios.get should only be called once
     expect(axios.get).toHaveBeenCalledTimes(1);
   });
@@ -108,18 +118,19 @@ describe('sloka Azure Function', () => {
     utils.getSlokaResourceUrl.mockReturnValue(
       'https://sloka.url/ch3s3/english',
     );
-    axios.get.mockResolvedValue({ data: 'Default English Content' });
+    axios.get.mockResolvedValue({
+      headers: { 'content-type': 'application/json' },
+      data: 'Default English Content',
+    });
 
     const request = {
       params: { chapterId: 3, slokaIndex: 3 },
       query: new Map(), // No content param
     };
     const result = await handler(request, context);
-
+    const responseBody = JSON.parse(result.body);
     expect(result.status).toBe(200);
-    expect(JSON.parse(result.body)).toEqual({
-      content: 'Default English Content',
-    });
+    expect(responseBody).toEqual('Default English Content');
   });
 
   it('should return 500 if axios.get throws', async () => {
