@@ -110,24 +110,25 @@ export class SlokaComponent implements OnInit, OnChanges, AfterViewInit {
     if (
       changes['chapterId'] ||
       changes['showSanskrit'] ||
-      changes['showSandhi'] ||
-      changes['sloka']
+      changes['showSandhi']
     ) {
       this.assignAudioSource();
       this.fetchSandhiAndAnvaya();
+    } else if (changes['sloka']) {
+      this.assignAudioSource();
     }
   }
 
   fetchSandhiAndAnvaya(): void {
     if (this.showSanskrit && this.showSandhi && this.isSlokaGroupsReady) {
-      this.getSlokaContent(
+      this.getSlokaResource(
         this.chapterId,
         this.slokaGroup[0] + 1,
         'sandhi',
       ).subscribe((data) => {
         this.sanskritSandhi = data.content;
       });
-      this.getSlokaContent(
+      this.getSlokaResource(
         this.chapterId,
         this.slokaGroup[0] + 1,
         'anvaya',
@@ -156,7 +157,7 @@ export class SlokaComponent implements OnInit, OnChanges, AfterViewInit {
     return `${min}-${max}`;
   }
 
-  private getSlokaContent(
+  private getSlokaResource(
     chapterId: number,
     slokaId: number,
     content: string,
@@ -167,17 +168,19 @@ export class SlokaComponent implements OnInit, OnChanges, AfterViewInit {
         content: `No sloka content available for Chapter ${chapterId}`,
       });
     }
-    return this.apiService.getSlokaContent(chapterId, slokaRange, content).pipe(
-      catchError((error: any) => {
-        console.error(
-          `Error fetching Sloka content for Chapter ${chapterId}, Sloka ${slokaId}, Content: ${content}`,
-          error,
-        );
-        return of({
-          content: `Error fetching Sloka content for Chapter ${chapterId}, Sloka ${slokaId}, Content: ${content}`,
-        });
-      }),
-    );
+    return this.apiService
+      .getSlokaResource(chapterId, slokaRange, content)
+      .pipe(
+        catchError((error: any) => {
+          console.error(
+            `Error fetching Sloka content for Chapter ${chapterId}, Sloka ${slokaId}, Content: ${content}`,
+            error,
+          );
+          return of({
+            content: `Error fetching Sloka content for Chapter ${chapterId}, Sloka ${slokaId}, Content: ${content}`,
+          });
+        }),
+      );
   }
 
   onSlokaChange(): void {
