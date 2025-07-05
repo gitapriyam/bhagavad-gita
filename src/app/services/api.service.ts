@@ -31,6 +31,15 @@ export class ApiService {
     return this.http.get<CustomContent>(url);
   }
 
+ getSlokaResource(
+    chapterId: number,
+    slokaIndex: string,
+    content: string,
+  ): Observable<CustomContent> {
+    const url = `/api/slokaResource/${chapterId}/${slokaIndex}?content=${content}`;
+    return this.http.get<CustomContent>(url);
+  }
+
   getSlokaAudio(
     chapterId: number,
     slokaIndex: number,

@@ -19,7 +19,7 @@ function getChapterBasePath(chapterId, content = 'english') {
   let remoteResourceLocal = remoteResource + '/';
   if (content === 'sanskrit' || content === 'sandhi' || content === 'anvaya') {
     remoteResourceLocal = remoteResourceLocal + 'sanskrit';
-  } else if (content === 'english') {
+  } else if (content === 'english' || content === 'meaning') {
     remoteResourceLocal = remoteResourceLocal + 'english';
   } else if (content === 'audio') {
     remoteResourceLocal = remoteResourceLocal + 'common/audio';
@@ -32,10 +32,8 @@ function getSlokaResourceUrl(chapterId, slokaId, content) {
   var slokaIndex = leftAppendedNumber(slokaId);
   const chapterBase = getChapterBasePath(chapterId, content);
   var resourceUrl = null;
-  if (content === 'sandhi') {
-    resourceUrl = 'sandhi_' + slokaIndex + '.txt';
-  } else if (content === 'anvaya') {
-    resourceUrl = 'anvaya_' + slokaIndex + '.txt';
+  if (content === 'sandhi' || content === 'anvaya' || content === 'meaning') {
+    resourceUrl = content + '_' + slokaIndex + '.txt';
   } else {
     resourceUrl = 'sloka_' + slokaIndex + '.json';
   }

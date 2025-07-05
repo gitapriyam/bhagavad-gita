@@ -51,25 +51,15 @@ async function slokaHandler(request, context) {
     });
 
     const meaningUrl = response.data.meaning_url;
-    if (meaningUrl) {
-      // Fetch the meaning content if available
-      const meaningResponse = await axios.get(meaningUrl, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        httpsAgent, // Use the same keep-alive agent
-      });
-      //how do I remove the meaning_url from the response?
-      delete response.data.meaning_url; // Remove meaning_url from the response data
-      response.data.meaning = meaningResponse.data; // Add meaning to the response data
-    }
+
+    const meaning = await fetchMeaningContent(meaningUrl);
+
+    delete response.data.meaning_url;
+    response.data.meaning = meaning;
+
     // Cache the response data
-    const contentType = response.headers['content-type'] || 'application/json';
     let responseContent = response.data;
-    if (contentType.includes('text/plain')) {
-      // If the content is plain text, convert it to a string
-      responseContent = { content: responseContent.toString() };
-    }
+
     cache.set(cacheKey, responseContent);
     // Return the fetched content
     return {
@@ -89,6 +79,22 @@ async function slokaHandler(request, context) {
         details: error.message,
       },
     };
+  }
+
+  async function fetchMeaningContent(meaningUrl) {
+    if (meaningUrl) {
+      // Fetch the meaning content if available
+      const meaningResponse = await axios.get(meaningUrl, {
+        headers: {
+          'Content-Type': 'application/text',
+        },
+        httpsAgent, // Use the same keep-alive agent
+      });
+      if (meaningResponse.status !== 200) {
+        return `Failed to fetch meaning content: ${meaningResponse.status}`;
+      }
+      return meaningResponse.data;
+    }
   }
 }
 

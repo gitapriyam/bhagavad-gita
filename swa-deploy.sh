@@ -43,6 +43,14 @@ echo "Building frontend application..."
 # Using --legacy-peer-deps to bypass peer dependency conflicts during installation.
 # This is a temporary workaround; resolving these conflicts is recommended in the future.
 npm install -legacy-peer-deps
+
+# Set release date and commit hash
+export APP_VERSION=$(node -p "require('./package.json').version")
+export APP_RELEASE_DATE="$(date +"%Y-%m-%d %H:%M:%S")"
+export APP_COMMIT_HASH=$(git rev-parse --short HEAD)
+
+node generate-env.js
+
 if [ "$ENVIRONMENT" == "development" ]; then
   echo "Building in development mode..."
   npx ng build --configuration=development
