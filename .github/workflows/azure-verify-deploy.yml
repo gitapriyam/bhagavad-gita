@@ -74,6 +74,14 @@ jobs:
           npm test
           cd -
 
+      # Step 8.5: Generate env variables
+      - name: Generate Angular Environment File
+        run: |
+          export APP_VERSION=$(node -p "require('./package.json').version")
+          export APP_RELEASE_DATE="$(date +"%Y-%m-%d %H:%M:%S")"
+          export APP_COMMIT_HASH=$(git rev-parse --short HEAD)
+          node generate-env.js
+
       # Step 9: Build the application
       - name: Build Application
         run: |

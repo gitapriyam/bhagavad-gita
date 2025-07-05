@@ -13,7 +13,9 @@
   --modal-overlay-color: rgba(0, 0, 0, 0.4);
   --modal-border-color: #888;
   --border-color: #000;
-  /* Black for light theme */
+  --footer-bg: #f8f9fa;
+  --footer-fg: #444;
+  --footer-border: #e0e0e0;
 
 }
 
@@ -28,7 +30,9 @@
     --modal-overlay-color: rgba(0, 0, 0, 0.8);
     --modal-border-color: #555;
     --border-color: #fff;
-    /* White for dark theme */
+    --footer-bg: #181818;
+    --footer-fg: #e0e0e0;
+    --footer-border: #333;
   }
 }
 
@@ -423,4 +427,25 @@ body.dark-mode .modal-content .close {
 .search-icon:focus {
   color: #0056b3;
   background: none;
+}
+
+.app-footer {
+  width: 100vw;
+  background: var(--footer-bg);
+  color: var(--footer-fg);
+  font-size: 0.82em;
+  padding: 0.25em 0 0.15em 0;
+  text-align: center;
+  border-top: 1px solid var(--footer-border);
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  z-index: 100;
+  letter-spacing: 0.01em;
+  box-shadow: 0 -1px 4px rgba(0,0,0,0.03);
+}
+
+.footer-separator {
+  margin: 0 0.3em;
+  color: #bbb;
 }
