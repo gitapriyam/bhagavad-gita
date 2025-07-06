@@ -79,7 +79,13 @@ jobs:
         run: |
           export APP_VERSION=$(node -p "require('./package.json').version")
           export APP_RELEASE_DATE="$(date +"%Y-%m-%d %H:%M:%S")"
-          export APP_COMMIT_HASH=$(git rev-parse --short HEAD)
+          # Fetch the head_ref branch and get its last commit hash
+          if [ "${{ github.head_ref }}" != "" ]; then
+            git fetch origin ${{ github.head_ref }}:${{ github.head_ref }}
+            export APP_COMMIT_HASH=$(git rev-parse --short ${{ github.head_ref }})
+          else
+            export APP_COMMIT_HASH=$(git rev-parse --short HEAD)
+          fi
           node generate-env.js
 
       # Step 9: Build the application
