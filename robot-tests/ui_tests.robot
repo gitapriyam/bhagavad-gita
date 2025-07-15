@@ -26,9 +26,20 @@ Ensure Dropdown Is Open
         Click    css=.current-chapter-title > .dropdown-arrow
         Wait For Elements State    css=.dropdown-content.chapter-dropdown    visible
     END
+# Selects a chapter by its index in the chapter list.
+Select Chapter By Index
+    [Arguments]    ${index}
+    [Documentation]    Selects a chapter by its 0-based index in the chapter list. Converts the index to 1-based internally for CSS compatibility.
+    ${css_index}=    Evaluate    ${index} + 1
+    Wait For Elements State    css=.chapters-list>li:nth-child(${css_index})>.chapter-title-row>h4    visible    timeout=5s
+    ${chapter}=    Get Element    css=.chapters-list>li:nth-child(${css_index})>.chapter-title-row>h4
+    Click    ${chapter}
+    #wait for a few seconds
+    Sleep    2s
 
 Validate Chapter Resource Link
     [Arguments]    ${index}    ${expected_text}    ${expected_url_fragment}
+    Select Chapter By Index    3
     Ensure Dropdown Is Open
     ${resource}=    Get Element   css=.dropdown-content.chapter-dropdown > .dropdown-item:nth-child(${index}) > a
     ${resource_text}=    Get Text    ${resource}
@@ -84,15 +95,13 @@ Sloka Cookie Is Used On Reload
     Reload
     ${cookie}=    Get Cookie    currentSloka
     Should Be Equal    ${cookie.value}    2
-
 # Verifies that the resources for a chapter are available and accessible in the application.
 Chapter Resources Are Available
     [Documentation]    Verifies that the resources for a chapter are available and accessible in the application.
     [Tags]    smoke
-    Click    css=div.chapters-section > ul > li:nth-child(3)
+    Select Chapter By Index    2
     Ensure Dropdown Is Open
     ${resources}=    Get Elements    css=.dropdown-content.chapter-dropdown > div
-    Log    message=Chapter resource links: ${resources}
     Should Not Be Empty    ${resources}
     Length Should Be    ${resources}    3
 
