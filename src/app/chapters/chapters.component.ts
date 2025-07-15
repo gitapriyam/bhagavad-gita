@@ -41,6 +41,8 @@ export class ChaptersComponent implements OnInit {
   windowWidth: number = 0;
   slokaId: number = 0;
   showSanskrit: boolean = false;
+  showSandhi: boolean = false;
+  isSlokaGroupsReady: boolean = false; // Set appropriately if you have async logic
   fontSize: number = 16;
   chapterAudioSrc: string = '';
   chapterResource: string = '';
@@ -50,6 +52,18 @@ export class ChaptersComponent implements OnInit {
   isDropdownOpen: boolean = false;
   showSearchModal = false;
   showHelpAndReferences = false;
+  isAppDropdownOpen = false;
+  chapterDropdownOpen: { [chapterId: number]: boolean } = {};
+
+  private updateBodyOverlayClass(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      if (this.showChapterView && this.windowWidth < 768) {
+        document.body.classList.add('chapters-overlay-open');
+      } else {
+        document.body.classList.remove('chapters-overlay-open');
+      }
+    }
+  }
 
   constructor(
     private utilityService: UtilityService,
@@ -72,8 +86,17 @@ export class ChaptersComponent implements OnInit {
       this.windowWidth = window.innerWidth;
       this.showSlokas(this.chapters[this.chapterId]);
       this.adjustChapterView(this.windowWidth);
+      this.updateBodyOverlayClass();
     }
+    this.setChapterName(this.chapters[this.chapterId]);
     this.showReferences = false;
+  }
+
+  private setChapterName(chapter: any): void {
+    this.chapterName = this.utilityService.getChapterName(
+      chapter.id,
+      this.showSanskrit,
+    );
   }
 
   private loadChapters(): void {
@@ -103,6 +126,7 @@ export class ChaptersComponent implements OnInit {
     if (isPlatformBrowser(this.platformId)) {
       if (this.windowWidth < 768) {
         this.showChapterView = !this.showChapterView;
+        this.updateBodyOverlayClass();
       }
     }
   }
@@ -112,6 +136,7 @@ export class ChaptersComponent implements OnInit {
     this.chapterName = this.showSanskrit ? chapter.sanskrit : chapter.english;
     this.slokaCount = chapter.slokaCount;
     this.showSlokaView = false;
+    this.showSandhi = false;
 
     this.assignChapterResource();
     this.assignChapterResource(true);
@@ -170,10 +195,13 @@ export class ChaptersComponent implements OnInit {
     this.showSlokaView = false;
   }
 
-  toggleSanskrit(): void {
-    this.showSanskrit = !this.showSanskrit;
+  onSanskritChange(event: any): void {
+    this.showSanskrit = event.target.checked;
+    this.setChapterName(this.chapters[this.chapterId]);
     this.assignChapterResource();
   }
+
+  toggleSandhi(): void {}
 
   getChapterName(chapter: any): string {
     return this.utilityService.getChapterName(chapter.id, this.showSanskrit);
@@ -182,6 +210,7 @@ export class ChaptersComponent implements OnInit {
   hideChapterOverlay(): void {
     if (this.windowWidth < 768) {
       this.showChapterView = false;
+      this.updateBodyOverlayClass();
     }
   }
 
@@ -213,9 +242,13 @@ export class ChaptersComponent implements OnInit {
   onDocumentClick(event: Event): void {
     const target = event.target as HTMLElement;
 
-    // Close the dropdown if the click is outside the dropdown
+    // Close the chapter dropdown if the click is outside
     if (!target.closest('.dropdown')) {
       this.isDropdownOpen = false;
+    }
+    // Close the app dropdown if the click is outside
+    if (!target.closest('.header-title-dropdown')) {
+      this.isAppDropdownOpen = false;
     }
   }
 
@@ -240,5 +273,23 @@ export class ChaptersComponent implements OnInit {
     if (this.showSearchModal) {
       this.closeSearchModal();
     }
+  }
+
+  toggleAppDropdown(): void {
+    this.isAppDropdownOpen = !this.isAppDropdownOpen;
+  }
+
+  toggleChapterDropdown(chapter: any, event: Event): void {
+    event.stopPropagation();
+    const id = chapter.id;
+    this.chapterDropdownOpen[id] = !this.chapterDropdownOpen[id];
+  }
+
+  isChapterDropdownOpen(chapter: any): boolean {
+    return !!this.chapterDropdownOpen[chapter.id];
+  }
+
+  onSlokaGroupsReadyChange(ready: boolean) {
+    this.isSlokaGroupsReady = ready;
   }
 }
