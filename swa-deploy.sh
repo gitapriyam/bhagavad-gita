@@ -10,6 +10,7 @@ echo "Action: $ACTION"
 export API_LOCATION="api"
 export APP_LOCATION="src"
 export OUTPUT_LOCATION="dist/bhagavad-gita/browser"
+source .env
 
 # Run unit tests before building
 npm run test
@@ -42,21 +43,14 @@ cd -
 echo "Building frontend application..."
 # Using --legacy-peer-deps to bypass peer dependency conflicts during installation.
 # This is a temporary workaround; resolving these conflicts is recommended in the future.
-npm install -legacy-peer-deps
-
-# Set release date and commit hash
-export APP_VERSION=$(node -p "require('./package.json').version")
-export APP_RELEASE_DATE="$(date +"%Y-%m-%d %H:%M:%S")"
-export APP_COMMIT_HASH=$(git rev-parse --short HEAD)
-
-node generate-env.js
+npm install --legacy-peer-deps
 
 if [ "$ENVIRONMENT" == "development" ]; then
   echo "Building in development mode..."
-  npx ng build --configuration=development
+  npm run build:dev
 else
   echo "Building in production mode..."
-  npx ng build --configuration=production
+  npm run build:prod
 fi
 
 # Install production dependencies for the API
@@ -79,7 +73,6 @@ if [ "$ACTION" == "start" ]; then
     --devserver-timeout 120
 else
   # Load environment variables from .env file
-  source .env
 
   echo "Deploying to environment: $ENVIRONMENT"
   npx swa --verbose=silly deploy \

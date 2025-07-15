@@ -1,7 +1,7 @@
 *** Settings ***
 Documentation     This Robot Framework test suite uses the Browser library to perform end-to-end UI tests for the Bhagavad Gita Angular application. The suite verifies core functionalities such as loading the home page, displaying chapter lists, selecting slokas, setting and using cookies, and validating chapter resource links (Audio, PDF, Tamil PDF). It includes smoke tests for critical paths and ensures that UI elements and resources are present and functioning as expected. The suite is designed to run in headless mode and assumes the application is accessible at http://localhost:4280.
 Library           Collections
-Library           Browser    timeout=30s
+Library           Browser
 
 Suite Setup       Open Browser To App
 Suite Teardown    Close Browser
@@ -20,18 +20,20 @@ Open Browser To App
 
 # Ensures that the dropdown element is currently open and visible to the user. This keyword can be used to verify the state of dropdown menus before performing further actions or assertions.
 Ensure Dropdown Is Open
-    [Documentation]    Ensures that the dropdown is open by checking its visibility and clicking the drop button if it is not visible.
-    ${is_visible}=    Run Keyword And Return Status    Get Element    css=.dropdown-content
-    IF    not ${is_visible}
-        Click    css=i.dropbtn
+    [Documentation]    Ensures that the chapter dropdown is open by checking its content visibility and clicking the drop button if it is not visible.
+    ${is_open}=    Run Keyword And Return Status    Wait For Elements State    css=.dropdown-content.chapter-dropdown    visible    timeout=1s
+    IF    not ${is_open}
+        Click    css=.current-chapter-title > .dropdown-arrow
+        Wait For Elements State    css=.dropdown-content.chapter-dropdown    visible
     END
 
 Validate Chapter Resource Link
     [Arguments]    ${index}    ${expected_text}    ${expected_url_fragment}
     Ensure Dropdown Is Open
-    ${resource}=    Get Text    css=.dropdown-content a:nth-child(${index})
-    Should Be Equal    ${resource}    ${expected_text}
-    ${url}=    Get Attribute    css=.dropdown-content a:nth-child(${index})    href
+    ${resource}=    Get Element   css=.dropdown-content.chapter-dropdown > .dropdown-item:nth-child(${index}) > a
+    ${resource_text}=    Get Text    ${resource}
+    Should Be Equal    ${resource_text}    ${expected_text}
+    ${url}=    Get Attribute    css=.dropdown-content.chapter-dropdown > .dropdown-item:nth-child(${index}) > a    href
     Should Contain    ${url}    ${expected_url_fragment}
 
 *** Test Cases ***
@@ -49,7 +51,7 @@ Chapter List Is Visible
 # This test case selects a chapter in the Bhagavad Gita application and verifies that the corresponding slokas (verses) are displayed to the user.
 Select Chapter And See Slokas
     [Documentation]    This test case selects a chapter in the Bhagavad Gita application and verifies that the corresponding slokas (verses) are displayed to the user.
-    ${sloka_text}=    Get Text    css=#sloka-list > div:nth-child(2) > ul > li:first-child > app-single-sloka > div > div > pre
+    ${sloka_text}=    Get Text    css=#sloka-list > div:nth-child(1) > ul > li:first-child > app-single-sloka > div > div > pre
     Should Not Be Empty    ${sloka_text}
 
 Sloka Cookie Is Set On Selection
@@ -57,7 +59,7 @@ Sloka Cookie Is Set On Selection
     ...                - `currentSloka`: Represents the currently selected sloka (verse) in the application. This cookie ensures that the user's selection is preserved across sessions or page reloads.
     ...                - `currentChapter`: Represents the chapter currently being viewed. This cookie helps maintain the user's context within the application.
     ...                - `showSanskrit`: Indicates whether the Sanskrit text display is enabled or disabled. This cookie reflects the user's preference for viewing the text in Sanskrit.
-    Click   css=#sloka-list > div:nth-child(2) > ul > li:nth-child(2) > app-single-sloka > div
+    Click   css=#sloka-list > div:nth-child(1) > ul > li:nth-child(1) > app-single-sloka > div
     # Check that the cookie is set correctly
     ${currentSloka}=    Get Cookie    currentSloka
     Should Not Be Empty    ${currentSloka.value}
@@ -78,7 +80,7 @@ Sloka Cookie Is Used On Reload
     ...                3. Retrieve the `currentSloka` cookie and verify its value matches the selected sloka.
     # Clicks on the third sloka item in the list within the second div of the element with id 'sloka-list'.
     # This action targets the <div> inside the <app-single-sloka> component for the specified sloka.
-    Click    css=#sloka-list > div:nth-child(2) > ul > li:nth-child(3) > app-single-sloka > div
+    Click    css=#sloka-list > div:nth-child(1) > ul > li:nth-child(3) > app-single-sloka > div
     Reload
     ${cookie}=    Get Cookie    currentSloka
     Should Be Equal    ${cookie.value}    2
@@ -87,9 +89,10 @@ Sloka Cookie Is Used On Reload
 Chapter Resources Are Available
     [Documentation]    Verifies that the resources for a chapter are available and accessible in the application.
     [Tags]    smoke
-    # Ensure the dropdown is open to check resources
+    Click    css=div.chapters-section > ul > li:nth-child(3)
     Ensure Dropdown Is Open
-    ${resources}=    Get Elements    css=.dropdown-content a
+    ${resources}=    Get Elements    css=.dropdown-content.chapter-dropdown > div
+    Log    message=Chapter resource links: ${resources}
     Should Not Be Empty    ${resources}
     Length Should Be    ${resources}    3
 

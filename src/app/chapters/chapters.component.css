@@ -1,234 +1,458 @@
+/* Stack app and chapter titles vertically and center */
+.vertical-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-chapter-titles {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.application-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 0.2em;
+  text-align: center;
+}
+
+.chapter-title-row {
+  display: flex;
+  align-items: left;
+  justify-content: left;
+  gap: 0.5em;
+}
+
+.chapter-title {
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-align: center;
+}
+/* Three-column header layout for perfect centering */
+.header-flex {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 48px;
+  height: 48px;
+  background: var(--card-background-color);
+  position: relative;
+}
+.header-col {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+.header-col-left {
+  justify-content: flex-start;
+}
+.header-col-center {
+  justify-content: center;
+}
+.header-col-right {
+  justify-content: flex-end;
+  visibility: hidden;
+}
+
 .header-title {
-    flex-grow: 1;
-    text-align: center;
+  text-align: center;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  min-width: 0;
+  font-family: var(--font-family);
+  color: var(--text-color);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: 100%;
+  pointer-events: auto;
+}
+
+header {
+  position: relative;
+}
+/* Fix header layout: prevent overlap between menu button and title */
+.menu-button {
+  position: relative;
+  /* z-index: 10; */
+  left: 0;
+  margin-right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 2rem;
+  color: var(--text-color);
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+/* Robust: Hide dropdowns when chapter overlay is open using a body class */
+body.chapters-overlay-open .dropdown-content.app-dropdown,
+body.chapters-overlay-open .dropdown-content.chapter-dropdown {
+  display: none !important;
+}
+/* Ensure dropdown items use theme text color for visibility */
+.dropdown-content.chapter-dropdown .dropdown-item,
+.dropdown-content.chapter-dropdown a {
+  color: var(--text-color) !important;
+}
+
+
+header {
+  overflow: visible !important;
+}
+
+/* App dropdown: robust, never truncated, always visible above content, but below overlay on mobile */
+.dropdown-content.app-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 8px;
+  min-width: 180px;
+  background: var(--card-background-color) !important;
+  color: var(--text-color) !important;
+  box-shadow: 0 2px 16px 4px rgba(0, 0, 0, 0.18);
+  /* z-index: 100; */
+  border-radius: 8px;
+  padding: 8px 8px;
+  font-family: var(--font-family);
+  overflow: visible;
+}
+/* Center and style the current chapter title and dropdown */
+.current-chapter-title-row {
+  position: relative;
+  margin-bottom: 1em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  font-family: var(--font-family);
+  color: var(--text-color);
+}
+.current-chapter-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0 auto;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  text-align: center;
+  width: 100%;
+  font-family: var(--font-family);
+  color: var(--text-color);
+}
+/* Chapter dropdown: robust, never truncated, always visible above content, but below overlay on mobile */
+.dropdown-content.chapter-dropdown {
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  background: var(--card-background-color);
+  min-width: 180px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 5;
+  border-radius: 8px;
+  padding: 8px 0;
+  color: var(--text-color);
+  font-family: var(--font-family);
+  overflow: visible;
+}
+
+header {
+  overflow: visible;
+}
+
+.header-title {
+  text-align: center;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  font-family: var(--font-family);
+  color: var(--text-color);
+}
+
+.chapters-section {
+  display: none; /* Hide by default */
+}
+
+.chapters-overlay {
+  position: fixed; /* Change to fixed to cover the entire viewport */
+  top: 0;
+  left: 0;
+  width: auto;
+  max-width: 400px; /* Set a maximum width for the chapter list */
+  height: 100%;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  /* z-index: 3000; Ensure overlay is always above dropdowns */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align the chapter list to the left */
+  justify-content: flex-start; /* Align the chapter list to the top */
+  overflow-y: auto; /* Add scroll if content overflows */
+  padding: 20px; /* Add padding for better spacing */
+  padding-bottom: 100px;
+}
+
+.chapters-list {
+  list-style-type: none;
+  padding: 0;
+  width: 100%;
+}
+
+.chapters-list li {
+  cursor: pointer;
+  margin: 10px 0;
+}
+
+.chapters-list li h4 {
+  margin: 0;
+  color: var(--text-color);
+}
+
+.sloka-list {
+  width: 100%;
+  overflow-y: auto;
+}
+
+.sloka-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sloka-list li {
+  cursor: pointer;
+  margin: 10px 0;
+}
+
+.sloka-view {
+  width: 100%;
+  overflow-y: auto;
+}
+
+.sloka-view nav {
+  margin-bottom: 10px;
+}
+
+.sloka-section {
+  margin-top: 20px;
+  width: 100%;
+  header {
+    overflow: visible !important;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    background: var(--card-background-color);
+    min-height: 48px;
+    height: 48px;
+    box-sizing: border-box;
   }
-  
-  .chapters-section {
-    display: none; /* Hide by default */
-  }
-  
-  .chapters-overlay {
-    position: fixed; /* Change to fixed to cover the entire viewport */
-    top: 0;
-    left: 0;
-    width: auto;
-    max-width: 400px; /* Set a maximum width for the chapter list */
-    height: 100%;
-    background-color: var(--background-color);
-    color: var(--text-color);
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  font-size: var(--font-size);
+}
+
+.breadcrumb a {
+  cursor: pointer;
+  color: #007bff;
+  text-decoration: none;
+  .menu-button {
+    position: relative;
     z-index: 10;
+    left: 0;
+    margin-right: 12px;
+    background: transparent;
+    border: none;
+    font-size: 2rem;
+    color: var(--text-color);
+    cursor: pointer;
+    align-self: center;
+    flex-shrink: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+  }
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.breadcrumb::after {
+  content: '>';
+  margin: 0 5px;
+}
+
+.header-title-dropdown {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 0;
+  font-family: var(--font-family);
+  color: var(--text-color);
+  position: relative;
+  overflow: visible !important;
+  z-index: 1;
+  height: 100%;
+}
+.sloka-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.sloka-list-header h4 {
+  margin: 0;
+  .header-title {
+    text-align: center;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    min-width: 0;
+    font-family: var(--font-family);
+    color: var(--text-color);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 100%;
+  }
+}
+
+.sloka-list-header label {
+  font-size: 16px;
+  color: var(--text-color);
+}
+
+.sloka-list-header input {
+  margin-right: 10px;
+}
+
+.font-size-controls {
+  display: flex;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.font-size-controls i {
+  font-size: 20px;
+  cursor: pointer;
+  color: #007bff;
+}
+
+.font-size-controls i:hover {
+  color: #0056b3;
+}
+
+.font-size-icon {
+  font-size: 20px;
+  cursor: pointer;
+  color: #007bff;
+  font-weight: bold;
+}
+
+.font-size-icon:hover {
+  color: #0056b3;
+}
+
+.reference-icon {
+  font-size: 20px;
+  cursor: pointer;
+  color: #007bff;
+  margin-left: 20px;
+}
+
+.reference-icon:hover {
+  color: #0056b3;
+}
+
+.dropbtn {
+  font-size: 20px;
+  cursor: pointer;
+  color: #007bff;
+  margin: 10px;
+  margin-left: 0;
+  float: left;
+  align-self: flex-start;
+}
+
+.dropbtn:hover,
+.dropbtn:focus {
+  color: #0056b3;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Remove global .dropdown-content rules to avoid conflicts between app and chapter dropdowns. Use only specific .dropdown-content.app-dropdown and .dropdown-content.chapter-dropdown rules above. */
+
+/* Media query for larger screens */
+@media (min-width: 768px) {
+  .content {
+    flex-direction: row; /* Arrange chapters and sloka list side by side */
+    justify-content: flex-start; /* Align the content to the top */
+    align-items: flex-start;
+  }
+
+  .chapters-section {
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* Align the chapter list to the left */
-    justify-content: flex-start; /* Align the chapter list to the top */
+    align-items: flex-start;
+    max-width: 300px; /* Set a maximum width for the chapter list */
+    height: 100%;
     overflow-y: auto; /* Add scroll if content overflows */
     padding: 20px; /* Add padding for better spacing */
-    padding-bottom: 100px;
+    justify-content: flex-start; /* Align the chapter list to the top */
+    white-space: nowrap;
   }
-  
-  .chapters-list {
-    list-style-type: none;
-    padding: 0;
-    width: 100%;
+
+  .chapters-overlay {
+    display: none; /* Hide overlay on larger screens */
   }
-  
-  .chapters-list li {
-    cursor: pointer;
-    margin: 10px 0;
-  }
-  
-  .chapters-list li h4 {
-    margin: 0;
-    color: var(--text-color);
-  }
-  
+
   .sloka-list {
-    width: 100%;
-    overflow-y: auto;
+    flex: 1; /* Take remaining space */
   }
-  
-  .sloka-list ul {
-    list-style-type: none;
-    padding: 0;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 767px) {
+  .chapters-section {
+    display: none; /* Hide chapters section */
   }
-  
-  .sloka-list li {
-    cursor: pointer;
-    margin: 10px 0;
+
+  .chapters-overlay {
+    display: flex; /* Show overlay on smaller screens */
+    justify-content: flex-start; /* Align the chapter list to the top */
   }
-  
-  .sloka-view {
-    width: 100%;
-    overflow-y: auto;
-  }
-  
-  .sloka-view nav {
-    margin-bottom: 10px;
-  }
-  
-  .sloka-section {
-    margin-top: 20px;
-    width: 100%;
-  }
-  
-  .breadcrumb {
-    display: flex;
-    align-items: center;
-    font-size: var(--font-size);
-  }
-  
-  .breadcrumb a {
-    cursor: pointer;
-    color: #007bff;
-    text-decoration: none;
-  }
-  
-  .breadcrumb a:hover {
-    text-decoration: underline;
-  }
-  
-  .breadcrumb::after {
-    content: '>';
-    margin: 0 5px;
-  }
-  
-  .sloka-list-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin-bottom: 20px;
-  }
-  
-  .sloka-list-header h4 {
-    margin: 0;
-  }
-  
-  .sloka-list-header label {
-    font-size: 16px;
-    color: var(--text-color);
-  }
-  
-  .sloka-list-header input {
-    margin-right: 10px;
-  }
-  
-  .font-size-controls {
-    display: flex;
-    gap: 10px;
-    margin-left: auto;
-  }
-  
-  .font-size-controls i {
-    font-size: 20px;
-    cursor: pointer;
-    color: #007bff;
-  }
-  
-  .font-size-controls i:hover {
-    color: #0056b3;
-  }
-  
-  .font-size-icon {
-    font-size: 20px;
-    cursor: pointer;
-    color: #007bff;
-    font-weight: bold;
-  }
-  
-  .font-size-icon:hover {
-    color: #0056b3;
-  }
-  
-  .reference-icon {
-    font-size: 20px;
-    cursor: pointer;
-    color: #007bff;
-    margin-left: 20px;
-  }
-  
-  .reference-icon:hover {
-    color: #0056b3;
-  }
-  
-  .dropbtn {
-    font-size: 20px;
-    cursor: pointer;
-    color: #007bff;
-    margin: 10px;
-  }
-  
-  .dropbtn:hover, .dropbtn:focus {
-    color: #0056b3;
-  }
-  
-  .dropdown {
-    position: relative;
-    display: inline-block;
-  }
-  
-  .dropdown-content {
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-    z-index: 1000; /* Ensure dropdown is above other elements */
-    padding: 10px;
-  }
-  
-  .dropdown-content a {
-    display: block;
-    color: black;
-    text-decoration: none;
-    padding: 8px 0;
-  }
-  
-  .dropdown-content a:hover {
-    background-color: #f1f1f1;
-  }
-  
-  .dropdown:hover .dropdown-content {
-    display: block; /* Show the dropdown on hover */
-  }
-  
-  /* Media query for larger screens */
-  @media (min-width: 768px) {
-    .content {
-      flex-direction: row; /* Arrange chapters and sloka list side by side */
-      justify-content: flex-start; /* Align the content to the top */
-      align-items: flex-start;
-    }
-  
-    .chapters-section {
-      display: flex; 
-      flex-direction: column;
-      align-items: flex-start;
-      max-width: 300px; /* Set a maximum width for the chapter list */
-      height: 100%;
-      overflow-y: auto; /* Add scroll if content overflows */
-      padding: 20px; /* Add padding for better spacing */
-      justify-content: flex-start; /* Align the chapter list to the top */
-      white-space: nowrap;
-    }
-  
-    .chapters-overlay {
-      display: none; /* Hide overlay on larger screens */
-    }
-  
-    .sloka-list {
-      flex: 1; /* Take remaining space */
-    }
-  
-  }
-  
-  /* Media query for smaller screens */
-  @media (max-width: 767px) {
-    .chapters-section {
-      display: none; /* Hide chapters section */
-    }
-  
-    .chapters-overlay {
-      display: flex; /* Show overlay on smaller screens */
-      justify-content: flex-start; /* Align the chapter list to the top */
-    }
-  }
+}

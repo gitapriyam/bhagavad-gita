@@ -1,4 +1,9 @@
-<footer class="app-footer">
+<footer
+  class="app-footer"
+  (touchstart)="onTouchStart($event)"
+  (touchend)="onTouchEnd($event)"
+  *ngIf="visible"
+>
   <span>Version: {{ version }}</span>
   <span class="footer-separator">|</span>
   <span>Released: {{ releaseDate }}</span>

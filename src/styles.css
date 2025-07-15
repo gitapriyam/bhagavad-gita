@@ -16,7 +16,6 @@
   --footer-bg: #f8f9fa;
   --footer-fg: #444;
   --footer-border: #e0e0e0;
-
 }
 
 @media (prefers-color-scheme: dark) {
@@ -37,6 +36,7 @@
 }
 
 /* Apply the global styles */
+
 body {
   font-family: var(--font-family);
   font-size: var(--font-size);
@@ -44,6 +44,13 @@ body {
   color: var(--text-color);
   margin: 0;
   padding: 0;
+}
+
+/* --- Fix font scaling difference between iOS portrait and landscape --- */
+@media screen and ((orientation: landscape) or (orientation: portrait)) and (max-width: 900px) {
+  html, body {
+    font-size: 16px !important;
+  }
 }
 
 body.light-theme {
@@ -263,7 +270,7 @@ header h3 {
   cursor: pointer;
 }
 
-h4{
+h4 {
   margin-bottom: 5px;
   color: var(--text-color);
 }
@@ -281,11 +288,15 @@ h4{
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s, color 0.2s, border 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    border 0.2s;
   outline: none;
 }
 
-.help-btn:hover, .help-btn:focus {
+.help-btn:hover,
+.help-btn:focus {
   background: var(--primary-color);
   color: #fff;
   border-color: var(--primary-color);
@@ -294,15 +305,15 @@ h4{
 .help-icon {
   font-size: 1.5em;
   margin-left: 0.25em;
-  margin-right: 0;         /* Ensure no extra right margin */
+  margin-right: 0; /* Ensure no extra right margin */
   cursor: pointer;
   color: var(--primary-color);
   background: none;
   border: none;
-  padding: 0;              /* Remove horizontal padding */
+  padding: 0; /* Remove horizontal padding */
   vertical-align: middle;
   border-radius: 50%;
-  width: auto;             /* Remove fixed width */
+  width: auto; /* Remove fixed width */
   height: 2em;
   line-height: 2em;
   text-align: center;
@@ -318,8 +329,11 @@ h4{
   display: none;
   position: fixed;
   z-index: 1000;
-  left: 0; top: 0; width: 100vw; height: 100vh;
-  background: rgba(0,0,0,0.4);
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
   justify-content: center;
   align-items: center;
 }
@@ -439,13 +453,31 @@ body.dark-mode .modal-content .close {
   border-top: 1px solid var(--footer-border);
   position: fixed;
   left: 0;
-  bottom: 0;
+  bottom: 16px; /* Bring the footer up by 16px */
   z-index: 100;
   letter-spacing: 0.01em;
-  box-shadow: 0 -1px 4px rgba(0,0,0,0.03);
+  box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.03);
 }
 
 .footer-separator {
   margin: 0 0.3em;
   color: #bbb;
+}
+
+@media (max-width: 430px) {
+  body,
+  .main {
+    padding-top: 24px !important;
+    padding-bottom: 16px !important;
+  }
+}
+
+/* Prevent iOS Safari and WebView from auto-scaling font size on orientation change */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+html, body {
+  font-size: var(--font-size);
 }
