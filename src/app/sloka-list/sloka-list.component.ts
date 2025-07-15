@@ -40,18 +40,18 @@ export class SlokaListComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() chapterName: string = '';
   @Input() slokaCount: number = 0;
   @Input() showSanskrit: boolean = false;
-  @Output() sanskritToggled = new EventEmitter<boolean>();
+  @Input() showSandhi: boolean = false;
+  @Output() isSlokaGroupsReadyChange = new EventEmitter<boolean>();
   @Output() showSloka = new EventEmitter<number>();
+  isSlokaGroupsReady: boolean = false;
   slokaData: number[][] = [];
   expandedSloka: number | null = null;
   slokas: { [key: number]: SlokaData } = {}; // Store slokas by index
   slokaMeanings: { [key: number]: string } = {}; // Store meanings by index
   slokaAudioUrls: { [key: number]: string } = {}; // Store audio URLs by index
   indices: number[] = [];
-  showSandhi: boolean = false;
   isPaneVisible: boolean = false;
   groups: any[] = []; // Store groups here
-  isSlokaGroupsReady: boolean = false;
   observer: IntersectionObserver | null = null;
   isViewportLoading = true;
   viewportIndices: number[] = []; // Add this property to track indices in the viewport
@@ -84,7 +84,6 @@ export class SlokaListComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.showSandhi = false;
     if (changes['chapterId'] || changes['showSanskrit']) {
       if (changes['chapterId']) {
         this.cookieService.set(
@@ -162,10 +161,14 @@ export class SlokaListComponent implements OnInit, OnChanges, AfterViewInit {
       const data: SlokaGroupData = await this.apiService
         .getSlokaGroupData(this.chapterId)
         .toPromise();
-      this.isSlokaGroupsReady = this.slokaService.isSlokaGroupReady(
+      const ready = this.slokaService.isSlokaGroupReady(
         isProduction,
         data.readiness,
       );
+      if (this.isSlokaGroupsReady !== ready) {
+        this.isSlokaGroupsReady = ready;
+        this.isSlokaGroupsReadyChange.emit(this.isSlokaGroupsReady);
+      }
       this.groups = data.groups;
       for (const group of this.groups) {
         for (const slokaId of group.slokas) {
@@ -297,12 +300,11 @@ export class SlokaListComponent implements OnInit, OnChanges, AfterViewInit {
     this.showSloka.emit(index);
   }
 
-  onToggleSanskrit(): void {
-    this.sanskritToggled.emit(this.showSanskrit);
-    this.loadSlokas(); // Reload slokas when toggling Sanskrit
-  }
+  // onToggleSanskrit(): void {
+  //   this.loadSlokas(); // Reload slokas when toggling Sanskrit
+  // }
 
-  onToggleSandhi(): void {}
+  // onToggleSandhi(): void {}
 
   getSlokaTitle(index: number): string {
     return this.utilityService.getSlokaTitle(index, this.showSanskrit);

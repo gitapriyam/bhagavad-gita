@@ -1,38 +1,82 @@
 <div class="container">
-  <header>
-    <button class="menu-button" (click)="toggleMenu()">☰</button>
-    <h3 class="header-title">{{ getApplicationTitle() }}</h3>
-    <button class="search-icon" (click)="openSearchModal()" title="Search">
-      <span aria-label="Search" role="img">🔍</span>
-    </button>
-    <button
-      class="help-icon"
-      (click)="openHelpAndReferences()"
-      title="Help & References"
-    >
-      ?
-    </button>
-    <div class="dropdown">
-      <i class="fas fa-download dropbtn" (click)="toggleDropdown()"></i>
-      <div
-        class="dropdown-content"
-        *ngIf="isDropdownOpen"
-        (click)="$event.stopPropagation()"
-      >
-        <a [href]="chapterAudioSrc" target="_blank" download>Audio</a>
-        <a [href]="chapterResource" target="_blank" download>PDF</a>
-        <a [href]="chapterTamilResource" target="_blank" download>Tamil PDF</a>
+  <header class="header-flex">
+    <div class="header-col header-col-left">
+      <button class="menu-button" (click)="toggleMenu()">☰</button>
+    </div>
+    <div style="display: flex; flex-direction: column; align-items: center">
+      <div class="header-col header-col-center">
+        <div class="header-title-dropdown">
+          <h3 class="header-title">
+            {{ getApplicationTitle() }}
+            <span
+              class="dropdown-arrow"
+              (click)="toggleAppDropdown(); $event.stopPropagation()"
+              >▼</span
+            >
+          </h3>
+          <div class="dropdown-content app-dropdown" *ngIf="isAppDropdownOpen">
+            <div class="dropdown-item" (click)="$event.stopPropagation()">
+              <input
+                type="checkbox"
+                [(ngModel)]="showSanskrit"
+                (click)="onSanskritChange($event); $event.stopPropagation()"
+              />
+              Show Sanskrit
+            </div>
+            <div class="dropdown-item" (click)="$event.stopPropagation()">
+              <input
+                type="checkbox"
+                [(ngModel)]="showSandhi"
+                [disabled]="!showSanskrit || !isSlokaGroupsReady"
+                (click)="toggleSandhi(); $event.stopPropagation()"
+              />
+              Show Sandhi
+            </div>
+            <div class="dropdown-item" (click)="openSearchModal()">Search</div>
+            <div class="dropdown-item" (click)="openHelpAndReferences()">
+              Help
+            </div>
+            <div class="dropdown-item" (click)="decreaseFontSize()">A-</div>
+            <div class="dropdown-item" (click)="increaseFontSize()">A+</div>
+          </div>
+        </div>
+      </div>
+      <div class="current-chapter-title-row dropdown">
+        <h2 class="current-chapter-title">
+          {{ chapterName }}
+          <span
+            class="dropdown-arrow"
+            (click)="toggleDropdown(); $event.stopPropagation()"
+            >▼</span
+          >
+        </h2>
+        <div
+          class="dropdown-content chapter-dropdown"
+          *ngIf="isDropdownOpen"
+          (click)="$event.stopPropagation()"
+        >
+          <div class="dropdown-item">
+            <a [href]="chapterAudioSrc" target="_blank" download>Audio</a>
+          </div>
+          <div class="dropdown-item">
+            <a [href]="chapterResource" target="_blank" download>PDF</a>
+          </div>
+          <div class="dropdown-item">
+            <a [href]="chapterTamilResource" target="_blank" download
+              >Tamil PDF</a
+            >
+          </div>
+        </div>
       </div>
     </div>
-    <div class="font-size-controls">
-      <i class="font-size-icon" (click)="decreaseFontSize()">A-</i>
-      <i class="font-size-icon" (click)="increaseFontSize()">A+</i>
-    </div>
 
+    <div class="header-col header-col-right"><!-- spacer for symmetry --></div>
     <!-- Help Modal -->
     <div class="modal" [ngClass]="{ show: showHelpAndReferences }">
       <div class="modal-content help-modal-content">
-        <button class="close" (click)="closeHelpAndReferences()">&times;</button>
+        <button class="close" (click)="closeHelpAndReferences()">
+          &times;
+        </button>
         <iframe
           src="assets/help-and-references.html"
           width="100%"
@@ -45,8 +89,12 @@
   <div class="content" [ngStyle]="{ 'font-size.px': fontSize }">
     <div class="chapters-section" *ngIf="showChapterView && windowWidth >= 768">
       <ul class="chapters-list">
-        <li *ngFor="let chapter of chapters" (click)="showSlokas(chapter)">
-          <h4>{{ getChapterName(chapter) }}</h4>
+        <li *ngFor="let chapter of chapters">
+          <div class="chapter-title-row">
+            <h4 (click)="showSlokas(chapter)">
+              {{ getChapterName(chapter) }}
+            </h4>
+          </div>
         </li>
       </ul>
     </div>
@@ -66,8 +114,12 @@
     </div>
     <div class="chapters-overlay" *ngIf="showChapterView && windowWidth < 768">
       <ul class="chapters-list">
-        <li *ngFor="let chapter of chapters" (click)="showSlokas(chapter)">
-          <h4>{{ getChapterName(chapter) }}</h4>
+        <li *ngFor="let chapter of chapters">
+          <div class="chapter-title-row">
+            <h4 (click)="showSlokas(chapter)">
+              {{ getChapterName(chapter) }}
+            </h4>
+          </div>
         </li>
       </ul>
     </div>
@@ -81,8 +133,9 @@
         [chapterName]="chapterName"
         [slokaCount]="slokaCount"
         [showSanskrit]="showSanskrit"
+        [showSandhi]="showSandhi"
+        (isSlokaGroupsReadyChange)="onSlokaGroupsReadyChange($event)"
         (showSloka)="showSloka($event)"
-        (sanskritToggled)="toggleSanskrit()"
       ></app-sloka-list>
     </div>
     <div

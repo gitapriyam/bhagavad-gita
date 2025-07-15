@@ -6,3 +6,4 @@ __azurite_*
 .vscode/
 __blobstorage*
 dist/
+environment.generated.ts

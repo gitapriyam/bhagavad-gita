@@ -6,11 +6,18 @@ import { RemoteResource } from '../models/remote-resource.model'; // Import the 
 import { SlokaData } from '../models/sloka-data.model'; // Import the interface
 import { SlokaSearchResult } from '@app/models/sloka-search-result.model';
 import { CustomContent } from '@app/models/custom-content.model';
+import { ApiBaseUrlService } from './api-base-url.service';
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
-  constructor(private http: HttpClient) {}
+  private API_BASE_URL = '';
+  constructor(
+    private http: HttpClient,
+    private apiBaseUrlService: ApiBaseUrlService,
+  ) {
+    this.API_BASE_URL = this.apiBaseUrlService.getApiBaseUrl();
+  }
 
   // Example: Fetch sloka data
   getSloka(
@@ -18,7 +25,7 @@ export class ApiService {
     slokaIndex: number,
     content: string,
   ): Observable<any> {
-    const url = `/api/sloka/${chapterId}/${slokaIndex}?content=${content}`;
+    const url = `${this.API_BASE_URL}/sloka/${chapterId}/${slokaIndex}?content=${content}`;
     return this.http.get<any>(url);
   }
 
@@ -27,16 +34,16 @@ export class ApiService {
     slokaIndex: string,
     content: string,
   ): Observable<CustomContent> {
-    const url = `/api/sloka/${chapterId}/${slokaIndex}?content=${content}`;
+    const url = `${this.API_BASE_URL}/sloka/${chapterId}/${slokaIndex}?content=${content}`;
     return this.http.get<CustomContent>(url);
   }
 
- getSlokaResource(
+  getSlokaResource(
     chapterId: number,
     slokaIndex: string,
     content: string,
   ): Observable<CustomContent> {
-    const url = `/api/slokaResource/${chapterId}/${slokaIndex}?content=${content}`;
+    const url = `${this.API_BASE_URL}/slokaResource/${chapterId}/${slokaIndex}?content=${content}`;
     return this.http.get<CustomContent>(url);
   }
 
@@ -44,12 +51,12 @@ export class ApiService {
     chapterId: number,
     slokaIndex: number,
   ): Observable<RemoteResource> {
-    const url = `/api/slokaAudio/${chapterId}/${slokaIndex}`;
+    const url = `${this.API_BASE_URL}/slokaAudio/${chapterId}/${slokaIndex}`;
     return this.http.get<RemoteResource>(url);
   }
 
   getSlokaGroupData(chapterId: number): Observable<any> {
-    const url = `/api/slokaGroups/${chapterId}`;
+    const url = `${this.API_BASE_URL}/slokaGroups/${chapterId}`;
     return this.http.get<any>(url);
   }
 
@@ -59,7 +66,7 @@ export class ApiService {
   }
 
   getChapterAudio(chapterId: number): Observable<RemoteResource> {
-    const url = `/api/chapterAudio/${chapterId}`;
+    const url = `${this.API_BASE_URL}/chapterAudio/${chapterId}`;
     return this.http.get<RemoteResource>(url);
   }
 
@@ -67,7 +74,8 @@ export class ApiService {
     chapterId: number,
     content: string,
   ): Observable<RemoteResource> {
-    const url = `/api/chapterResource/${chapterId}?content=${content}`;
+    const API_BASE_URL = this.apiBaseUrlService.getApiBaseUrl();
+    const url = `${API_BASE_URL}/chapterResource/${chapterId}?content=${content}`;
     return this.http.get<RemoteResource>(url);
   }
 
@@ -86,6 +94,10 @@ export class ApiService {
       .set('searchText', query)
       .set('top', top.toString())
       .set('lang', queryLang);
-    return this.http.get<SlokaSearchResult[]>('/api/slokaSearch', { params });
+    // Use the API base URL to construct the endpoint
+
+    return this.http.get<SlokaSearchResult[]>(`${this.API_BASE_URL}/slokaSearch`, {
+      params,
+    });
   }
 }

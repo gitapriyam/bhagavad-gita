@@ -156,4 +156,5 @@ export const baseEnvironment = {
       slokaCount: 22,
     },
   ],
+  apiBaseUrl: '/api',
 };
