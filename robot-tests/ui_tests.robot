@@ -3,7 +3,7 @@ Documentation     This Robot Framework test suite uses the Browser library to pe
 Library           Collections
 Library           Browser
 
-Suite Setup       Open Browser To App
+Suite Setup       Open Browser App and Select Chapter
 Suite Teardown    Close Browser
 
 *** Variables ***
@@ -12,6 +12,13 @@ ${APP_URL}        http://localhost:4280
 
 *** Keywords ***
 # Opens a web browser and navigates to the application under test.
+
+Open Browser App and Select Chapter
+    [Arguments]    ${chapter_index}=1
+    [Documentation]    Opens the application in a new browser instance and selects a chapter by its index.
+    Open Browser To App
+    Select Chapter By Index    ${chapter_index}    15
+
 Open Browser To App
     [Documentation]    Opens a new browser instance and navigates to the application URL.
     New Browser    headless=${HEADLESS}
@@ -28,24 +35,33 @@ Ensure Dropdown Is Open
     END
 # Selects a chapter by its index in the chapter list.
 Select Chapter By Index
-    [Arguments]    ${index}
+    [Arguments]    ${index}    ${timeout}=5s
     [Documentation]    Selects a chapter by its 0-based index in the chapter list. Converts the index to 1-based internally for CSS compatibility.
     ${css_index}=    Evaluate    ${index} + 1
     Wait For Elements State    css=.chapters-list>li:nth-child(${css_index})>.chapter-title-row>h4    visible    timeout=5s
     ${chapter}=    Get Element    css=.chapters-list>li:nth-child(${css_index})>.chapter-title-row>h4
     Click    ${chapter}
     #wait for a few seconds
-    Sleep    2s
+    Sleep    ${timeout}
 
 Validate Chapter Resource Link
     [Arguments]    ${index}    ${expected_text}    ${expected_url_fragment}
-    Select Chapter By Index    3
+    [Documentation]    Validates that the chapter resource link at the specified index contains the expected text and URL fragment.
+    ...                - `${index}`: The 1-based index of the resource link in the dropdown.
+    ...                - `${expected_text}`: The expected text of the resource link.
+    ...                - `${expected_url_fragment}`: The expected fragment of the URL for the resource
     Ensure Dropdown Is Open
     ${resource}=    Get Element   css=.dropdown-content.chapter-dropdown > .dropdown-item:nth-child(${index}) > a
     ${resource_text}=    Get Text    ${resource}
     Should Be Equal    ${resource_text}    ${expected_text}
     ${url}=    Get Attribute    css=.dropdown-content.chapter-dropdown > .dropdown-item:nth-child(${index}) > a    href
     Should Contain    ${url}    ${expected_url_fragment}
+
+Print Html content
+    [Arguments]    ${css_selector}    ${content}
+    [Documentation]    Prints the HTML content of the specified element to the console.
+    ${html_content}=    Get Property    ${css_selector}    ${content}
+    # Log To Console     HTML : ${html_content}
 
 *** Test Cases ***
 # Verifies that the Home Page loads successfully.
@@ -62,7 +78,9 @@ Chapter List Is Visible
 # This test case selects a chapter in the Bhagavad Gita application and verifies that the corresponding slokas (verses) are displayed to the user.
 Select Chapter And See Slokas
     [Documentation]    This test case selects a chapter in the Bhagavad Gita application and verifies that the corresponding slokas (verses) are displayed to the user.
-    ${sloka_text}=    Get Text    css=#sloka-list > div:nth-child(1) > ul > li:first-child > app-single-sloka > div > div > pre
+    ${css_selector}=    Set Variable    css=#sloka-list > div > ul > li:nth-child(1) > app-single-sloka > div > div.custom-pre.clickable > pre
+    # Print Html content    ${css_selector}    innerHTML
+    ${sloka_text}=    Get Text    ${css_selector}
     Should Not Be Empty    ${sloka_text}
 
 Sloka Cookie Is Set On Selection
@@ -95,24 +113,16 @@ Sloka Cookie Is Used On Reload
     Reload
     ${cookie}=    Get Cookie    currentSloka
     Should Be Equal    ${cookie.value}    2
-# Verifies that the resources for a chapter are available and accessible in the application.
-Chapter Resources Are Available
-    [Documentation]    Verifies that the resources for a chapter are available and accessible in the application.
+
+Chapter URL Resources Are Valid
     [Tags]    smoke
-    Select Chapter By Index    2
     Ensure Dropdown Is Open
-    ${resources}=    Get Elements    css=.dropdown-content.chapter-dropdown > div
+    ${css_selector}=    Set Variable    css=.dropdown-content.chapter-dropdown
+    Wait For Elements State    ${css_selector}    visible    timeout=10s
+    Print Html content    ${css_selector}    outerHTML
+    ${resources}=    Get Elements    ${css_selector} > .dropdown-item
     Should Not Be Empty    ${resources}
     Length Should Be    ${resources}    3
-
-Chapter Audio Resource Is Valid
-    [Tags]    smoke
-    Validate Chapter Resource Link    1    Audio    slokastorage
-
-Chapter PDF Resource Is Valid
-    [Tags]    smoke
-    Validate Chapter Resource Link    2    PDF    slokastorage
-
-Chapter Tamil PDF Resource Is Valid
-    [Tags]    smoke
+    Validate Chapter Resource Link    1    Audio        slokastorage
+    Validate Chapter Resource Link    2    PDF          slokastorage
     Validate Chapter Resource Link    3    Tamil PDF    tamil.pdf
