@@ -151,11 +151,9 @@ jobs:
           azure_static_web_apps_api_token: ${{ env.AZURE_STATIC_WEB_APPS_API_TOKEN_PROD }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: upload
-          app_location: ${{ env.OUTPUT_LOCATION }}
+          app_location: ${{ env.APP_LOCATION }}
           api_location: ${{ env.API_LOCATION }}
-          output_location: ""
-          skip_app_build: true
-          skip_api_build: true
+          output_location: ${{ env.OUTPUT_LOCATION }}
 
       - name: Deploy to Azure Static Web Apps - Development
         if: env.SHOULD_DEPLOY == 'true' && env.SWA_CLI_DEPLOY_ENV != 'production'
@@ -164,11 +162,9 @@ jobs:
           azure_static_web_apps_api_token: ${{ env.AZURE_STATIC_WEB_APPS_API_TOKEN_DEV != '' && env.AZURE_STATIC_WEB_APPS_API_TOKEN_DEV || env.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: upload
-          app_location: ${{ env.OUTPUT_LOCATION }}
+          app_location: ${{ env.APP_LOCATION }}
           api_location: ${{ env.API_LOCATION }}
-          output_location: ""
-          skip_app_build: true
-          skip_api_build: true
+          output_location: ${{ env.OUTPUT_LOCATION }}
 
       # Step 13: Set up Python
       - name: Set up Python
