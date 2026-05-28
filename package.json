@@ -18,7 +18,7 @@
   "dependencies": {
     "@capacitor/core": "^7.4.1",
     "@capacitor/ios": "^7.4.1",
-    "ngx-cookie-service": "^15.0.0",
+    "ngx-cookie-service": "^19.1.2",
     "rxjs": "~6.6.0",
     "zone.js": "^0.15.0"
   },

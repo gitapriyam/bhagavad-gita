@@ -154,6 +154,7 @@ jobs:
           app_location: ${{ env.APP_LOCATION }}
           api_location: ${{ env.API_LOCATION }}
           output_location: ${{ env.OUTPUT_LOCATION }}
+          app_build_command: npm run build:prod
 
       - name: Deploy to Azure Static Web Apps - Development
         if: env.SHOULD_DEPLOY == 'true' && env.SWA_CLI_DEPLOY_ENV != 'production'
@@ -165,6 +166,7 @@ jobs:
           app_location: ${{ env.APP_LOCATION }}
           api_location: ${{ env.API_LOCATION }}
           output_location: ${{ env.OUTPUT_LOCATION }}
+          app_build_command: npm run build:dev
 
       # Step 13: Set up Python
       - name: Set up Python
