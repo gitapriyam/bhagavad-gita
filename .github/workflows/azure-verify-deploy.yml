@@ -17,7 +17,10 @@ jobs:
 
     env:
       AZURE_STATIC_WEB_APPS_API_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
-      APP_LOCATION: "src"
+      AZURE_STATIC_WEB_APPS_API_TOKEN_DEV: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_DEV }}
+      AZURE_STATIC_WEB_APPS_API_TOKEN_PROD: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_PROD }}
+      APP_LOCATION: "."
+      API_LOCATION: "api"
       OUTPUT_LOCATION: "dist/bhagavad-gita/browser"
 
     steps:
@@ -36,21 +39,27 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" == "push" ]; then
             if [ "${{ github.ref_name }}" == "main" ]; then
-              echo "SWA_CLI_DEPLOY_ENV=Production" >> $GITHUB_ENV
+              echo "SWA_CLI_DEPLOY_ENV=production" >> $GITHUB_ENV
             else
               echo "SWA_CLI_DEPLOY_ENV=development" >> $GITHUB_ENV
             fi
           elif [ "${{ github.event_name }}" == "pull_request" ]; then
             if [ "${{ github.base_ref }}" == "main" ]; then
-              echo "SWA_CLI_DEPLOY_ENV=Production" >> $GITHUB_ENV
+              echo "SWA_CLI_DEPLOY_ENV=production" >> $GITHUB_ENV
             else
               echo "SWA_CLI_DEPLOY_ENV=development" >> $GITHUB_ENV
             fi
           fi
+          if { [ "${{ github.event_name }}" = "pull_request" ] && [ "${{ github.base_ref }}" = "development" ]; } || \
+             { [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; }; then
+            echo "SHOULD_DEPLOY=true" >> $GITHUB_ENV
+          else
+            echo "SHOULD_DEPLOY=false" >> $GITHUB_ENV
+          fi
 
       # Step 4: Install dependencies
       - name: Install Dependencies
-        run: npm install -legacy-peer-deps
+        run: npm ci --legacy-peer-deps
 
       # Step 5: Install Angular CLI
       - name: Install Angular CLI
@@ -64,7 +73,7 @@ jobs:
       - name: Install API Dev Dependencies
         run: |
           cd api
-          npm install
+          npm ci
           cd -
 
       # Step 8: Run API Unit Tests
@@ -92,7 +101,7 @@ jobs:
       - name: Build Application
         run: |
           echo "Building application for environment: $SWA_CLI_DEPLOY_ENV"
-          if [ "$SWA_CLI_DEPLOY_ENV" = "Production" ]; then
+          if [ "$SWA_CLI_DEPLOY_ENV" = "production" ]; then
             npx ng build --configuration=production
           else
             npx ng build --configuration=$SWA_CLI_DEPLOY_ENV
@@ -102,7 +111,7 @@ jobs:
       - name: Install API Dependencies
         run: |
           cd api
-          npm install --production
+          npm ci --omit=dev
           cd -
 
       # Step 11: Print Event Info
@@ -112,37 +121,54 @@ jobs:
           echo "Base Ref: ${{ github.base_ref }}"
           echo "Ref Name: ${{ github.ref_name }}"
           echo "Deployment Environment: $SWA_CLI_DEPLOY_ENV"
+          echo "Should Deploy: $SHOULD_DEPLOY"
+
+      - name: Validate Azure Deployment Token
+        if: env.SHOULD_DEPLOY == 'true'
+        run: |
+          if [ "$SWA_CLI_DEPLOY_ENV" = "production" ]; then
+            DEPLOYMENT_TOKEN="$AZURE_STATIC_WEB_APPS_API_TOKEN_PROD"
+            TOKEN_NAME="AZURE_STATIC_WEB_APPS_API_TOKEN_PROD"
+          else
+            DEPLOYMENT_TOKEN="${AZURE_STATIC_WEB_APPS_API_TOKEN_DEV:-$AZURE_STATIC_WEB_APPS_API_TOKEN}"
+            TOKEN_NAME="AZURE_STATIC_WEB_APPS_API_TOKEN_DEV"
+          fi
+
+          if [ -z "$DEPLOYMENT_TOKEN" ]; then
+            echo "$TOKEN_NAME is not set. Add the environment-specific Azure Static Web Apps deployment token as a repository secret."
+            exit 1
+          fi
 
       # Step 12: Conditionally deploy to Azure Static Web Apps
       - name: Deploy to Azure Static Web Apps
-        if: >
-          (github.event_name == 'pull_request' && github.base_ref == 'development') ||
-          (github.event_name == 'push' && github.ref == 'refs/heads/main')
-        env:
-          DEPLOYMENT_ENVIRONMENT: ${{ env.DEPLOYMENT_ENVIRONMENT }}
+        if: env.SHOULD_DEPLOY == 'true'
         run: |
-          npx @azure/static-web-apps-cli deploy \
-            --app-location ${{ env.APP_LOCATION }} \
-            --api-location api \
-            --output-location ${{ env.OUTPUT_LOCATION }} \
-            --deployment-token ${{ env.AZURE_STATIC_WEB_APPS_API_TOKEN }} \
+          if [ "$SWA_CLI_DEPLOY_ENV" = "production" ]; then
+            DEPLOYMENT_TOKEN="$AZURE_STATIC_WEB_APPS_API_TOKEN_PROD"
+          else
+            DEPLOYMENT_TOKEN="${AZURE_STATIC_WEB_APPS_API_TOKEN_DEV:-$AZURE_STATIC_WEB_APPS_API_TOKEN}"
+          fi
+
+          npx -y @azure/static-web-apps-cli@2.0.9 deploy \
+            --app-location "$APP_LOCATION" \
+            --api-location "$API_LOCATION" \
+            --output-location "$OUTPUT_LOCATION" \
+            --deployment-token "$DEPLOYMENT_TOKEN" \
+            --env "$SWA_CLI_DEPLOY_ENV" \
+            --swa-config-location . \
             --api-language node \
             --api-version 20
 
       # Step 13: Set up Python
       - name: Set up Python
-        if: >
-          (github.event_name == 'pull_request' && github.base_ref == 'development') ||
-          (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        if: env.SHOULD_DEPLOY == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
       # Step 14: Set up Python venv and install Robot Framework
       - name: Set up venv and install Robot Framework
-        if: >
-          (github.event_name == 'pull_request' && github.base_ref == 'development') ||
-          (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        if: env.SHOULD_DEPLOY == 'true'
         run: |
           python -m venv rf-venv
           source rf-venv/bin/activate
@@ -151,17 +177,16 @@ jobs:
 
       # Step 15: Install Robot Framework Browser
       - name: Initialize Robot Framework Browser
-        if: >
-          (github.event_name == 'pull_request' && github.base_ref == 'development') ||
-          (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        if: env.SHOULD_DEPLOY == 'true'
         run: |
           source rf-venv/bin/activate
           rfbrowser init
 
       # Step 16: Set AZURE_STATIC_WEB_APPS_URL based on environment
       - name: Set AZURE_STATIC_WEB_APPS_URL
+        if: env.SHOULD_DEPLOY == 'true'
         run: |
-          if [ "$SWA_CLI_DEPLOY_ENV" = "Production" ]; then
+          if [ "$SWA_CLI_DEPLOY_ENV" = "production" ]; then
             echo "AZURE_STATIC_WEB_APPS_URL=${{ secrets.AZURE_STATIC_WEB_APPS_URL_PROD }}" >> $GITHUB_ENV
           else
             echo "AZURE_STATIC_WEB_APPS_URL=${{ secrets.AZURE_STATIC_WEB_APPS_URL_DEV }}" >> $GITHUB_ENV
@@ -169,6 +194,7 @@ jobs:
 
       # Step 16.5: Wait for AZURE_STATIC_WEB_APPS_URL to be up
       - name: Wait for Static Web App to be Up
+        if: env.SHOULD_DEPLOY == 'true'
         run: |
           echo "Waiting for $AZURE_STATIC_WEB_APPS_URL to be available..."
           for i in {1..20}; do
@@ -185,18 +211,14 @@ jobs:
 
       # Step 17: Run Robot UI Tests
       - name: Run Robot UI Tests
-        if: >
-          (github.event_name == 'pull_request' && github.base_ref == 'development') ||
-          (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        if: env.SHOULD_DEPLOY == 'true'
         run: |
           source rf-venv/bin/activate
           robot --variable HEADLESS:true --variable APP_URL:$AZURE_STATIC_WEB_APPS_URL robot-tests/ui_tests.robot
 
       # Step 18: Run Robot API Tests
       - name: Run Robot API Tests
-        if: >
-          (github.event_name == 'pull_request' && github.base_ref == 'development') ||
-          (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        if: env.SHOULD_DEPLOY == 'true'
         run: |
           source rf-venv/bin/activate
           robot --variable API_URL:$AZURE_STATIC_WEB_APPS_URL/api robot-tests/api_tests.robot
