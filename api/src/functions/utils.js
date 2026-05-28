@@ -88,7 +88,6 @@ function getChapterAudioUrl(chapterId) {
 function getSlokaAudioUrl(chapterId, slokaId) {
   return (
     getChapterBasePath(chapterId, 'audio') +
-    'sloka_' +
     leftAppendedNumber(slokaId) +
     '.mp3'
   );
