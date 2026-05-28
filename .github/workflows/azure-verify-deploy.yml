@@ -223,11 +223,20 @@ jobs:
         if: env.SHOULD_DEPLOY == 'true'
         run: |
           source "$RUNNER_TEMP/rf-venv/bin/activate"
-          robot --variable HEADLESS:true --variable APP_URL:$AZURE_STATIC_WEB_APPS_URL robot-tests/ui_tests.robot
+          mkdir -p "$RUNNER_TEMP/robot-results/ui"
+          robot \
+            --outputdir "$RUNNER_TEMP/robot-results/ui" \
+            --variable HEADLESS:true \
+            --variable APP_URL:$AZURE_STATIC_WEB_APPS_URL \
+            robot-tests/ui_tests.robot
 
       # Step 18: Run Robot API Tests
       - name: Run Robot API Tests
         if: env.SHOULD_DEPLOY == 'true'
         run: |
           source "$RUNNER_TEMP/rf-venv/bin/activate"
-          robot --variable API_URL:$AZURE_STATIC_WEB_APPS_URL/api robot-tests/api_tests.robot
+          mkdir -p "$RUNNER_TEMP/robot-results/api"
+          robot \
+            --outputdir "$RUNNER_TEMP/robot-results/api" \
+            --variable API_URL:$AZURE_STATIC_WEB_APPS_URL/api \
+            robot-tests/api_tests.robot
