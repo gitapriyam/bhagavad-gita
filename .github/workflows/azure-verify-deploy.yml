@@ -179,8 +179,8 @@ jobs:
       - name: Set up venv and install Robot Framework
         if: env.SHOULD_DEPLOY == 'true'
         run: |
-          python -m venv rf-venv
-          source rf-venv/bin/activate
+          python -m venv "$RUNNER_TEMP/rf-venv"
+          source "$RUNNER_TEMP/rf-venv/bin/activate"
           pip install --upgrade pip
           pip install -r robot-tests/requirements.txt
 
@@ -188,7 +188,7 @@ jobs:
       - name: Initialize Robot Framework Browser
         if: env.SHOULD_DEPLOY == 'true'
         run: |
-          source rf-venv/bin/activate
+          source "$RUNNER_TEMP/rf-venv/bin/activate"
           rfbrowser init
 
       # Step 16: Set AZURE_STATIC_WEB_APPS_URL based on environment
@@ -222,12 +222,12 @@ jobs:
       - name: Run Robot UI Tests
         if: env.SHOULD_DEPLOY == 'true'
         run: |
-          source rf-venv/bin/activate
+          source "$RUNNER_TEMP/rf-venv/bin/activate"
           robot --variable HEADLESS:true --variable APP_URL:$AZURE_STATIC_WEB_APPS_URL robot-tests/ui_tests.robot
 
       # Step 18: Run Robot API Tests
       - name: Run Robot API Tests
         if: env.SHOULD_DEPLOY == 'true'
         run: |
-          source rf-venv/bin/activate
+          source "$RUNNER_TEMP/rf-venv/bin/activate"
           robot --variable API_URL:$AZURE_STATIC_WEB_APPS_URL/api robot-tests/api_tests.robot
