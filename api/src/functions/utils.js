@@ -85,6 +85,15 @@ function getChapterAudioUrl(chapterId) {
   );
 }
 
+function getSlokaAudioUrl(chapterId, slokaId) {
+  return (
+    getChapterBasePath(chapterId, 'audio') +
+    'sloka_' +
+    leftAppendedNumber(slokaId) +
+    '.mp3'
+  );
+}
+
 /**
  * Logs an error message with additional context.
  * @param {object} context - The Azure Function context object.
@@ -138,6 +147,7 @@ module.exports = {
   getSlokaGroupUrl,
   getChapterResource,
   getChapterAudioUrl,
+  getSlokaAudioUrl,
   getChaptersUrl,
   logError,
   validateContent,
