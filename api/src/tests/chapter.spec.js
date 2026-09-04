@@ -28,7 +28,7 @@ describe('chapter Azure Function', () => {
 
     const request = {
       params: { chapterId: 'abc' },
-      query: new Map([['q', 'sanskrit-sandhi']]),
+      query: new Map([['content', 'sanskrit-sandhi']]),
     };
     const result = await handler(request, context);
 
@@ -41,12 +41,12 @@ describe('chapter Azure Function', () => {
 
     const request = {
       params: { chapterId: '1' },
-      query: new Map([['q', 'english']]),
+      query: new Map([['content', 'english']]),
     };
     const result = await handler(request, context);
 
     expect(result.status).toBe(400);
-    expect(JSON.parse(result.body).error).toMatch(/Allowed q values/);
+    expect(JSON.parse(result.body).error).toMatch(/Allowed content values/);
   });
 
   it('should return Sanskrit sandhi chapter content', async () => {
@@ -73,7 +73,7 @@ describe('chapter Azure Function', () => {
 
     const request = {
       params: { chapterId: '1' },
-      query: new Map([['q', 'sanskrit-sandhi']]),
+      query: new Map([['content', 'sanskrit-sandhi']]),
     };
     const result = await handler(request, context);
 
@@ -116,7 +116,7 @@ describe('chapter Azure Function', () => {
 
     const request = {
       params: { chapterId: '1' },
-      query: new Map([['q', 'sanskrit-sandhi']]),
+      query: new Map([['content', 'sanskrit-sandhi']]),
     };
     await handler(request, context);
     const result = await handler(request, context);
