@@ -44,6 +44,10 @@ function getSlokaGroupUrl(chapterId) {
   return getChapterBasePath(chapterId, 'english') + 'sloka-groups.json';
 }
 
+function getSanskritSandhiUrl(chapterId) {
+  return getChapterBasePath(chapterId, 'sanskrit') + 'sandhi.json';
+}
+
 function getChapterName(chapterId) {
   if (Number(chapterId) === 0) {
     return 'dhyanam';
@@ -145,6 +149,7 @@ function validateChapterId(chapterId) {
 module.exports = {
   getSlokaResourceUrl,
   getSlokaGroupUrl,
+  getSanskritSandhiUrl,
   getChapterResource,
   getChapterAudioUrl,
   getSlokaAudioUrl,
