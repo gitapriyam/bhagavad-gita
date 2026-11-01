@@ -35,6 +35,9 @@
     --footer-bg: #181818;
     --footer-fg: #e0e0e0;
     --footer-border: #333;
+    --ios-background: #121212;
+    --ios-secondary-text: #98989d;
+    --ios-separator: #38383a;
   }
 }
 
