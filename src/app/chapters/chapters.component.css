@@ -802,6 +802,7 @@ header {
 
 /* iOS-style page toolbar. */
 .header-flex {
+  box-sizing: border-box;
   position: fixed;
   top: 0;
   right: 0;
@@ -819,14 +820,14 @@ header {
 }
 
 .header-flex .title-bar {
-  justify-content: space-around;
+  justify-content: flex-start;
   width: 100%;
   gap: 2px;
 }
 
 .header-flex .title-action {
-  flex: 1 1 0;
-  width: auto;
+  flex: 0 1 32px;
+  width: 32px;
   min-width: 32px;
   max-width: 48px;
   height: 40px;
@@ -850,7 +851,7 @@ header {
   }
 
   .header-flex .title-bar {
-    justify-content: center;
+    justify-content: flex-start;
     gap: 10px;
   }
 }
@@ -858,7 +859,7 @@ header {
 /* Build information is available from the toolbar on click or tap. */
 .version-control {
   position: relative;
-  flex: 1 1 0;
+  flex: 0 1 32px;
   min-width: 32px;
   max-width: 48px;
 }
@@ -893,6 +894,20 @@ header {
 @media (max-width: 380px) {
   .header-flex .title-action,
   .version-control {
-    min-width: 26px;
+    min-width: 24px;
   }
+}
+
+.header-flex .title-action:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.header-flex .title-action[aria-pressed="true"] {
+  background: rgba(120, 120, 128, 0.25);
+}
+
+.version-control .title-action {
+  width: 100%;
+  min-width: 0;
 }

@@ -16,6 +16,8 @@
   --footer-bg: #f8f9fa;
   --footer-fg: #444;
   --footer-border: #e0e0e0;
+  --search-accent: #0056b3;
+  --secondary-text-color: #666;
   --ios-background: #f2f2f7;
   --ios-secondary-text: #8e8e93;
   --ios-separator: #e5e5ea;
@@ -35,6 +37,8 @@
     --footer-bg: #181818;
     --footer-fg: #e0e0e0;
     --footer-border: #333;
+    --search-accent: #80bfff;
+    --secondary-text-color: #b5b5b5;
     --ios-background: #121212;
     --ios-secondary-text: #98989d;
     --ios-separator: #38383a;
@@ -394,6 +398,9 @@ body.dark-mode .modal-content .close {
 }
 
 .modal-content.search-modal-content {
+  background: var(--modal-background-color);
+  color: var(--modal-text-color);
+  border-color: var(--modal-border-color);
   max-width: 600px;
   width: 95vw;
   max-height: 90vh;
@@ -482,13 +489,6 @@ body.dark-mode .modal-content .close {
   color: #bbb;
 }
 
-@media (max-width: 430px) {
-  body,
-  .main {
-    padding-top: 24px !important;
-    padding-bottom: 16px !important;
-  }
-}
 
 /* Prevent iOS Safari and WebView from auto-scaling font size on orientation change */
 html {

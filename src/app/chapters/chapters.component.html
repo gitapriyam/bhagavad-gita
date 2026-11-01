@@ -9,6 +9,13 @@
           <button class="title-action" type="button" (click)="onSanskritChange({ target: { checked: !showSanskrit } })" [attr.aria-label]="showSanskrit ? 'Show English' : 'Show Sanskrit'" [attr.title]="showSanskrit ? 'Show English' : 'Show Sanskrit'">
             <svg class="title-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16M8 5c0 6-2 10-5 13M8 5c1 4 3 7 6 9M14 15h6M17 12l3 8M14 20l3-8 3 8"/></svg>
           </button>
+          <button class="title-action" type="button" (click)="toggleSandhi()"
+            [disabled]="!showSanskrit || !isSlokaGroupsReady"
+            [attr.aria-pressed]="showSandhi"
+            [attr.aria-label]="showSandhi ? 'Hide Sandhi' : 'Show Sandhi'"
+            [attr.title]="!showSanskrit ? 'Show Sandhi (select Sanskrit first)' : !isSlokaGroupsReady ? 'Sandhi is unavailable for this chapter' : showSandhi ? 'Hide Sandhi' : 'Show Sandhi'">
+            <svg class="title-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v5M12 8l-6 5v7M12 8l6 5v7M3 17l3 3 3-3M15 17l3 3 3-3"/></svg>
+          </button>
           <button class="title-action" type="button" (click)="openSearchModal()" aria-label="Search" title="Search verses">
             <svg class="title-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>
           </button>
@@ -105,6 +112,8 @@
         [chapterId]="chapterId"
         [slokaGroup]="[slokaId]"
         [showSanskrit]="showSanskrit"
+        [showSandhi]="showSandhi"
+        [isSlokaGroupsReady]="isSlokaGroupsReady"
       ></app-sloka>
     </div>
   </div>

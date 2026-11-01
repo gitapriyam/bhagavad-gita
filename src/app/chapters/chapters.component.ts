@@ -151,6 +151,9 @@ export class ChaptersComponent implements OnInit {
 
     this.isChapterMenuOpen = false;
     this.updateBodyOverlayClass();
+    if (isPlatformBrowser(this.platformId)) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
   }
 
   private assignChapterAudio() {
@@ -207,7 +210,11 @@ export class ChaptersComponent implements OnInit {
     this.assignChapterResource();
   }
 
-  toggleSandhi(): void {}
+  toggleSandhi(): void {
+    if (this.showSanskrit && this.isSlokaGroupsReady) {
+      this.showSandhi = !this.showSandhi;
+    }
+  }
 
   getChapterName(chapter: any): string {
     return this.utilityService.getChapterName(chapter.id, this.showSanskrit);
