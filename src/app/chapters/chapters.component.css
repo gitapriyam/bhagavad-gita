@@ -748,7 +748,7 @@ header {
   border-radius: 0;
   background: transparent;
   color: #111;
-  font: bold 16px/1.35 Georgia, 'Times New Roman', serif;
+  font: bold 1em/1.35 Georgia, 'Times New Roman', serif;
   text-align: left;
   white-space: nowrap;
   cursor: pointer;
@@ -793,9 +793,6 @@ header {
     box-shadow: none;
   }
 
-  .chapter-list-item {
-    font-size: 16px;
-  }
 }
 
 /* Share the toolbar offset with the content and chapter menu. */
