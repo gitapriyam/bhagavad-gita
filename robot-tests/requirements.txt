@@ -1,19 +1,29 @@
 certifi==2025.4.26
 charset-normalizer==3.4.2
-click==8.2.1
-grpcio==1.71.0
-grpcio-tools==1.71.0
+click==8.2.1; python_version < "3.14"
+click==8.5.0; python_version >= "3.14"
+grpcio==1.71.0; python_version < "3.14"
+grpcio==1.83.0; python_version >= "3.14"
+grpcio-tools==1.71.0; python_version < "3.14"
+grpcio-tools==1.83.0; python_version >= "3.14"
 idna==3.10
 natsort==8.4.0
 overrides==7.7.0
-protobuf==5.29.3
+protobuf==5.29.3; python_version < "3.14"
+protobuf==7.35.1; python_version >= "3.14"
 requests==2.32.4
-robotframework==7.3
-robotframework-assertion-engine==3.0.3
-robotframework-browser==19.5.1
-robotframework-pythonlibcore==4.4.1
+robotframework==7.3; python_version < "3.14"
+robotframework==7.4.2; python_version >= "3.14"
+robotframework-assertion-engine==3.0.3; python_version < "3.14"
+robotframework-assertion-engine==5.0.1; python_version >= "3.14"
+robotframework-browser==19.5.1; python_version < "3.14"
+robotframework-browser==20.4.0; python_version >= "3.14"
+robotframework-pythonlibcore==4.4.1; python_version < "3.14"
+robotframework-pythonlibcore==4.6.0; python_version >= "3.14"
 robotframework-requests==0.9.7
 seedir==0.5.1
-setuptools==80.9.0
+setuptools==80.9.0; python_version < "3.14"
+setuptools==84.0.0; python_version >= "3.14"
 urllib3==2.4.0
-wrapt==1.17.2
+wrapt==1.17.2; python_version < "3.14"
+wrapt==2.4.0; python_version >= "3.14"

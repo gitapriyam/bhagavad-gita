@@ -78,6 +78,9 @@
   text-overflow: ellipsis;
   height: 100%;
   pointer-events: auto;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
 }
 
 header {
@@ -97,10 +100,31 @@ header {
   align-self: flex-start;
 }
 
+.menu-icon {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 1.8;
+}
+
 /* Robust: Hide dropdowns when chapter overlay is open using a body class */
 body.chapters-overlay-open .dropdown-content.app-dropdown,
 body.chapters-overlay-open .dropdown-content.chapter-dropdown {
   display: none !important;
+}
+
+body.chapters-overlay-open .current-chapter-title-row {
+  visibility: hidden;
+}
+
+@media (max-width: 767px) {
+  body.chapters-overlay-open .sloka-list,
+  body.chapters-overlay-open .sloka-view {
+    width: calc(100% - 118px);
+    margin-left: 118px;
+  }
 }
 /* Ensure dropdown items use theme text color for visibility */
 .dropdown-content.chapter-dropdown .dropdown-item,
@@ -154,6 +178,97 @@ header {
   width: 100%;
   font-family: var(--font-family);
   color: var(--text-color);
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.dropdown-arrow {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-left: 9px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 180ms ease;
+}
+
+.title-bar,
+.chapter-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.title-bar {
+  justify-content: center;
+  flex-wrap: nowrap;
+  width: 100%;
+  gap: 6px;
+}
+
+.title-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-color);
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.title-action:hover,
+.title-action:focus-visible {
+  background: rgba(120, 120, 128, 0.14);
+  outline: none;
+}
+
+.title-icon {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.font-icon,
+.script-icon {
+  display: block;
+  line-height: 1;
+  font-family: Georgia, serif;
+}
+
+.font-icon.small {
+  font-size: 0.82rem;
+}
+
+.font-icon.large {
+  font-size: 1.18rem;
+}
+
+.script-icon {
+  font-size: 1rem;
+}
+
+.title-name {
+  width: auto;
+  padding: 0 8px;
+  font-weight: 700;
+  cursor: default;
+}
+
+.header-title[aria-expanded='true'] .dropdown-arrow,
+.current-chapter-title[aria-expanded='true'] .dropdown-arrow {
+  transform: translateY(2px) rotate(225deg);
 }
 /* Chapter dropdown: robust, never truncated, always visible above content, but below overlay on mobile */
 .dropdown-content.chapter-dropdown {
@@ -454,5 +569,332 @@ header {
   .chapters-overlay {
     display: flex; /* Show overlay on smaller screens */
     justify-content: flex-start; /* Align the chapter list to the top */
+  }
+}
+
+/* iOS-style mobile shell and grouped chapter list */
+@media (max-width: 767px) {
+  .header-flex {
+    min-height: 74px;
+    height: 74px;
+    background: transparent;
+    box-shadow: none;
+    z-index: 3;
+  }
+
+  .header-col-left,
+  .header-col-right {
+    display: flex;
+  }
+
+  .header-col-left {
+    position: absolute;
+    left: 8px;
+    z-index: 2;
+  }
+
+  .header-col-right {
+    visibility: hidden;
+  }
+
+  .header-col-center,
+  .header-col-center > div {
+    width: 100%;
+  }
+
+  .menu-button {
+    width: 42px;
+    height: 42px;
+    margin: 0;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 1.45rem;
+    line-height: 1;
+    background: rgba(255, 255, 255, 0.72);
+  }
+
+  .header-title {
+    font-size: 0.78rem;
+    font-weight: 400;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .header-title-dropdown {
+    height: 28px;
+  }
+
+  .title-bar {
+    gap: 4px;
+    justify-content: center;
+    padding: 0 38px;
+    box-sizing: border-box;
+  }
+
+  .title-action {
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+    font-size: 0.9rem;
+  }
+
+  .title-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .title-name {
+    padding: 0 4px;
+    font-size: 0.78rem;
+  }
+
+  .header-title .dropdown-arrow,
+  .current-chapter-title .dropdown-arrow {
+    color: #1c1c1e;
+    width: 7px;
+    height: 7px;
+    margin-left: 8px;
+    border-width: 1.5px;
+  }
+
+  .current-chapter-title-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    min-height: 38px;
+  }
+
+  .current-chapter-title {
+    justify-content: center;
+    width: auto;
+    min-width: 0;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    font-size: 1.25rem;
+    font-weight: 700;
+    box-shadow: none;
+  }
+
+  .chapter-actions {
+    gap: 1px;
+  }
+
+  .current-chapter-title-row {
+    justify-content: center;
+  }
+
+  .chapter-actions .title-action {
+    width: 27px;
+    height: 27px;
+    color: var(--ios-secondary-text);
+  }
+
+  .dropdown-content.app-dropdown,
+  .dropdown-content.chapter-dropdown {
+    top: calc(100% + 8px);
+    min-width: 230px;
+    padding: 8px;
+    border: 1px solid rgba(60, 60, 67, 0.12);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.97) !important;
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.16);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    z-index: 20;
+  }
+
+  .dropdown-content .dropdown-item {
+    min-height: 42px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    font-size: 0.98rem;
+  }
+
+  .dropdown-content .dropdown-item + .dropdown-item {
+    border-top: 1px solid var(--ios-separator);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+  .dropdown-content .dropdown-item:hover,
+  .dropdown-content .dropdown-item:focus-within {
+    background: #f2f2f7;
+  }
+
+  .dropdown-content.chapter-dropdown a {
+    display: block;
+    width: 100%;
+    color: #1c1c1e !important;
+    text-decoration: none;
+  }
+
+}
+
+/* Compact chapter menu presentation. */
+.chapter-list-item {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  padding: 3px 8px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #111;
+  font: bold 16px/1.35 Georgia, 'Times New Roman', serif;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.chapter-list-item:hover,
+.chapter-list-item:focus-visible {
+  background: #f0f0f0;
+  outline: none;
+}
+
+.chapter-title-row {
+  display: block;
+}
+
+.chapters-list li {
+  margin: 0;
+}
+
+@media (max-width: 767px) {
+  .chapters-overlay {
+    top: var(--page-toolbar-height);
+    bottom: 0;
+    left: 0;
+    width: max-content;
+    min-width: 118px;
+    max-width: calc(100vw - 16px);
+    height: auto;
+    overscroll-behavior-y: contain;
+    padding: 8px 0 24px;
+    background: #fff;
+    border-right: 1px solid #d6d6d6;
+    z-index: 10;
+  }
+
+  .chapters-list {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .chapter-list-item {
+    font-size: 16px;
+  }
+}
+
+/* Share the toolbar offset with the content and chapter menu. */
+:host {
+  --page-toolbar-height: calc(58px + env(safe-area-inset-top, 0px));
+}
+
+/* iOS-style page toolbar. */
+.header-flex {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 20;
+  width: 100%;
+  min-height: var(--page-toolbar-height);
+  height: var(--page-toolbar-height);
+  padding: calc(6px + env(safe-area-inset-top, 0px)) 8px 6px;
+  border-bottom: 1px solid #d6d6d6;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(12px);
+}
+
+.header-flex .title-bar {
+  justify-content: space-around;
+  width: 100%;
+  gap: 2px;
+}
+
+.header-flex .title-action {
+  flex: 1 1 0;
+  width: auto;
+  min-width: 32px;
+  max-width: 48px;
+  height: 40px;
+  border-radius: 12px;
+}
+
+.header-flex .title-action:active {
+  background: rgba(120, 120, 128, 0.2);
+  transform: scale(0.94);
+}
+
+.container {
+  padding-top: calc(var(--page-toolbar-height) + 14px);
+  padding-bottom: 42px;
+}
+
+@media (min-width: 768px) {
+  .header-flex {
+    padding-right: 24px;
+    padding-left: 24px;
+  }
+
+  .header-flex .title-bar {
+    justify-content: center;
+    gap: 10px;
+  }
+}
+
+/* Build information is available from the toolbar on click or tap. */
+.version-control {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 32px;
+  max-width: 48px;
+}
+
+.version-control summary {
+  list-style: none;
+}
+
+.version-control summary::-webkit-details-marker {
+  display: none;
+}
+
+.version-info {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: max-content;
+  max-width: min(320px, calc(100vw - 32px));
+  padding: 16px;
+  border: 1px solid var(--modal-border-color);
+  border-radius: 12px;
+  background: var(--modal-background-color);
+  color: var(--modal-text-color);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 380px) {
+  .header-flex .title-action,
+  .version-control {
+    min-width: 26px;
   }
 }

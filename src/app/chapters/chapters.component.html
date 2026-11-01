@@ -1,76 +1,34 @@
 <div class="container">
   <header class="header-flex">
-    <div class="header-col header-col-left">
-      <button class="menu-button" (click)="toggleMenu()">☰</button>
+    <div class="title-bar" role="toolbar" aria-label="Page controls">
+          <button class="title-action chapter-menu-toggle" type="button" (click)="toggleMenu()" [attr.aria-label]="isChapterMenuOpen ? 'Close chapter menu' : 'Open chapter menu'" [attr.title]="isChapterMenuOpen ? 'Close chapter menu' : 'Open chapter menu'">
+            <svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 7h16M4 12h16M4 17h16"></path>
+            </svg>
+          </button>
+          <button class="title-action" type="button" (click)="onSanskritChange({ target: { checked: !showSanskrit } })" [attr.aria-label]="showSanskrit ? 'Show English' : 'Show Sanskrit'" [attr.title]="showSanskrit ? 'Show English' : 'Show Sanskrit'">
+            <svg class="title-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16M8 5c0 6-2 10-5 13M8 5c1 4 3 7 6 9M14 15h6M17 12l3 8M14 20l3-8 3 8"/></svg>
+          </button>
+          <button class="title-action" type="button" (click)="openSearchModal()" aria-label="Search" title="Search verses">
+            <svg class="title-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>
+          </button>
+          <button class="title-action" type="button" (click)="decreaseFontSize()" aria-label="Decrease font size" title="Decrease font size"><span class="font-icon small" aria-hidden="true">A</span></button>
+          <button class="title-action" type="button" (click)="increaseFontSize()" aria-label="Increase font size" title="Increase font size"><span class="font-icon large" aria-hidden="true">A</span></button>
+          <button class="title-action" type="button" (click)="openHelpAndReferences()" aria-label="Help" title="Help and references"><svg class="title-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.3 2.3 0 1 1 3.7 1.8c-1 .7-1.5 1.2-1.5 2.4M12 16.5h.01"/></svg></button>
+          <a class="title-action" [href]="chapterAudioSrc" target="_blank" download aria-label="Download audio" title="Download chapter audio"><svg class="title-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l10-2v13M9 9l10-2"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/></svg></a>
+          <a class="title-action" [href]="chapterResource" target="_blank" download aria-label="Download PDF" title="Download chapter PDF"><svg class="title-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l3 3v15H6zM15 3v4h4M8 11h8M8 15h8M8 19h5"/></svg></a>
+          <a class="title-action" [href]="chapterTamilResource" target="_blank" download aria-label="Download Tamil PDF" title="Download chapter PDF in Tamil"><span class="script-icon" aria-hidden="true">த</span></a>
+          <details #versionPopup class="version-control">
+            <summary class="title-action" aria-label="App version information" title="App version information">
+              <svg class="title-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></svg>
+            </summary>
+            <div class="version-info">
+              <span>Version: {{ buildInfo.version }}</span>
+              <span>Released: {{ buildInfo.releaseDate }}</span>
+              <span>Commit: {{ buildInfo.commitHash }}</span>
+            </div>
+          </details>
     </div>
-    <div style="display: flex; flex-direction: column; align-items: center">
-      <div class="header-col header-col-center">
-        <div class="header-title-dropdown">
-          <h3 class="header-title">
-            {{ getApplicationTitle() }}
-            <span
-              class="dropdown-arrow"
-              (click)="toggleAppDropdown(); $event.stopPropagation()"
-              >▼</span
-            >
-          </h3>
-          <div class="dropdown-content app-dropdown" *ngIf="isAppDropdownOpen">
-            <div class="dropdown-item" (click)="$event.stopPropagation()">
-              <input
-                type="checkbox"
-                [(ngModel)]="showSanskrit"
-                (click)="onSanskritChange($event); $event.stopPropagation()"
-              />
-              Show Sanskrit
-            </div>
-            <div class="dropdown-item" (click)="$event.stopPropagation()">
-              <input
-                type="checkbox"
-                [(ngModel)]="showSandhi"
-                [disabled]="!showSanskrit || !isSlokaGroupsReady"
-                (click)="toggleSandhi(); $event.stopPropagation()"
-              />
-              Show Sandhi
-            </div>
-            <div class="dropdown-item" (click)="openSearchModal()">Search</div>
-            <div class="dropdown-item" (click)="openHelpAndReferences()">
-              Help
-            </div>
-            <div class="dropdown-item" (click)="decreaseFontSize()">A-</div>
-            <div class="dropdown-item" (click)="increaseFontSize()">A+</div>
-          </div>
-        </div>
-      </div>
-      <div class="current-chapter-title-row dropdown">
-        <h2 class="current-chapter-title">
-          {{ chapterName }}
-          <span
-            class="dropdown-arrow"
-            (click)="toggleDropdown(); $event.stopPropagation()"
-            >▼</span
-          >
-        </h2>
-        <div
-          class="dropdown-content chapter-dropdown"
-          *ngIf="isDropdownOpen"
-          (click)="$event.stopPropagation()"
-        >
-          <div class="dropdown-item">
-            <a [href]="chapterAudioSrc" target="_blank" download>Audio</a>
-          </div>
-          <div class="dropdown-item">
-            <a [href]="chapterResource" target="_blank" download>PDF</a>
-          </div>
-          <div class="dropdown-item">
-            <a [href]="chapterTamilResource" target="_blank" download
-              >Tamil PDF</a
-            >
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="header-col header-col-right"><!-- spacer for symmetry --></div>
     <!-- Help Modal -->
     <div class="modal" [ngClass]="{ show: showHelpAndReferences }">
       <div class="modal-content help-modal-content">
@@ -91,9 +49,9 @@
       <ul class="chapters-list">
         <li *ngFor="let chapter of chapters">
           <div class="chapter-title-row">
-            <h4 (click)="showSlokas(chapter)">
-              {{ getChapterName(chapter) }}
-            </h4>
+            <button class="chapter-list-item" type="button" (click)="showSlokas(chapter); hideChapterOverlay()">
+              {{ showSanskrit ? chapter.sanskrit : chapter.english }}
+            </button>
           </div>
         </li>
       </ul>
@@ -112,13 +70,13 @@
         <app-search-results></app-search-results>
       </div>
     </div>
-    <div class="chapters-overlay" *ngIf="showChapterView && windowWidth < 768">
+    <div class="chapters-overlay" *ngIf="isChapterMenuOpen && windowWidth < 768">
       <ul class="chapters-list">
         <li *ngFor="let chapter of chapters">
           <div class="chapter-title-row">
-            <h4 (click)="showSlokas(chapter)">
-              {{ getChapterName(chapter) }}
-            </h4>
+            <button class="chapter-list-item" type="button" (click)="showSlokas(chapter); hideChapterOverlay()">
+              {{ showSanskrit ? chapter.sanskrit : chapter.english }}
+            </button>
           </div>
         </li>
       </ul>

@@ -30,9 +30,12 @@ jobs:
 
       # Step 2: Set up Node.js
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: '.nvmrc'
+
+      - name: Set up npm
+        run: npm install --global npm@12.2.1
 
       # Step 3: Set Deployment Environment
       - name: Set Deployment Environment
@@ -59,13 +62,9 @@ jobs:
 
       # Step 4: Install dependencies
       - name: Install Dependencies
-        run: npm ci --legacy-peer-deps
+        run: npm ci
 
-      # Step 5: Install Angular CLI
-      - name: Install Angular CLI
-        run: npm install -g @angular/cli@19
-
-      # Step 6: Install Angular CLI
+      # Step 6: Run frontend unit tests
       - name: Run unit tests
         run: npm test
 
@@ -149,7 +148,7 @@ jobs:
             DEPLOYMENT_TOKEN="${AZURE_STATIC_WEB_APPS_API_TOKEN_DEV:-$AZURE_STATIC_WEB_APPS_API_TOKEN}"
           fi
 
-          npx -y @azure/static-web-apps-cli@2.0.9 deploy \
+          npx -y @azure/static-web-apps-cli@2.1.0 deploy \
             --app-location "$APP_LOCATION" \
             --api-location "$API_LOCATION" \
             --output-location "$OUTPUT_LOCATION" \
@@ -157,7 +156,7 @@ jobs:
             --env "$SWA_CLI_DEPLOY_ENV" \
             --swa-config-location . \
             --api-language node \
-            --api-version 20
+            --api-version 22
 
       # Step 13: Set up Python
       - name: Set up Python

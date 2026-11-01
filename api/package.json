@@ -17,5 +17,10 @@
   "devDependencies": {
     "jest": "^29.7.0"
   },
-  "main": "src/{index.js,functions/*.js}"
+  "main": "src/{index.js,functions/*.js}",
+  "engines": {
+    "node": "^22.23.4",
+    "npm": "^12.2.1"
+  },
+  "packageManager": "npm@12.2.1"
 }
