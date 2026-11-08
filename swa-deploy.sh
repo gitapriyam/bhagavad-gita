@@ -41,9 +41,7 @@ cd -
 
 # Build the frontend application
 echo "Building frontend application..."
-# Using --legacy-peer-deps to bypass peer dependency conflicts during installation.
-# This is a temporary workaround; resolving these conflicts is recommended in the future.
-npm install --legacy-peer-deps
+npm ci
 
 if [ "$ENVIRONMENT" == "development" ]; then
   echo "Building in development mode..."
@@ -57,7 +55,7 @@ fi
 echo "Installing production dependencies for the API..."
 cd $API_LOCATION
 echo "Current directory: $(pwd)"
-npm install --production
+npm install --omit=dev
 cd -
 
 # Deploy or start the Static Web App based on the action
@@ -86,5 +84,5 @@ else
     --app-name gita-app-rg/bhagavad-gita \
     --swa-config-location src \
     --api-language node \
-    --api-version 20
+    --api-version 22
 fi

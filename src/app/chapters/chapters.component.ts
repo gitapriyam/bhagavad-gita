@@ -4,8 +4,11 @@ import {
   Inject,
   PLATFORM_ID,
   HostListener,
+  ElementRef,
+  ViewChild,
 } from '@angular/core';
 import { environment } from '../../environments/environment';
+import { environment as buildEnvironment } from '../environment-loader';
 import { SlokaListComponent } from '../sloka-list/sloka-list.component';
 import { UtilityService } from '../services/utility.service';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
@@ -31,10 +34,13 @@ import { SearchResultsComponent } from '../search-results/search-results.compone
   standalone: true,
 })
 export class ChaptersComponent implements OnInit {
+  @ViewChild('versionPopup') versionPopup?: ElementRef<HTMLDetailsElement>;
+  readonly buildInfo = buildEnvironment;
   chapterId: number = 0;
   chapters: any[] = [];
   chapterName: string = '';
   showChapterView: boolean = true;
+  isChapterMenuOpen = false;
   showSlokaView: boolean = false;
   slokaTitle: string = '';
   slokaCount: number = 0;
@@ -57,7 +63,7 @@ export class ChaptersComponent implements OnInit {
 
   private updateBodyOverlayClass(): void {
     if (isPlatformBrowser(this.platformId)) {
-      if (this.showChapterView && this.windowWidth < 768) {
+      if (this.isChapterMenuOpen && this.windowWidth < 768) {
         document.body.classList.add('chapters-overlay-open');
       } else {
         document.body.classList.remove('chapters-overlay-open');
@@ -115,6 +121,7 @@ export class ChaptersComponent implements OnInit {
     if (isPlatformBrowser(this.platformId)) {
       this.windowWidth = event.target.innerWidth;
       this.adjustChapterView(this.windowWidth);
+      this.updateBodyOverlayClass();
     }
   }
 
@@ -125,7 +132,7 @@ export class ChaptersComponent implements OnInit {
   toggleMenu(): void {
     if (isPlatformBrowser(this.platformId)) {
       if (this.windowWidth < 768) {
-        this.showChapterView = !this.showChapterView;
+        this.isChapterMenuOpen = !this.isChapterMenuOpen;
         this.updateBodyOverlayClass();
       }
     }
@@ -142,8 +149,10 @@ export class ChaptersComponent implements OnInit {
     this.assignChapterResource(true);
     this.assignChapterAudio();
 
-    if (isPlatformBrowser(this.platformId) && this.windowWidth < 768) {
-      this.showChapterView = false;
+    this.isChapterMenuOpen = false;
+    this.updateBodyOverlayClass();
+    if (isPlatformBrowser(this.platformId)) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }
   }
 
@@ -201,17 +210,19 @@ export class ChaptersComponent implements OnInit {
     this.assignChapterResource();
   }
 
-  toggleSandhi(): void {}
+  toggleSandhi(): void {
+    if (this.showSanskrit && this.isSlokaGroupsReady) {
+      this.showSandhi = !this.showSandhi;
+    }
+  }
 
   getChapterName(chapter: any): string {
     return this.utilityService.getChapterName(chapter.id, this.showSanskrit);
   }
 
   hideChapterOverlay(): void {
-    if (this.windowWidth < 768) {
-      this.showChapterView = false;
-      this.updateBodyOverlayClass();
-    }
+    this.isChapterMenuOpen = false;
+    this.updateBodyOverlayClass();
   }
 
   increaseFontSize(): void {
@@ -241,6 +252,18 @@ export class ChaptersComponent implements OnInit {
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: Event): void {
     const target = event.target as HTMLElement;
+
+    if (
+      this.isChapterMenuOpen &&
+      !target.closest('.chapters-overlay, .chapter-menu-toggle')
+    ) {
+      this.hideChapterOverlay();
+    }
+
+    const versionPopup = this.versionPopup?.nativeElement;
+    if (versionPopup?.open && !versionPopup.contains(target)) {
+      versionPopup.open = false;
+    }
 
     // Close the chapter dropdown if the click is outside
     if (!target.closest('.dropdown')) {
