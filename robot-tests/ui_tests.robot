@@ -3,7 +3,8 @@ Documentation     This Robot Framework test suite uses the Browser library to pe
 Library           Collections
 Library           Browser
 
-Suite Setup       Open Browser App and Select Chapter
+Suite Setup       Open Browser To App
+Test Setup        Select Chapter By Index    1
 Suite Teardown    Close Browser
 
 *** Variables ***
@@ -13,49 +14,36 @@ ${APP_URL}        http://localhost:4280
 *** Keywords ***
 # Opens a web browser and navigates to the application under test.
 
-Open Browser App and Select Chapter
-    [Arguments]    ${chapter_index}=1
-    [Documentation]    Opens the application in a new browser instance and selects a chapter by its index.
-    Open Browser To App
-    Select Chapter By Index    ${chapter_index}    15
-
 Open Browser To App
     [Documentation]    Opens a new browser instance and navigates to the application URL.
     New Browser    headless=${HEADLESS}
+    New Context    viewport={"width": 1280, "height": 800}
     # Opens a new browser page and navigates to the application URL specified by ${APP_URL}.
     New Page    ${APP_URL}
 
-# Ensures that the dropdown element is currently open and visible to the user. This keyword can be used to verify the state of dropdown menus before performing further actions or assertions.
-Ensure Dropdown Is Open
-    [Documentation]    Ensures that the chapter dropdown is open by checking its content visibility and clicking the drop button if it is not visible.
-    ${is_open}=    Run Keyword And Return Status    Wait For Elements State    css=.dropdown-content.chapter-dropdown    visible    timeout=1s
-    IF    not ${is_open}
-        Click    css=.current-chapter-title > .dropdown-arrow
-        Wait For Elements State    css=.dropdown-content.chapter-dropdown    visible
+# Open the mobile chapter menu only when the desktop list is hidden.
+Ensure Chapter Menu Is Open
+    ${is_visible}=    Run Keyword And Return Status    Wait For Elements State    css=.chapters-list .chapter-list-item >> visible=true >> nth=0    visible    timeout=1s
+    IF    not ${is_visible}
+        Click    css=.chapter-menu-toggle
+        Wait For Elements State    css=.chapters-overlay .chapter-list-item >> nth=0    visible
     END
-# Selects a chapter by its index in the chapter list.
+
 Select Chapter By Index
-    [Arguments]    ${index}    ${timeout}=5s
-    [Documentation]    Selects a chapter by its 0-based index in the chapter list. Converts the index to 1-based internally for CSS compatibility.
-    ${css_index}=    Evaluate    ${index} + 1
-    Wait For Elements State    css=.chapters-list>li:nth-child(${css_index})>.chapter-title-row>h4    visible    timeout=5s
-    ${chapter}=    Get Element    css=.chapters-list>li:nth-child(${css_index})>.chapter-title-row>h4
+    [Arguments]    ${index}    ${timeout}=15s
+    [Documentation]    Selects a chapter by its 0-based index and waits for its verse list.
+    Ensure Chapter Menu Is Open
+    ${chapter}=    Set Variable    css=.chapters-list .chapter-list-item >> visible=true >> nth=${index}
+    Wait For Elements State    ${chapter}    visible    timeout=${timeout}
     Click    ${chapter}
-    #wait for a few seconds
-    Sleep    ${timeout}
+    Wait For Elements State    css=#sloka-list app-single-sloka >> nth=0    visible    timeout=${timeout}
 
 Validate Chapter Resource Link
-    [Arguments]    ${index}    ${expected_text}    ${expected_url_fragment}
-    [Documentation]    Validates that the chapter resource link at the specified index contains the expected text and URL fragment.
-    ...                - `${index}`: The 1-based index of the resource link in the dropdown.
-    ...                - `${expected_text}`: The expected text of the resource link.
-    ...                - `${expected_url_fragment}`: The expected fragment of the URL for the resource
-    Ensure Dropdown Is Open
-    ${resource}=    Get Element   css=.dropdown-content.chapter-dropdown > .dropdown-item:nth-child(${index}) > a
-    ${resource_text}=    Get Text    ${resource}
-    Should Be Equal    ${resource_text}    ${expected_text}
-    ${url}=    Get Attribute    css=.dropdown-content.chapter-dropdown > .dropdown-item:nth-child(${index}) > a    href
-    Should Contain    ${url}    ${expected_url_fragment}
+    [Arguments]    ${label}    ${expected_url_fragment}
+    [Documentation]    Validates the chapter download link in the toolbar.
+    ${resource}=    Set Variable    css=.title-bar a[aria-label="${label}"]
+    Wait For Elements State    ${resource}    visible
+    Wait For Condition    Attribute    ${resource}    href    contains    ${expected_url_fragment}    timeout=15s
 
 Print Html content
     [Arguments]    ${css_selector}    ${content}
@@ -72,7 +60,8 @@ Home Page Loads
 
 Chapter List Is Visible
     [Documentation]    Verifies that the chapter list is visible on the user interface.
-    ${first_chapter}=    Get Text    css=.chapters-list li:first-child h4
+    Ensure Chapter Menu Is Open
+    ${first_chapter}=    Get Text    css=.chapters-list .chapter-list-item >> visible=true >> nth=0
     Should Be Equal    ${first_chapter}    Dhyanam
 
 # This test case selects a chapter in the Bhagavad Gita application and verifies that the corresponding slokas (verses) are displayed to the user.
@@ -88,7 +77,7 @@ Sloka Cookie Is Set On Selection
     ...                - `currentSloka`: Represents the currently selected sloka (verse) in the application. This cookie ensures that the user's selection is preserved across sessions or page reloads.
     ...                - `currentChapter`: Represents the chapter currently being viewed. This cookie helps maintain the user's context within the application.
     ...                - `showSanskrit`: Indicates whether the Sanskrit text display is enabled or disabled. This cookie reflects the user's preference for viewing the text in Sanskrit.
-    Click   css=#sloka-list > div:nth-child(1) > ul > li:nth-child(1) > app-single-sloka > div
+    Click   css=#sloka-list app-single-sloka >> nth=0 >> css=.sloka-single-container > div.custom-pre.clickable
     # Check that the cookie is set correctly
     ${currentSloka}=    Get Cookie    currentSloka
     Should Not Be Empty    ${currentSloka.value}
@@ -109,20 +98,13 @@ Sloka Cookie Is Used On Reload
     ...                3. Retrieve the `currentSloka` cookie and verify its value matches the selected sloka.
     # Clicks on the third sloka item in the list within the second div of the element with id 'sloka-list'.
     # This action targets the <div> inside the <app-single-sloka> component for the specified sloka.
-    Click    css=#sloka-list > div:nth-child(1) > ul > li:nth-child(3) > app-single-sloka > div
+    Click    css=#sloka-list app-single-sloka >> nth=2 >> css=.sloka-single-container > div.custom-pre.clickable
     Reload
     ${cookie}=    Get Cookie    currentSloka
     Should Be Equal    ${cookie.value}    2
 
 Chapter URL Resources Are Valid
     [Tags]    smoke
-    Ensure Dropdown Is Open
-    ${css_selector}=    Set Variable    css=.dropdown-content.chapter-dropdown
-    Wait For Elements State    ${css_selector}    visible    timeout=10s
-    Print Html content    ${css_selector}    outerHTML
-    ${resources}=    Get Elements    ${css_selector} > .dropdown-item
-    Should Not Be Empty    ${resources}
-    Length Should Be    ${resources}    3
-    Validate Chapter Resource Link    1    Audio        slokastorage
-    Validate Chapter Resource Link    2    PDF          slokastorage
-    Validate Chapter Resource Link    3    Tamil PDF    tamil.pdf
+    Validate Chapter Resource Link    Download audio        slokastorage
+    Validate Chapter Resource Link    Download PDF          slokastorage
+    Validate Chapter Resource Link    Download Tamil PDF    tamil.pdf

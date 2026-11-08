@@ -17,9 +17,12 @@ This project is an Angular-based static web application. Below are the details r
 swa-deploy.sh # Deployment script for SWA
 ```
 ## Prerequisites
-- Node.js (v16 or later)
+- Node.js 22.23.4 (see `.nvmrc`)
+- npm 12.2.1
 - Azure CLI
 - Azure Static Web Apps CLI (`@azure/static-web-apps-cli`)
+
+Node 22 is the newest major supported by both Angular 19 and the Azure Static Web Apps managed API. CI reads `.nvmrc`, and both deployment paths use the Node 22 API runtime.
 
 ## Setup Instructions
 
@@ -29,11 +32,14 @@ swa-deploy.sh # Deployment script for SWA
    cd bhagavad-gita
    ```
 
-2. **Install dependencies:**
+2. **Select the toolchain and install dependencies:**
    ```
-   npm install
+   nvm install
+   nvm use
+   npm install --global npm@12.2.1
+   npm ci
    cd api
-   npm install
+   npm ci
    cd ..
    ```
 ### 4. Build the Application
