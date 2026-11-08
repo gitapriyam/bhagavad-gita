@@ -45,8 +45,6 @@ describe('SingleSlokaComponent', () => {
     component.expandedSloka = 0;
     component.chapterId = 1;
     component.showSanskrit = false;
-    component.showSandhi = false;
-    component.isSlokaGroupsReady = true;
     fixture.detectChanges();
   });
 

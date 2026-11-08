@@ -20,6 +20,10 @@ import { FormsModule } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
 import { LoggerService } from '@app/services/logging.service';
 import { SearchResultsComponent } from '../search-results/search-results.component';
+import { SandhiReaderComponent } from '../sandhi-reader/sandhi-reader.component';
+
+type ReadingMode = 'english' | 'sanskrit' | 'sanskrit-sandhi';
+
 @Component({
   selector: 'app-chapters',
   templateUrl: './chapters.component.html',
@@ -30,6 +34,7 @@ import { SearchResultsComponent } from '../search-results/search-results.compone
     SlokaListComponent,
     SlokaComponent,
     SearchResultsComponent,
+    SandhiReaderComponent,
   ],
   standalone: true,
 })
@@ -46,9 +51,7 @@ export class ChaptersComponent implements OnInit {
   slokaCount: number = 0;
   windowWidth: number = 0;
   slokaId: number = 0;
-  showSanskrit: boolean = false;
-  showSandhi: boolean = false;
-  isSlokaGroupsReady: boolean = false; // Set appropriately if you have async logic
+  readingMode: ReadingMode = 'english';
   fontSize: number = 16;
   chapterAudioSrc: string = '';
   chapterResource: string = '';
@@ -85,9 +88,9 @@ export class ChaptersComponent implements OnInit {
     if (this.cookieService.get('currentChapter')) {
       this.chapterId = +this.cookieService.get('currentChapter');
     }
-    if (this.cookieService.get('showSanskrit')) {
-      this.showSanskrit = this.cookieService.get('showSanskrit') === 'true';
-    }
+    this.readingMode =
+      this.cookieService.get('showSanskrit') === 'true' ? 'sanskrit' : 'english';
+    this.saveLanguagePreference();
     if (isPlatformBrowser(this.platformId)) {
       this.windowWidth = window.innerWidth;
       this.showSlokas(this.chapters[this.chapterId]);
@@ -140,10 +143,13 @@ export class ChaptersComponent implements OnInit {
 
   showSlokas(chapter: any): void {
     this.chapterId = chapter.id;
+    this.cookieService.set('currentChapter', this.chapterId.toString(), 30);
     this.chapterName = this.showSanskrit ? chapter.sanskrit : chapter.english;
     this.slokaCount = chapter.slokaCount;
     this.showSlokaView = false;
-    this.showSandhi = false;
+    if (this.showSandhi && !this.isSandhiAvailable) {
+      this.readingMode = 'sanskrit';
+    }
 
     this.assignChapterResource();
     this.assignChapterResource(true);
@@ -204,16 +210,30 @@ export class ChaptersComponent implements OnInit {
     this.showSlokaView = false;
   }
 
-  onSanskritChange(event: any): void {
-    this.showSanskrit = event.target.checked;
-    this.setChapterName(this.chapters[this.chapterId]);
-    this.assignChapterResource();
+  onReadingModeChange(mode: ReadingMode): void {
+    const wasSanskrit = this.showSanskrit;
+    this.readingMode = mode;
+    if (wasSanskrit !== this.showSanskrit) {
+      this.saveLanguagePreference();
+      this.setChapterName(this.chapters[this.chapterId]);
+      this.assignChapterResource();
+    }
   }
 
-  toggleSandhi(): void {
-    if (this.showSanskrit && this.isSlokaGroupsReady) {
-      this.showSandhi = !this.showSandhi;
-    }
+  private saveLanguagePreference(): void {
+    this.cookieService.set('showSanskrit', this.showSanskrit.toString(), 30);
+  }
+
+  get showSanskrit(): boolean {
+    return this.readingMode !== 'english';
+  }
+
+  get showSandhi(): boolean {
+    return this.readingMode === 'sanskrit-sandhi';
+  }
+
+  get isSandhiAvailable(): boolean {
+    return this.chapterId >= 1 && this.chapterId <= 18;
   }
 
   getChapterName(chapter: any): string {
@@ -310,9 +330,5 @@ export class ChaptersComponent implements OnInit {
 
   isChapterDropdownOpen(chapter: any): boolean {
     return !!this.chapterDropdownOpen[chapter.id];
-  }
-
-  onSlokaGroupsReadyChange(ready: boolean) {
-    this.isSlokaGroupsReady = ready;
   }
 }

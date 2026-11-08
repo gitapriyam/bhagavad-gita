@@ -1,0 +1,56 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.sandhi-row + .sandhi-row {
+  margin-top: 1em;
+}
+
+.row-label,
+.sandhi-detail h4 {
+  margin: 0 0 0.4em;
+  color: var(--secondary-text-color);
+  font-size: 0.9em;
+}
+
+.sandhi-card {
+  background: var(--card-background-color);
+  border: 1px solid var(--card-border-color);
+  border-radius: 0.65em;
+}
+
+.verse-text {
+  display: block;
+  width: 100%;
+  padding: 0.75em;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: start;
+}
+
+.verse-text:focus-visible {
+  outline: 2px solid var(--search-accent);
+  outline-offset: -2px;
+}
+
+.verse-text span,
+.sandhi-detail p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.55;
+}
+
+.sandhi-detail {
+  margin-inline: 0.75em;
+  padding-block: 0.75em;
+  border-top: 1px solid var(--card-border-color);
+}
+
+.sandhi-detail p {
+  margin: 0;
+}
