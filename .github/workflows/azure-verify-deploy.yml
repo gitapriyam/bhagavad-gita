@@ -56,7 +56,8 @@ jobs:
             fi
           fi
           if { [ "${{ github.event_name }}" = "pull_request" ] && [ "${{ github.base_ref }}" = "development" ]; } || \
-             { [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; }; then
+             { [ "${{ github.event_name }}" = "push" ] &&
+               { [ "${{ github.ref }}" = "refs/heads/main" ] || [ "${{ github.ref }}" = "refs/heads/development" ]; }; }; then
             echo "SHOULD_DEPLOY=true" >> $GITHUB_ENV
           else
             echo "SHOULD_DEPLOY=false" >> $GITHUB_ENV
@@ -130,6 +131,9 @@ jobs:
           if [ "$SWA_CLI_DEPLOY_ENV" = "production" ]; then
             DEPLOYMENT_TOKEN="$AZURE_STATIC_WEB_APPS_API_TOKEN_PROD"
             TOKEN_NAME="AZURE_STATIC_WEB_APPS_API_TOKEN_PROD"
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            DEPLOYMENT_TOKEN="$AZURE_STATIC_WEB_APPS_API_TOKEN_DEV"
+            TOKEN_NAME="AZURE_STATIC_WEB_APPS_API_TOKEN_DEV"
           else
             DEPLOYMENT_TOKEN="${AZURE_STATIC_WEB_APPS_API_TOKEN_DEV:-$AZURE_STATIC_WEB_APPS_API_TOKEN}"
             TOKEN_NAME="AZURE_STATIC_WEB_APPS_API_TOKEN_DEV"
@@ -159,10 +163,12 @@ jobs:
           skip_api_build: true
 
       - name: Deploy to Azure Static Web Apps - Development
-        if: env.SHOULD_DEPLOY == 'true' && env.SWA_CLI_DEPLOY_ENV != 'production'
+        if: env.SHOULD_DEPLOY == 'true' && env.SWA_CLI_DEPLOY_ENV == 'development'
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ env.AZURE_STATIC_WEB_APPS_API_TOKEN_DEV != '' && env.AZURE_STATIC_WEB_APPS_API_TOKEN_DEV || env.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          # The shared token can be used for PR previews only.
+          azure_static_web_apps_api_token: ${{ env.AZURE_STATIC_WEB_APPS_API_TOKEN_DEV || (github.event_name == 'pull_request' && env.AZURE_STATIC_WEB_APPS_API_TOKEN) || '' }}
+          production_branch: ${{ github.event_name == 'push' && 'development' || '' }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: upload
           app_location: ${{ env.OUTPUT_LOCATION }}
