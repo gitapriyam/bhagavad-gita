@@ -20,7 +20,6 @@ jobs:
 
     env:
       AZURE_STATIC_WEB_APPS_API_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
-      AZURE_STATIC_WEB_APPS_API_TOKEN_DEV: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_DEV }}
       AZURE_STATIC_WEB_APPS_API_TOKEN_PROD: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_PROD }}
       API_LOCATION: "api"
       OUTPUT_LOCATION: "dist/bhagavad-gita/browser"
@@ -131,12 +130,9 @@ jobs:
           if [ "$SWA_CLI_DEPLOY_ENV" = "production" ]; then
             DEPLOYMENT_TOKEN="$AZURE_STATIC_WEB_APPS_API_TOKEN_PROD"
             TOKEN_NAME="AZURE_STATIC_WEB_APPS_API_TOKEN_PROD"
-          elif [ "${{ github.event_name }}" = "push" ]; then
-            DEPLOYMENT_TOKEN="$AZURE_STATIC_WEB_APPS_API_TOKEN_DEV"
-            TOKEN_NAME="AZURE_STATIC_WEB_APPS_API_TOKEN_DEV"
           else
-            DEPLOYMENT_TOKEN="${AZURE_STATIC_WEB_APPS_API_TOKEN_DEV:-$AZURE_STATIC_WEB_APPS_API_TOKEN}"
-            TOKEN_NAME="AZURE_STATIC_WEB_APPS_API_TOKEN_DEV"
+            DEPLOYMENT_TOKEN="$AZURE_STATIC_WEB_APPS_API_TOKEN"
+            TOKEN_NAME="AZURE_STATIC_WEB_APPS_API_TOKEN"
           fi
 
           if [ -z "$DEPLOYMENT_TOKEN" ]; then
@@ -163,12 +159,13 @@ jobs:
           skip_api_build: true
 
       - name: Deploy to Azure Static Web Apps - Development
+        id: deploy_development
         if: env.SHOULD_DEPLOY == 'true' && env.SWA_CLI_DEPLOY_ENV == 'development'
         uses: Azure/static-web-apps-deploy@v1
         with:
-          # The shared token can be used for PR previews only.
-          azure_static_web_apps_api_token: ${{ env.AZURE_STATIC_WEB_APPS_API_TOKEN_DEV || (github.event_name == 'pull_request' && env.AZURE_STATIC_WEB_APPS_API_TOKEN) || '' }}
-          production_branch: ${{ github.event_name == 'push' && 'development' || '' }}
+          azure_static_web_apps_api_token: ${{ env.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          # Pushes update the named environment. Pull requests keep their own previews.
+          deployment_environment: ${{ github.event_name == 'push' && 'development' || '' }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: upload
           app_location: ${{ env.OUTPUT_LOCATION }}
@@ -203,12 +200,20 @@ jobs:
       # Step 16: Set AZURE_STATIC_WEB_APPS_URL based on environment
       - name: Set AZURE_STATIC_WEB_APPS_URL
         if: env.SHOULD_DEPLOY == 'true'
+        env:
+          PRODUCTION_URL: ${{ secrets.AZURE_STATIC_WEB_APPS_URL_PROD }}
+          DEVELOPMENT_URL: ${{ steps.deploy_development.outputs.static_web_app_url }}
         run: |
           if [ "$SWA_CLI_DEPLOY_ENV" = "production" ]; then
-            echo "AZURE_STATIC_WEB_APPS_URL=${{ secrets.AZURE_STATIC_WEB_APPS_URL_PROD }}" >> $GITHUB_ENV
+            APP_URL="$PRODUCTION_URL"
           else
-            echo "AZURE_STATIC_WEB_APPS_URL=${{ secrets.AZURE_STATIC_WEB_APPS_URL_DEV }}" >> $GITHUB_ENV
+            APP_URL="$DEVELOPMENT_URL"
           fi
+          if [ -z "$APP_URL" ]; then
+            echo "No deployment URL is available for $SWA_CLI_DEPLOY_ENV."
+            exit 1
+          fi
+          echo "AZURE_STATIC_WEB_APPS_URL=${APP_URL%/}" >> "$GITHUB_ENV"
 
       # Step 16.5: Wait for AZURE_STATIC_WEB_APPS_URL to be up
       - name: Wait for Static Web App to be Up
