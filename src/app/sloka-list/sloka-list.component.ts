@@ -5,6 +5,7 @@ import {
   EventEmitter,
   OnInit,
   OnChanges,
+  OnDestroy,
   SimpleChanges,
   ElementRef,
   ViewChild,
@@ -35,13 +36,13 @@ import { LoggerService } from '../services/logging.service';
     GroupedSlokaComponent,
   ],
 })
-export class SlokaListComponent implements OnInit, OnChanges, AfterViewInit {
+export class SlokaListComponent
+  implements OnInit, OnChanges, AfterViewInit, OnDestroy
+{
   @Input() chapterId: number = 0;
   @Input() chapterName: string = '';
   @Input() slokaCount: number = 0;
   @Input() showSanskrit: boolean = false;
-  @Input() showSandhi: boolean = false;
-  @Output() isSlokaGroupsReadyChange = new EventEmitter<boolean>();
   @Output() showSloka = new EventEmitter<number>();
   isSlokaGroupsReady: boolean = false;
   slokaData: number[][] = [];
@@ -53,6 +54,8 @@ export class SlokaListComponent implements OnInit, OnChanges, AfterViewInit {
   isPaneVisible: boolean = false;
   groups: any[] = []; // Store groups here
   observer: IntersectionObserver | null = null;
+  private mutationObserver?: MutationObserver;
+  private observerTimer?: ReturnType<typeof setTimeout>;
   isViewportLoading = true;
   viewportIndices: number[] = []; // Add this property to track indices in the viewport
   visibleSlokaIndices = new Set<number>();
@@ -85,33 +88,23 @@ export class SlokaListComponent implements OnInit, OnChanges, AfterViewInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['chapterId'] || changes['showSanskrit']) {
-      if (changes['chapterId']) {
-        this.cookieService.set(
-          'currentChapter',
-          this.chapterId.toString(),
-          this.cookieLifetimeDays,
-        );
-      }
-      if (changes['showSanskrit']) {
-        this.cookieService.set(
-          'showSanskrit',
-          this.showSanskrit.toString(),
-          this.cookieLifetimeDays,
-        );
-      }
       this.loadSlokas();
-      setTimeout(() => {
+      clearTimeout(this.observerTimer);
+      this.observerTimer = setTimeout(() => {
         this.setupIntersectionObserver(); // Reinitialize the observer after DOM update
       });
-    }
-    if (!this.isSlokaGroupsReady) {
-      this.showSandhi = false;
     }
   }
 
   ngAfterViewInit(): void {
     this.setupIntersectionObserver();
     this.setupMutationObserver();
+  }
+
+  ngOnDestroy(): void {
+    clearTimeout(this.observerTimer);
+    this.observer?.disconnect();
+    this.mutationObserver?.disconnect();
   }
 
   togglePane(): void {
@@ -165,10 +158,7 @@ export class SlokaListComponent implements OnInit, OnChanges, AfterViewInit {
         isProduction,
         data.readiness,
       );
-      if (this.isSlokaGroupsReady !== ready) {
-        this.isSlokaGroupsReady = ready;
-        this.isSlokaGroupsReadyChange.emit(this.isSlokaGroupsReady);
-      }
+      this.isSlokaGroupsReady = ready;
       this.groups = data.groups;
       for (const group of this.groups) {
         for (const slokaId of group.slokas) {
@@ -260,11 +250,11 @@ export class SlokaListComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   setupMutationObserver(): void {
-    const observer = new MutationObserver(() => {
+    this.mutationObserver = new MutationObserver(() => {
       this.setupIntersectionObserver(); // Reinitialize IntersectionObserver on DOM changes
     });
 
-    observer.observe(this.slokaContainer.nativeElement, {
+    this.mutationObserver.observe(this.slokaContainer.nativeElement, {
       childList: true, // Observe changes to child elements
       subtree: true, // Observe changes in all descendants
     });
@@ -303,8 +293,6 @@ export class SlokaListComponent implements OnInit, OnChanges, AfterViewInit {
   // onToggleSanskrit(): void {
   //   this.loadSlokas(); // Reload slokas when toggling Sanskrit
   // }
-
-  // onToggleSandhi(): void {}
 
   getSlokaTitle(index: number): string {
     return this.utilityService.getSlokaTitle(index, this.showSanskrit);

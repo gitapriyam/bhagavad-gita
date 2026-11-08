@@ -6,6 +6,7 @@ import { RemoteResource } from '../models/remote-resource.model'; // Import the 
 import { SlokaData } from '../models/sloka-data.model'; // Import the interface
 import { SlokaSearchResult } from '@app/models/sloka-search-result.model';
 import { CustomContent } from '@app/models/custom-content.model';
+import { SandhiChapter } from '../models/sandhi-chapter.model';
 import { ApiBaseUrlService } from './api-base-url.service';
 @Injectable({
   providedIn: 'root',
@@ -58,6 +59,13 @@ export class ApiService {
   getSlokaGroupData(chapterId: number): Observable<any> {
     const url = `${this.API_BASE_URL}/slokaGroups/${chapterId}`;
     return this.http.get<any>(url);
+  }
+
+  getSandhiChapter(chapterId: number): Observable<SandhiChapter> {
+    return this.http.get<SandhiChapter>(
+      `${this.API_BASE_URL}/chapter/${chapterId}`,
+      { params: { content: 'sanskrit-sandhi' } },
+    );
   }
 
   getChapters(): Observable<any> {
