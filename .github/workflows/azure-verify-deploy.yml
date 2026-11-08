@@ -16,7 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: write # Allows Azure Static Web Apps to post the preview URL.
 
     env:
       AZURE_STATIC_WEB_APPS_API_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
@@ -54,9 +53,8 @@ jobs:
               echo "SWA_CLI_DEPLOY_ENV=development" >> $GITHUB_ENV
             fi
           fi
-          if { [ "${{ github.event_name }}" = "pull_request" ] && [ "${{ github.base_ref }}" = "development" ]; } || \
-             { [ "${{ github.event_name }}" = "push" ] &&
-               { [ "${{ github.ref }}" = "refs/heads/main" ] || [ "${{ github.ref }}" = "refs/heads/development" ]; }; }; then
+          if [ "${{ github.event_name }}" = "push" ] &&
+             { [ "${{ github.ref }}" = "refs/heads/main" ] || [ "${{ github.ref }}" = "refs/heads/development" ]; }; then
             echo "SHOULD_DEPLOY=true" >> $GITHUB_ENV
           else
             echo "SHOULD_DEPLOY=false" >> $GITHUB_ENV
@@ -150,7 +148,6 @@ jobs:
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ env.AZURE_STATIC_WEB_APPS_API_TOKEN_PROD }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: upload
           app_location: ${{ env.OUTPUT_LOCATION }}
           api_location: ${{ env.API_LOCATION }}
@@ -164,9 +161,7 @@ jobs:
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ env.AZURE_STATIC_WEB_APPS_API_TOKEN }}
-          # Pushes update the named environment. Pull requests keep their own previews.
-          deployment_environment: ${{ github.event_name == 'push' && 'development' || '' }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          deployment_environment: development
           action: upload
           app_location: ${{ env.OUTPUT_LOCATION }}
           api_location: ${{ env.API_LOCATION }}
