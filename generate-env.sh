@@ -1,5 +1,7 @@
 # Set release date and commit hash
-source ./.env
+if [ -f ./.env ]; then
+  source ./.env
+fi
 export APP_VERSION=$(node -p "require('./package.json').version")
 export APP_RELEASE_DATE="$(date +"%Y-%m-%d %H:%M:%S")"
 export APP_COMMIT_HASH=$(git rev-parse --short HEAD)
