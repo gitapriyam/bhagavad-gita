@@ -24,8 +24,6 @@ import { SlokaData } from '@app/models/sloka-data.model';
         [slokaGroup]="[index]"
         [sloka]="sloka"
         [showSanskrit]="showSanskrit"
-        [showSandhi]="showSandhi"
-        [isSlokaGroupsReady]="isSlokaGroupsReady"
       ></app-sloka>
     </div>
   </div>`,
@@ -38,8 +36,6 @@ export class SingleSlokaComponent {
   @Input() expandedSloka!: number;
   @Input() chapterId!: number;
   @Input() showSanskrit: boolean = false;
-  @Input() showSandhi: boolean = false;
-  @Input() isSlokaGroupsReady: boolean = false;
   @Output() slokaToggle = new EventEmitter<number>();
 
   constructor(private utilityService: UtilityService) {}

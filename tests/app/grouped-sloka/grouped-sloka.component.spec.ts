@@ -46,8 +46,6 @@ describe('GroupedSlokaComponent', () => {
     };
     component.chapterId = 1;
     component.showSanskrit = false;
-    component.showSandhi = false;
-    component.isSlokaGroupsReady = true;
     component.expandedSloka = 0;
     fixture.detectChanges();
   });

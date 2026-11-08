@@ -1,0 +1,49 @@
+@if (loading) {
+  <p role="status">Loading Sanskrit Sandhi…</p>
+} @else if (loadFailed) {
+  <p role="alert">Unable to load Sanskrit Sandhi for this chapter.</p>
+  <button type="button" (click)="loadChapter()">Retry</button>
+} @else if (!rows.length) {
+  <p role="status">Sanskrit Sandhi is not available for this chapter.</p>
+} @else {
+  <section class="sandhi-reader" aria-label="Sanskrit Sandhi" lang="sa">
+    @for (row of rows; track $index) {
+      <article class="sandhi-row">
+        <h3 class="row-label" [id]="'sandhi-label-' + $index">
+          {{ row.label }}
+        </h3>
+        <div class="sandhi-card">
+          <button
+            class="verse-text"
+            type="button"
+            [attr.aria-expanded]="expandedRow === $index"
+            [attr.aria-controls]="'sandhi-details-' + $index"
+            [attr.aria-labelledby]="
+              'sandhi-label-' + $index + ' sandhi-verse-' + $index
+            "
+            (click)="toggleRow($index)"
+          >
+            <span [id]="'sandhi-verse-' + $index">{{ row.sloka }}</span>
+          </button>
+          <div
+            [id]="'sandhi-details-' + $index"
+            [hidden]="expandedRow !== $index"
+          >
+            @if (row.sandhi?.trim()) {
+              <div class="sandhi-detail">
+                <h4>सन्धिविग्रह</h4>
+                <p>{{ row.sandhi }}</p>
+              </div>
+            }
+            @if (row.anvaya?.trim()) {
+              <div class="sandhi-detail">
+                <h4>अन्वय</h4>
+                <p>{{ row.anvaya }}</p>
+              </div>
+            }
+          </div>
+        </div>
+      </article>
+    }
+  </section>
+}

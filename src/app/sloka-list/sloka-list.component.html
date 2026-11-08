@@ -10,8 +10,6 @@
               [expandedSloka]="expandedSloka ?? -1"
               [chapterId]="chapterId"
               [showSanskrit]="showSanskrit"
-              [showSandhi]="showSandhi"
-              [isSlokaGroupsReady]="isSlokaGroupsReady"
               [slokas]="slokas"
               (toggleGroup)="toggleSlokaGroup($event)">
             </app-grouped-sloka>
@@ -26,8 +24,6 @@
                 [expandedSloka]="expandedSloka ?? -1"
                 [chapterId]="chapterId"
                 [showSanskrit]="showSanskrit"
-                [showSandhi]="showSandhi"
-                [isSlokaGroupsReady]="isSlokaGroupsReady"
                 (slokaToggle)="toggleSloka(index)">
               </app-single-sloka>
             </li>

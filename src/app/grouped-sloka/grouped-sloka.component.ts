@@ -23,8 +23,6 @@ import { SlokaData } from '@app/models/sloka-data.model';
           [chapterId]="chapterId"
           [slokaGroup]="group"
           [showSanskrit]="showSanskrit"
-          [showSandhi]="showSandhi"
-          [isSlokaGroupsReady]="isSlokaGroupsReady"
           [sloka]="selectedSloka !== null ? slokas[selectedSloka] : null"
           (slokaChange)="onSlokaSelected($event)"
         ></app-sloka>
@@ -40,8 +38,6 @@ export class GroupedSlokaComponent implements OnInit {
   @Input() slokas!: { [key: number]: SlokaData };
   @Input() chapterId!: number;
   @Input() showSanskrit!: boolean;
-  @Input() showSandhi!: boolean;
-  @Input() isSlokaGroupsReady!: boolean;
   @Output() toggleGroup = new EventEmitter<number>();
   selectedSloka: number | null = null;
   onToggleGroup(slokaId: number): void {
